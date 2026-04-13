@@ -2,6 +2,10 @@ package com.example.AuthService.controller;
 
 import com.example.AuthService.dto.request.UserUpdateRequestDTO;
 import com.example.AuthService.dto.response.UserProfileResponse;
+import com.example.AuthService.security.jwt.JwtService;
+import com.example.AuthService.security.OAuth2LoginSuccessHandler;
+import com.example.AuthService.service.SocialLoginService;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import com.example.AuthService.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
@@ -9,7 +13,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.bean.MockBean;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -28,6 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @WebMvcTest(UserController.class)
 @AutoConfigureMockMvc(addFilters = false)
+@ActiveProfiles("test")
 class UserControllerTest {
 
     @Autowired
@@ -36,8 +42,20 @@ class UserControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @MockBean
+    @MockitoBean
     private UserService userService;
+
+    @MockitoBean
+    private JwtService jwtService;
+
+    @MockitoBean
+    private SocialLoginService socialLoginService;
+
+    @MockitoBean
+    private OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
+
+    @MockitoBean
+    private UserDetailsService userDetailsService;
 
     // ======================== GET USER PROFILE ========================
 

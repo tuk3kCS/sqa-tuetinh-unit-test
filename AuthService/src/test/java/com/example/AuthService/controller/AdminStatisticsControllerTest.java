@@ -2,15 +2,23 @@ package com.example.AuthService.controller;
 
 import com.example.AuthService.dto.stats.*;
 import com.example.AuthService.enums.StatsGroupBy;
+import com.example.AuthService.security.jwt.JwtService;
+import com.example.AuthService.security.OAuth2LoginSuccessHandler;
 import com.example.AuthService.service.AdminStatisticsService;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import com.example.AuthService.service.SocialLoginService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.bean.MockBean;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -26,13 +34,26 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @WebMvcTest(AdminStatisticsController.class)
 @AutoConfigureMockMvc(addFilters = false)
+@ActiveProfiles("test")
 class AdminStatisticsControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @MockitoBean
     private AdminStatisticsService adminStatisticsService;
+
+    @MockitoBean
+    private JwtService jwtService;
+
+    @MockitoBean
+    private SocialLoginService socialLoginService;
+
+    @MockitoBean
+    private OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
+
+    @MockitoBean
+    private UserDetailsService userDetailsService;
 
     // ======================== REVENUE SUMMARY ========================
 
@@ -193,11 +214,16 @@ class AdminStatisticsControllerTest {
                 .revenue(BigDecimal.valueOf(1500000))
                 .build();
 
-        when(adminStatisticsService.getTopProducts(any())).thenReturn(List.of(product));
+        Page<TopProductDto> topProductsPage = new PageImpl<>(
+                List.of(product),
+                PageRequest.of(0, 20),
+                1
+        );
+        when(adminStatisticsService.getTopProducts(any())).thenReturn(topProductsPage);
 
         mockMvc.perform(get("/api/admin/statistics/revenue/top-products"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].drugName").value("Paracetamol"));
+                .andExpect(jsonPath("$.content[0].drugName").value("Paracetamol"));
     }
 
     /**
@@ -211,12 +237,13 @@ class AdminStatisticsControllerTest {
     @WithMockUser(roles = "ADMIN")
     @DisplayName("TC_AUTH_AdminStatisticsController_topProducts_002: Top sản phẩm - không có dữ liệu")
     void TC_AUTH_AdminStatisticsController_topProducts_002() throws Exception {
-        when(adminStatisticsService.getTopProducts(any())).thenReturn(List.of());
+        Page<TopProductDto> emptyPage = new PageImpl<>(List.of(), PageRequest.of(0, 20), 0);
+        when(adminStatisticsService.getTopProducts(any())).thenReturn(emptyPage);
 
         mockMvc.perform(get("/api/admin/statistics/revenue/top-products"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$").isEmpty());
+                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.content").isEmpty());
     }
 
     /**
@@ -230,7 +257,8 @@ class AdminStatisticsControllerTest {
     @WithMockUser(roles = "ADMIN")
     @DisplayName("TC_AUTH_AdminStatisticsController_topProducts_003: Top sản phẩm với topN=5")
     void TC_AUTH_AdminStatisticsController_topProducts_003() throws Exception {
-        when(adminStatisticsService.getTopProducts(any())).thenReturn(List.of());
+        Page<TopProductDto> emptyPage = new PageImpl<>(List.of(), PageRequest.of(0, 5), 0);
+        when(adminStatisticsService.getTopProducts(any())).thenReturn(emptyPage);
 
         mockMvc.perform(get("/api/admin/statistics/revenue/top-products")
                         .param("topN", "5"))

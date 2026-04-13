@@ -3,21 +3,25 @@ package com.example.AuthService.controller;
 import com.example.AuthService.dto.request.CreateOrderRequest;
 import com.example.AuthService.dto.request.OrderItemRequest;
 import com.example.AuthService.dto.response.OrderResponse;
+import com.example.AuthService.dto.response.PageResponse;
 import com.example.AuthService.entity.Order;
 import com.example.AuthService.entity.User;
 import com.example.AuthService.enums.OrderStatus;
 import com.example.AuthService.enums.PaymentMethod;
 import com.example.AuthService.repository.UserRepository;
+import com.example.AuthService.security.jwt.JwtService;
+import com.example.AuthService.security.OAuth2LoginSuccessHandler;
 import com.example.AuthService.service.OrderService;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import com.example.AuthService.service.SocialLoginService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.bean.MockBean;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -38,6 +42,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @WebMvcTest(OrderController.class)
 @AutoConfigureMockMvc(addFilters = false)
+@ActiveProfiles("test")
 class OrderControllerTest {
 
     @Autowired
@@ -46,11 +51,23 @@ class OrderControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @MockBean
+    @MockitoBean
     private OrderService orderService;
 
-    @MockBean
+    @MockitoBean
     private UserRepository userRepository;
+
+    @MockitoBean
+    private JwtService jwtService;
+
+    @MockitoBean
+    private SocialLoginService socialLoginService;
+
+    @MockitoBean
+    private OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
+
+    @MockitoBean
+    private UserDetailsService userDetailsService;
 
     private User createMockUser() {
         User user = new User();
@@ -282,9 +299,12 @@ class OrderControllerTest {
         User user = createMockUser();
         when(userRepository.findByEmail("user@test.com")).thenReturn(Optional.of(user));
 
-        Page<OrderResponse> page = new PageImpl<>(List.of());
+        PageResponse<OrderResponse> pageResponse = PageResponse.<OrderResponse>builder()
+                .content(List.of())
+                .page(0).size(10).totalElements(0).totalPages(0).last(true)
+                .build();
         when(orderService.getOrders(eq(user), isNull(), isNull(), isNull(), isNull(), isNull(), any()))
-                .thenReturn(page);
+                .thenReturn(pageResponse);
 
         mockMvc.perform(get("/api/orders"))
                 .andExpect(status().isOk());
@@ -304,9 +324,12 @@ class OrderControllerTest {
         User user = createMockUser();
         when(userRepository.findByEmail("user@test.com")).thenReturn(Optional.of(user));
 
-        Page<OrderResponse> page = new PageImpl<>(List.of());
+        PageResponse<OrderResponse> pageResponse = PageResponse.<OrderResponse>builder()
+                .content(List.of())
+                .page(0).size(10).totalElements(0).totalPages(0).last(true)
+                .build();
         when(orderService.getOrders(eq(user), eq(OrderStatus.PENDING), isNull(), isNull(), isNull(), isNull(), any()))
-                .thenReturn(page);
+                .thenReturn(pageResponse);
 
         mockMvc.perform(get("/api/orders")
                         .param("status", "PENDING"))
@@ -327,9 +350,12 @@ class OrderControllerTest {
         User user = createMockUser();
         when(userRepository.findByEmail("user@test.com")).thenReturn(Optional.of(user));
 
-        Page<OrderResponse> page = new PageImpl<>(List.of());
+        PageResponse<OrderResponse> pageResponse = PageResponse.<OrderResponse>builder()
+                .content(List.of())
+                .page(1).size(5).totalElements(0).totalPages(0).last(true)
+                .build();
         when(orderService.getOrders(any(), any(), any(), any(), any(), any(), any()))
-                .thenReturn(page);
+                .thenReturn(pageResponse);
 
         mockMvc.perform(get("/api/orders")
                         .param("page", "1")

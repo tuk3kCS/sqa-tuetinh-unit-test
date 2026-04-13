@@ -1,8 +1,11 @@
 package com.example.AuthService.controller;
 
 import com.example.AuthService.dto.request.UserUpdateRequestDTO;
-import com.example.AuthService.dto.response.PageResponse;
 import com.example.AuthService.dto.response.UserResponseDTO;
+import com.example.AuthService.security.jwt.JwtService;
+import com.example.AuthService.security.OAuth2LoginSuccessHandler;
+import com.example.AuthService.service.SocialLoginService;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import com.example.AuthService.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
@@ -10,7 +13,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.bean.MockBean;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -30,6 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @WebMvcTest(AdminUserController.class)
 @AutoConfigureMockMvc(addFilters = false)
+@ActiveProfiles("test")
 class AdminUserControllerTest {
 
     @Autowired
@@ -38,8 +43,20 @@ class AdminUserControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @MockBean
+    @MockitoBean
     private UserService userService;
+
+    @MockitoBean
+    private JwtService jwtService;
+
+    @MockitoBean
+    private SocialLoginService socialLoginService;
+
+    @MockitoBean
+    private OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
+
+    @MockitoBean
+    private UserDetailsService userDetailsService;
 
     // ======================== GET ALL USERS ========================
 
@@ -54,16 +71,12 @@ class AdminUserControllerTest {
     @WithMockUser(roles = "ADMIN")
     @DisplayName("TC_AUTH_AdminUserController_getAllUsers_001: Lấy danh sách user thành công")
     void TC_AUTH_AdminUserController_getAllUsers_001() throws Exception {
-        PageResponse<UserResponseDTO> pageResponse = PageResponse.<UserResponseDTO>builder()
-                .content(List.of())
-                .page(0).size(20).totalElements(0).totalPages(0).last(true)
-                .build();
-
-        when(userService.getAllUsers(0, 20, null, null, null)).thenReturn(pageResponse);
+        when(userService.getAllUsers(0, 20, null, null, null)).thenReturn(List.of());
 
         mockMvc.perform(get("/api/admin/users"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.page").value(0));
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$").isEmpty());
     }
 
     /**
@@ -77,11 +90,7 @@ class AdminUserControllerTest {
     @WithMockUser(roles = "ADMIN")
     @DisplayName("TC_AUTH_AdminUserController_getAllUsers_002: Lấy danh sách user với keyword")
     void TC_AUTH_AdminUserController_getAllUsers_002() throws Exception {
-        PageResponse<UserResponseDTO> pageResponse = PageResponse.<UserResponseDTO>builder()
-                .content(List.of()).page(0).size(20).totalElements(0).totalPages(0).last(true)
-                .build();
-
-        when(userService.getAllUsers(0, 20, "test", null, null)).thenReturn(pageResponse);
+        when(userService.getAllUsers(0, 20, "test", null, null)).thenReturn(List.of());
 
         mockMvc.perform(get("/api/admin/users")
                         .param("keyword", "test"))
@@ -99,11 +108,7 @@ class AdminUserControllerTest {
     @WithMockUser(roles = "ADMIN")
     @DisplayName("TC_AUTH_AdminUserController_getAllUsers_003: Lấy user với filter roleId và enabled")
     void TC_AUTH_AdminUserController_getAllUsers_003() throws Exception {
-        PageResponse<UserResponseDTO> pageResponse = PageResponse.<UserResponseDTO>builder()
-                .content(List.of()).page(0).size(20).totalElements(0).totalPages(0).last(true)
-                .build();
-
-        when(userService.getAllUsers(0, 20, null, 1L, true)).thenReturn(pageResponse);
+        when(userService.getAllUsers(0, 20, null, 1L, true)).thenReturn(List.of());
 
         mockMvc.perform(get("/api/admin/users")
                         .param("roleId", "1")

@@ -5,14 +5,19 @@ import com.example.AuthService.dto.request.*;
 import com.example.AuthService.dto.response.TokenResponse;
 import com.example.AuthService.otp.OtpType;
 import com.example.AuthService.service.AuthProfileService;
+import com.example.AuthService.security.jwt.JwtService;
+import com.example.AuthService.security.OAuth2LoginSuccessHandler;
 import com.example.AuthService.service.AuthService;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import com.example.AuthService.service.SocialLoginService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.bean.MockBean;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -36,6 +41,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @WebMvcTest(AuthController.class)
 @AutoConfigureMockMvc(addFilters = false)
+@ActiveProfiles("test")
 class AuthControllerTest {
 
     @Autowired
@@ -44,11 +50,23 @@ class AuthControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @MockBean
+    @MockitoBean
     private AuthService authService;
 
-    @MockBean
+    @MockitoBean
     private AuthProfileService authProfileService;
+
+    @MockitoBean
+    private JwtService jwtService;
+
+    @MockitoBean
+    private SocialLoginService socialLoginService;
+
+    @MockitoBean
+    private OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
+
+    @MockitoBean
+    private UserDetailsService userDetailsService;
 
     // ======================== LOGIN ========================
 
@@ -486,7 +504,7 @@ class AuthControllerTest {
         ResetPasswordRequest request = new ResetPasswordRequest();
         request.setEmail("user@test.com");
         request.setCode("123456");
-        request.setNewPassword("short");
+        request.setNewPassword("weakpass1");
 
         doThrow(new ResponseStatusException(BAD_REQUEST, "Mật khẩu mới tối thiểu 8 ký tự"))
                 .when(authService).resetPassword(any(ResetPasswordRequest.class));

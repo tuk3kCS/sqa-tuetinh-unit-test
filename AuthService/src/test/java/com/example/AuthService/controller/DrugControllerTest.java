@@ -2,14 +2,19 @@ package com.example.AuthService.controller;
 
 import com.example.AuthService.dto.response.DrugResponse;
 import com.example.AuthService.entity.Drug;
+import com.example.AuthService.security.jwt.JwtService;
+import com.example.AuthService.security.OAuth2LoginSuccessHandler;
 import com.example.AuthService.service.DrugService;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import com.example.AuthService.service.SocialLoginService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.bean.MockBean;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.http.MediaType;
@@ -26,6 +31,10 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.springframework.http.HttpStatus.*;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.test.web.servlet.request.RequestPostProcessor;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -35,6 +44,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @WebMvcTest(DrugController.class)
 @AutoConfigureMockMvc(addFilters = false)
+@ActiveProfiles("test")
 class DrugControllerTest {
 
     @Autowired
@@ -43,8 +53,28 @@ class DrugControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @MockBean
+    @MockitoBean
     private DrugService drugService;
+
+    @MockitoBean
+    private JwtService jwtService;
+
+    @MockitoBean
+    private SocialLoginService socialLoginService;
+
+    @MockitoBean
+    private OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
+
+    @MockitoBean
+    private UserDetailsService userDetailsService;
+
+    private static RequestPostProcessor authAs(String username, String... roles) {
+        var authorities = java.util.Arrays.stream(roles)
+                .map(r -> new SimpleGrantedAuthority("ROLE_" + r))
+                .collect(java.util.stream.Collectors.toList());
+        var auth = new UsernamePasswordAuthenticationToken(username, null, authorities);
+        return request -> { request.setUserPrincipal(auth); return request; };
+    }
 
     // ======================== LIST ========================
 
@@ -65,7 +95,7 @@ class DrugControllerTest {
 
         when(drugService.getDrugs(any(), any(), eq(false))).thenReturn(page);
 
-        mockMvc.perform(get("/api/drugs"))
+        mockMvc.perform(get("/api/drugs").with(authAs("user", "USER")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content", hasSize(1)))
                 .andExpect(jsonPath("$.content[0].name").value("Paracetamol"));
@@ -88,7 +118,8 @@ class DrugControllerTest {
         mockMvc.perform(get("/api/drugs")
                         .param("q", "para")
                         .param("minPrice", "10000")
-                        .param("maxPrice", "50000"))
+                        .param("maxPrice", "50000")
+                        .with(authAs("user", "USER")))
                 .andExpect(status().isOk());
     }
 
@@ -106,7 +137,7 @@ class DrugControllerTest {
         Page<DrugResponse> page = new PageImpl<>(List.of());
         when(drugService.getDrugs(any(), any(), eq(true))).thenReturn(page);
 
-        mockMvc.perform(get("/api/drugs"))
+        mockMvc.perform(get("/api/drugs").with(authAs("admin", "ADMIN")))
                 .andExpect(status().isOk());
     }
 
@@ -127,7 +158,8 @@ class DrugControllerTest {
                 .thenReturn(List.of("Paracetamol", "Paracetamol Extra"));
 
         mockMvc.perform(get("/api/drugs/suggest")
-                        .param("q", "para"))
+                        .param("q", "para")
+                        .with(authAs("user", "USER")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[0]").value("Paracetamol"));
@@ -147,7 +179,8 @@ class DrugControllerTest {
         when(drugService.suggestNames("xyznotfound", 10)).thenReturn(List.of());
 
         mockMvc.perform(get("/api/drugs/suggest")
-                        .param("q", "xyznotfound"))
+                        .param("q", "xyznotfound")
+                        .with(authAs("user", "USER")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(0)));
     }
@@ -168,7 +201,8 @@ class DrugControllerTest {
 
         mockMvc.perform(get("/api/drugs/suggest")
                         .param("q", "para")
-                        .param("limit", "3"))
+                        .param("limit", "3")
+                        .with(authAs("user", "USER")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(3)));
     }
@@ -193,7 +227,7 @@ class DrugControllerTest {
                 .build();
         when(drugService.getDrugById(1L)).thenReturn(drug);
 
-        mockMvc.perform(get("/api/drugs/1"))
+        mockMvc.perform(get("/api/drugs/1").with(authAs("user", "USER")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("Paracetamol"));
     }
@@ -212,7 +246,7 @@ class DrugControllerTest {
         when(drugService.getDrugById(999L))
                 .thenThrow(new RuntimeException("Không tìm thấy thuốc"));
 
-        mockMvc.perform(get("/api/drugs/999"))
+        mockMvc.perform(get("/api/drugs/999").with(authAs("user", "USER")))
                 .andExpect(status().isInternalServerError());
     }
 
@@ -243,7 +277,8 @@ class DrugControllerTest {
 
         mockMvc.perform(multipart("/api/drugs")
                         .file(drugPart)
-                        .file(imagePart))
+                        .file(imagePart)
+                        .with(authAs("admin", "ADMIN")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("New Drug"));
     }
@@ -264,7 +299,8 @@ class DrugControllerTest {
 
         mockMvc.perform(multipart("/api/drugs")
                         .file(drugPart)
-                        .file(imagePart))
+                        .file(imagePart)
+                        .with(authAs("admin", "ADMIN")))
                 .andExpect(status().isInternalServerError());
     }
 
@@ -288,7 +324,8 @@ class DrugControllerTest {
 
         mockMvc.perform(multipart("/api/drugs")
                         .file(drugPart)
-                        .file(imagePart))
+                        .file(imagePart)
+                        .with(authAs("admin", "ADMIN")))
                 .andExpect(status().isInternalServerError());
     }
 
@@ -317,7 +354,8 @@ class DrugControllerTest {
 
         mockMvc.perform(multipart("/api/drugs/1")
                         .file(drugPart)
-                        .with(request -> { request.setMethod("PUT"); return request; }))
+                        .with(request -> { request.setMethod("PUT"); return request; })
+                        .with(authAs("admin", "ADMIN")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("Updated Drug"));
     }
@@ -341,7 +379,8 @@ class DrugControllerTest {
 
         mockMvc.perform(multipart("/api/drugs/999")
                         .file(drugPart)
-                        .with(request -> { request.setMethod("PUT"); return request; }))
+                        .with(request -> { request.setMethod("PUT"); return request; })
+                        .with(authAs("admin", "ADMIN")))
                 .andExpect(status().isInternalServerError());
     }
 
@@ -360,7 +399,7 @@ class DrugControllerTest {
     void TC_AUTH_DrugController_deleteDrug_001() throws Exception {
         doNothing().when(drugService).deleteDrug(1L);
 
-        mockMvc.perform(delete("/api/drugs/1"))
+        mockMvc.perform(delete("/api/drugs/1").with(authAs("admin", "ADMIN")))
                 .andExpect(status().isNoContent());
 
         verify(drugService).deleteDrug(1L);
@@ -380,7 +419,7 @@ class DrugControllerTest {
         doThrow(new RuntimeException("Không tìm thấy thuốc"))
                 .when(drugService).deleteDrug(999L);
 
-        mockMvc.perform(delete("/api/drugs/999"))
+        mockMvc.perform(delete("/api/drugs/999").with(authAs("admin", "ADMIN")))
                 .andExpect(status().isInternalServerError());
     }
 
@@ -398,7 +437,7 @@ class DrugControllerTest {
         doThrow(new RuntimeException("Không thể xóa thuốc đang có đơn hàng"))
                 .when(drugService).deleteDrug(1L);
 
-        mockMvc.perform(delete("/api/drugs/1"))
+        mockMvc.perform(delete("/api/drugs/1").with(authAs("admin", "ADMIN")))
                 .andExpect(status().isInternalServerError());
     }
 }
