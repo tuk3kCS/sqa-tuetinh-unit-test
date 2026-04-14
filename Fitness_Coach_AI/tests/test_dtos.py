@@ -21,7 +21,7 @@ from app.dto.ai_profile_input_dto import AIProfileInputDTO
 # _pick helper
 # ============================================================
 
-# Test Case ID: TC_FITNESS_DTOs_pick_001
+# Test Case ID: TC-FR-00-001s_pick_001
 # Test Objective: Kiểm tra _pick trả giá trị đúng khi key đầu tiên tồn tại
 # Input: dict {"calorie_target": 2000}, keys=("calorie_target", "calorieTarget")
 # Expected Output: 2000
@@ -31,7 +31,7 @@ def test_pick_first_key_found():
     assert result == 2000
 
 
-# Test Case ID: TC_FITNESS_DTOs_pick_002
+# Test Case ID: TC-FR-00-001s_pick_002
 # Test Objective: Kiểm tra _pick dùng key thay thế (camelCase)
 # Input: dict {"calorieTarget": 1800}, keys=("calorie_target", "calorieTarget")
 # Expected Output: 1800
@@ -41,7 +41,7 @@ def test_pick_fallback_key():
     assert result == 1800
 
 
-# Test Case ID: TC_FITNESS_DTOs_pick_003
+# Test Case ID: TC-FR-00-001s_pick_003
 # Test Objective: Kiểm tra _pick trả default khi không tìm thấy key
 # Input: dict rỗng, default="fallback"
 # Expected Output: "fallback"
@@ -51,7 +51,7 @@ def test_pick_default_value():
     assert result == "fallback"
 
 
-# Test Case ID: TC_FITNESS_DTOs_pick_004
+# Test Case ID: TC-FR-00-001s_pick_004
 # Test Objective: Kiểm tra _pick raise DTOValidationError khi required=True và không tìm thấy
 # Input: dict rỗng, required=True
 # Expected Output: Raise DTOValidationError
@@ -61,7 +61,7 @@ def test_pick_required_missing():
         _pick({}, "field_a", "field_b", required=True)
 
 
-# Test Case ID: TC_FITNESS_DTOs_pick_005
+# Test Case ID: TC-FR-00-001s_pick_005
 # Test Objective: Kiểm tra _pick bỏ qua key có giá trị None
 # Input: dict {"key": None}, required=True
 # Expected Output: Raise DTOValidationError (None bị bỏ qua)
@@ -75,7 +75,7 @@ def test_pick_skips_none_value():
 # _to_int helper
 # ============================================================
 
-# Test Case ID: TC_FITNESS_DTOs_to_int_001
+# Test Case ID: TC-FR-00-001s_to_int_001
 # Test Objective: Kiểm tra chuyển đổi string sang int
 # Input: "42"
 # Expected Output: 42
@@ -84,7 +84,7 @@ def test_to_int_from_string():
     assert _to_int("42", "field") == 42
 
 
-# Test Case ID: TC_FITNESS_DTOs_to_int_002
+# Test Case ID: TC-FR-00-001s_to_int_002
 # Test Objective: Kiểm tra chuyển đổi float sang int (truncate)
 # Input: 3.7
 # Expected Output: 3
@@ -93,7 +93,7 @@ def test_to_int_from_float():
     assert _to_int(3.7, "field") == 3
 
 
-# Test Case ID: TC_FITNESS_DTOs_to_int_003
+# Test Case ID: TC-FR-00-001s_to_int_003
 # Test Objective: Kiểm tra raise DTOValidationError khi giá trị không convert được
 # Input: "not_a_number"
 # Expected Output: Raise DTOValidationError
@@ -107,7 +107,7 @@ def test_to_int_invalid():
 # _to_float helper
 # ============================================================
 
-# Test Case ID: TC_FITNESS_DTOs_to_float_001
+# Test Case ID: TC-FR-00-001s_to_float_001
 # Test Objective: Kiểm tra chuyển đổi string sang float
 # Input: "70.5"
 # Expected Output: 70.5
@@ -116,7 +116,7 @@ def test_to_float_from_string():
     assert _to_float("70.5", "weight") == 70.5
 
 
-# Test Case ID: TC_FITNESS_DTOs_to_float_002
+# Test Case ID: TC-FR-00-001s_to_float_002
 # Test Objective: Kiểm tra chuyển đổi int sang float
 # Input: 70
 # Expected Output: 70.0
@@ -125,7 +125,7 @@ def test_to_float_from_int():
     assert _to_float(70, "weight") == 70.0
 
 
-# Test Case ID: TC_FITNESS_DTOs_to_float_003
+# Test Case ID: TC-FR-00-001s_to_float_003
 # Test Objective: Kiểm tra raise DTOValidationError khi giá trị không convert được
 # Input: "abc"
 # Expected Output: Raise DTOValidationError
@@ -139,7 +139,7 @@ def test_to_float_invalid():
 # _unwrap_payload helper
 # ============================================================
 
-# Test Case ID: TC_FITNESS_DTOs_unwrap_payload_001
+# Test Case ID: TC-FR-00-001s_unwrap_payload_001
 # Test Objective: Kiểm tra unwrap khi payload có key "data"
 # Input: {"data": {"age": 25}}
 # Expected Output: {"age": 25}
@@ -149,7 +149,7 @@ def test_unwrap_payload_with_data_key():
     assert result == {"age": 25}
 
 
-# Test Case ID: TC_FITNESS_DTOs_unwrap_payload_002
+# Test Case ID: TC-FR-00-001s_unwrap_payload_002
 # Test Objective: Kiểm tra unwrap khi payload có key "result"
 # Input: {"result": {"name": "test"}}
 # Expected Output: {"name": "test"}
@@ -159,7 +159,7 @@ def test_unwrap_payload_with_result_key():
     assert result == {"name": "test"}
 
 
-# Test Case ID: TC_FITNESS_DTOs_unwrap_payload_003
+# Test Case ID: TC-FR-00-001s_unwrap_payload_003
 # Test Objective: Kiểm tra unwrap khi payload không có key đặc biệt
 # Input: {"age": 25, "gender": "male"}
 # Expected Output: Trả nguyên dict (không unwrap)
@@ -170,7 +170,7 @@ def test_unwrap_payload_no_special_key():
     assert result == data
 
 
-# Test Case ID: TC_FITNESS_DTOs_unwrap_payload_004
+# Test Case ID: TC-FR-00-001s_unwrap_payload_004
 # Test Objective: Kiểm tra raise DTOValidationError khi payload không phải dict
 # Input: "not a dict"
 # Expected Output: Raise DTOValidationError
@@ -180,7 +180,7 @@ def test_unwrap_payload_not_dict():
         _unwrap_payload("not a dict")
 
 
-# Test Case ID: TC_FITNESS_DTOs_unwrap_payload_005
+# Test Case ID: TC-FR-00-001s_unwrap_payload_005
 # Test Objective: Kiểm tra khi "data" key tồn tại nhưng value không phải dict
 # Input: {"data": "string_value", "age": 25}
 # Expected Output: Trả nguyên dict gốc (data value không phải dict → bỏ qua)
@@ -195,7 +195,7 @@ def test_unwrap_payload_data_not_dict():
 # MealPlanProfileDTO.from_dict
 # ============================================================
 
-# Test Case ID: TC_FITNESS_DTOs_MealPlanProfileDTO_from_dict_001
+# Test Case ID: TC-FR-00-001s_MealPlanProfileDTO_from_dict_001
 # Test Objective: Kiểm tra tạo DTO thành công với data hợp lệ
 # Input: Dict đầy đủ required fields
 # Expected Output: DTO instance với đúng giá trị
@@ -209,7 +209,7 @@ def test_meal_plan_dto_valid():
     assert dto.goal == "lose_weight"
 
 
-# Test Case ID: TC_FITNESS_DTOs_MealPlanProfileDTO_from_dict_002
+# Test Case ID: TC-FR-00-001s_MealPlanProfileDTO_from_dict_002
 # Test Objective: Kiểm tra tạo DTO với data bọc trong "data" key
 # Input: {"data": {"calorie_target": 1800, ...}}
 # Expected Output: DTO tạo thành công (unwrap trước)
@@ -220,7 +220,7 @@ def test_meal_plan_dto_wrapped_in_data():
     assert dto.calorie_target == 1800
 
 
-# Test Case ID: TC_FITNESS_DTOs_MealPlanProfileDTO_from_dict_003
+# Test Case ID: TC-FR-00-001s_MealPlanProfileDTO_from_dict_003
 # Test Objective: Kiểm tra raise khi thiếu required field
 # Input: Dict thiếu "calorie_target"
 # Expected Output: Raise DTOValidationError
@@ -230,7 +230,7 @@ def test_meal_plan_dto_missing_required_field():
         MealPlanProfileDTO.from_dict({"gender": "male", "weight_kg": 70, "goal": "fit"})
 
 
-# Test Case ID: TC_FITNESS_DTOs_MealPlanProfileDTO_from_dict_004
+# Test Case ID: TC-FR-00-001s_MealPlanProfileDTO_from_dict_004
 # Test Objective: Kiểm tra raise khi calorie_target không convert được sang int
 # Input: calorie_target="abc"
 # Expected Output: Raise DTOValidationError "must be int"
@@ -243,7 +243,7 @@ def test_meal_plan_dto_wrong_type():
         })
 
 
-# Test Case ID: TC_FITNESS_DTOs_MealPlanProfileDTO_from_dict_005
+# Test Case ID: TC-FR-00-001s_MealPlanProfileDTO_from_dict_005
 # Test Objective: Kiểm tra camelCase key support
 # Input: {"calorieTarget": 2200, "gender": "male", "weightKg": 80, "goal": "gain"}
 # Expected Output: DTO tạo thành công
@@ -259,7 +259,7 @@ def test_meal_plan_dto_camel_case_keys():
 # WorkoutPlanProfileDTO.from_dict
 # ============================================================
 
-# Test Case ID: TC_FITNESS_DTOs_WorkoutPlanProfileDTO_from_dict_001
+# Test Case ID: TC-FR-00-001s_WorkoutPlanProfileDTO_from_dict_001
 # Test Objective: Kiểm tra tạo DTO thành công với tất cả fields
 # Input: Dict đầy đủ required + optional fields
 # Expected Output: DTO instance với đúng giá trị
@@ -278,7 +278,7 @@ def test_workout_plan_dto_valid_all_fields():
     assert dto.calorie_target == 2500
 
 
-# Test Case ID: TC_FITNESS_DTOs_WorkoutPlanProfileDTO_from_dict_002
+# Test Case ID: TC-FR-00-001s_WorkoutPlanProfileDTO_from_dict_002
 # Test Objective: Kiểm tra tạo DTO chỉ với required fields (optional = None)
 # Input: Dict chỉ có required fields
 # Expected Output: DTO với optional fields = None
@@ -295,7 +295,7 @@ def test_workout_plan_dto_only_required():
     assert dto.calorie_target is None
 
 
-# Test Case ID: TC_FITNESS_DTOs_WorkoutPlanProfileDTO_from_dict_003
+# Test Case ID: TC-FR-00-001s_WorkoutPlanProfileDTO_from_dict_003
 # Test Objective: Kiểm tra raise khi thiếu required field "age"
 # Input: Dict thiếu "age"
 # Expected Output: Raise DTOValidationError
@@ -308,7 +308,7 @@ def test_workout_plan_dto_missing_required():
         })
 
 
-# Test Case ID: TC_FITNESS_DTOs_WorkoutPlanProfileDTO_from_dict_004
+# Test Case ID: TC-FR-00-001s_WorkoutPlanProfileDTO_from_dict_004
 # Test Objective: Kiểm tra injuries là string đơn lẻ → chuyển thành list
 # Input: injuries="back pain" (string, không phải list)
 # Expected Output: injuries=["back pain"]
@@ -323,7 +323,7 @@ def test_workout_plan_dto_injuries_single_string():
     assert dto.injuries == ["back pain"]
 
 
-# Test Case ID: TC_FITNESS_DTOs_WorkoutPlanProfileDTO_from_dict_005
+# Test Case ID: TC-FR-00-001s_WorkoutPlanProfileDTO_from_dict_005
 # Test Objective: Kiểm tra camelCase keys
 # Input: {"heightCm": 170, "weightKg": 65, ...}
 # Expected Output: DTO tạo thành công với đúng giá trị
@@ -342,7 +342,7 @@ def test_workout_plan_dto_camel_case():
 # AIProfileInputDTO.from_request
 # ============================================================
 
-# Test Case ID: TC_FITNESS_DTOs_AIProfileInputDTO_from_request_001
+# Test Case ID: TC-FR-00-001s_AIProfileInputDTO_from_request_001
 # Test Objective: Kiểm tra tạo DTO thành công với payload đầy đủ
 # Input: Dict đầy đủ tất cả required fields
 # Expected Output: DTO instance
@@ -360,7 +360,7 @@ def test_ai_profile_input_dto_valid():
     assert dto.injuries == ["knee"]
 
 
-# Test Case ID: TC_FITNESS_DTOs_AIProfileInputDTO_from_request_002
+# Test Case ID: TC-FR-00-001s_AIProfileInputDTO_from_request_002
 # Test Objective: Kiểm tra raise khi payload rỗng (None)
 # Input: None
 # Expected Output: Raise ValueError "Empty payload"
@@ -370,7 +370,7 @@ def test_ai_profile_input_dto_empty_payload():
         AIProfileInputDTO.from_request(None)
 
 
-# Test Case ID: TC_FITNESS_DTOs_AIProfileInputDTO_from_request_003
+# Test Case ID: TC-FR-00-001s_AIProfileInputDTO_from_request_003
 # Test Objective: Kiểm tra raise khi thiếu required field
 # Input: Dict thiếu "goal"
 # Expected Output: Raise ValueError "Missing field: goal"
@@ -386,7 +386,7 @@ def test_ai_profile_input_dto_missing_field():
         AIProfileInputDTO.from_request(payload)
 
 
-# Test Case ID: TC_FITNESS_DTOs_AIProfileInputDTO_from_request_004
+# Test Case ID: TC-FR-00-001s_AIProfileInputDTO_from_request_004
 # Test Objective: Kiểm tra default injuries khi không có key
 # Input: payload đầy đủ nhưng không có "injuries" key
 # Expected Output: Raise ValueError (injuries là required field)
@@ -402,7 +402,7 @@ def test_ai_profile_input_dto_missing_injuries():
         AIProfileInputDTO.from_request(payload)
 
 
-# Test Case ID: TC_FITNESS_DTOs_AIProfileInputDTO_from_request_005
+# Test Case ID: TC-FR-00-001s_AIProfileInputDTO_from_request_005
 # Test Objective: Kiểm tra type conversion (string numbers)
 # Input: age="25" (string), weight_kg="70.5" (string)
 # Expected Output: DTO với age=25 (int), weight_kg=70.5 (float)

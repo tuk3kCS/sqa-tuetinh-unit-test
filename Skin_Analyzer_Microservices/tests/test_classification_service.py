@@ -49,7 +49,7 @@ def _create_file_like_image():
 # _preprocess
 # ============================================================
 
-# Test Case ID: TC_SKIN_SkinClassificationService__preprocess_001
+# Test Case ID: TC-FR-07-001kinClassificationService__preprocess_001
 # Test Objective: Preprocess ảnh PIL hợp lệ trả về numpy array đúng shape
 # Input: PIL Image 224×224 RGB
 # Expected Output: numpy array shape (1, 3, 224, 224), dtype float32
@@ -70,7 +70,7 @@ def test_classification_preprocess_valid_pil_image(mock_ort):
     assert result.dtype == np.float32
 
 
-# Test Case ID: TC_SKIN_SkinClassificationService__preprocess_002
+# Test Case ID: TC-FR-07-001kinClassificationService__preprocess_002
 # Test Objective: Preprocess file-like object (FileStorage) trả về đúng shape
 # Input: BytesIO chứa JPEG
 # Expected Output: numpy array shape (1, 3, 224, 224)
@@ -90,7 +90,7 @@ def test_classification_preprocess_file_like_object(mock_ort):
     assert result.dtype == np.float32
 
 
-# Test Case ID: TC_SKIN_SkinClassificationService__preprocess_003
+# Test Case ID: TC-FR-07-001kinClassificationService__preprocess_003
 # Test Objective: Preprocess ảnh RGBA (4 kênh) vẫn convert đúng sang RGB
 # Input: PIL Image mode RGBA
 # Expected Output: numpy array shape (1, 3, H, W) – chỉ 3 kênh
@@ -113,7 +113,7 @@ def test_classification_preprocess_rgba_image(mock_ort):
 # classify
 # ============================================================
 
-# Test Case ID: TC_SKIN_SkinClassificationService_classify_001
+# Test Case ID: TC-FR-07-001kinClassificationService_classify_001
 # Test Objective: Classify trả về class_index, class_name, confidence đúng
 # Input: Ảnh PIL hợp lệ, ONNX session trả logits class 0 cao nhất
 # Expected Output: dict có class_index=0, class_name=CLASS_NAMES[0], confidence gần 1.0
@@ -136,7 +136,7 @@ def test_classification_classify_returns_correct_class(mock_ort):
     assert result["confidence"] > 0.99
 
 
-# Test Case ID: TC_SKIN_SkinClassificationService_classify_002
+# Test Case ID: TC-FR-07-001kinClassificationService_classify_002
 # Test Objective: Classify trả đúng class khi logits cao nhất ở index khác 0
 # Input: ONNX logits cao nhất ở index 3 (Eyebag)
 # Expected Output: class_index=3, class_name=CLASS_NAMES[3]
@@ -157,7 +157,7 @@ def test_classification_classify_different_class_output(mock_ort):
     assert result["class_name"] == service.class_names[3]
 
 
-# Test Case ID: TC_SKIN_SkinClassificationService_classify_003
+# Test Case ID: TC-FR-07-001kinClassificationService_classify_003
 # Test Objective: Confidence thấp khi logits phân bố đều
 # Input: ONNX logits đều nhau cho tất cả class
 # Expected Output: confidence xấp xỉ 1/NUM_CLASSES
@@ -176,7 +176,7 @@ def test_classification_classify_low_confidence(mock_ort):
     assert result["confidence"] < 0.2  # ≈ 1/19 ≈ 0.0526
 
 
-# Test Case ID: TC_SKIN_SkinClassificationService_classify_004
+# Test Case ID: TC-FR-07-001kinClassificationService_classify_004
 # Test Objective: Kết quả classify có đủ 3 key bắt buộc
 # Input: Ảnh PIL hợp lệ bất kỳ
 # Expected Output: dict chứa "class_index", "class_name", "confidence"

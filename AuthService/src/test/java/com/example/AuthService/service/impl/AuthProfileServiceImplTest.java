@@ -27,30 +27,30 @@ class AuthProfileServiceImplTest {
     // ==================== BUILD PROFILE ====================
 
     /**
-     * Test Case ID: TC_AUTH_AuthProfileServiceImpl_buildProfile_001
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Build profile khi principal = null
      * Input: principal = null
      * Expected Output: AuthProfileDto authenticated = false
      * Notes: Kiểm tra nhánh principal == null
      */
     @Test
-    @DisplayName("TC_AUTH_AuthProfileServiceImpl_buildProfile_001: Principal null → not authenticated")
-    void TC_AUTH_AuthProfileServiceImpl_buildProfile_001() {
+    @DisplayName("TC-FR-02-001: Principal null → not authenticated")
+    void TC_FR_02_001() {
         AuthProfileDto result = authProfileService.buildProfile(null, true);
 
         assertThat(result.isAuthenticated()).isFalse();
     }
 
     /**
-     * Test Case ID: TC_AUTH_AuthProfileServiceImpl_buildProfile_002
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Build profile từ OAuth2UserPrincipal (Google login)
      * Input: OAuth2UserPrincipal với attributes
      * Expected Output: AuthProfileDto với provider = "google", authenticated = true
      * Notes: Kiểm tra nhánh instanceof OAuth2UserPrincipal
      */
     @Test
-    @DisplayName("TC_AUTH_AuthProfileServiceImpl_buildProfile_002: OAuth2UserPrincipal → google profile")
-    void TC_AUTH_AuthProfileServiceImpl_buildProfile_002() {
+    @DisplayName("TC-FR-02-001: OAuth2UserPrincipal → google profile")
+    void TC_FR_02_001() {
         Role role = Role.builder().id(1L).name("USER").build();
         User user = User.builder().id(1L).email("user@gmail.com").name("User")
                 .role(role).enabled(true).build();
@@ -74,15 +74,15 @@ class AuthProfileServiceImplTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_AuthProfileServiceImpl_buildProfile_003
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Build profile từ UserDetails (JWT login)
      * Input: UserDetails (User entity)
      * Expected Output: AuthProfileDto với provider = "local/jwt"
      * Notes: Kiểm tra nhánh instanceof UserDetails
      */
     @Test
-    @DisplayName("TC_AUTH_AuthProfileServiceImpl_buildProfile_003: UserDetails → local/jwt profile")
-    void TC_AUTH_AuthProfileServiceImpl_buildProfile_003() {
+    @DisplayName("TC-FR-02-001: UserDetails → local/jwt profile")
+    void TC_FR_02_001() {
         Role role = Role.builder().id(1L).name("ADMIN").build();
         UserDetails user = User.builder().id(1L).email("admin@test.com")
                 .name("Admin").role(role).enabled(true).build();
@@ -96,15 +96,15 @@ class AuthProfileServiceImplTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_AuthProfileServiceImpl_buildProfile_004
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Build profile không bao gồm authorities khi includeAuthorities = false
      * Input: includeAuthorities = false
      * Expected Output: authorities = null
      * Notes: Kiểm tra nhánh includeAuthorities == false
      */
     @Test
-    @DisplayName("TC_AUTH_AuthProfileServiceImpl_buildProfile_004: includeAuthorities false → null authorities")
-    void TC_AUTH_AuthProfileServiceImpl_buildProfile_004() {
+    @DisplayName("TC-FR-02-001: includeAuthorities false → null authorities")
+    void TC_FR_02_001() {
         Role role = Role.builder().id(1L).name("USER").build();
         UserDetails user = User.builder().id(1L).email("user@test.com")
                 .role(role).enabled(true).build();
@@ -115,15 +115,15 @@ class AuthProfileServiceImplTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_AuthProfileServiceImpl_buildProfile_005
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Build profile từ unknown principal type
      * Input: Object không phải OAuth2User hay UserDetails
      * Expected Output: AuthProfileDto authenticated = true, provider = class name
      * Notes: Kiểm tra nhánh default/fallback
      */
     @Test
-    @DisplayName("TC_AUTH_AuthProfileServiceImpl_buildProfile_005: Unknown principal → class name provider")
-    void TC_AUTH_AuthProfileServiceImpl_buildProfile_005() {
+    @DisplayName("TC-FR-02-001: Unknown principal → class name provider")
+    void TC_FR_02_001() {
         Object unknownPrincipal = "some-string-principal";
 
         AuthProfileDto result = authProfileService.buildProfile(unknownPrincipal, true);

@@ -30,15 +30,15 @@ class RoleSeederTest {
     // ======================== RUN ========================
 
     /**
-     * Test Case ID: TC_AUTH_RoleSeeder_run_001
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Tạo tất cả 3 roles khi chưa có role nào trong DB
      * Input: DB rỗng (không có role nào)
      * Expected Output: roleRepo.save() được gọi 3 lần (USER, MODERATOR, ADMIN)
      * Notes: Happy path - khởi tạo lần đầu
      */
     @Test
-    @DisplayName("TC_AUTH_RoleSeeder_run_001: Tạo tất cả roles khi DB rỗng")
-    void TC_AUTH_RoleSeeder_run_001() throws Exception {
+    @DisplayName("TC-FR-02-030: Tạo tất cả roles khi DB rỗng")
+    void TC_FR_02_030() throws Exception {
         when(roleRepo.findByName("USER")).thenReturn(Optional.empty());
         when(roleRepo.findByName("MODERATOR")).thenReturn(Optional.empty());
         when(roleRepo.findByName("ADMIN")).thenReturn(Optional.empty());
@@ -51,15 +51,15 @@ class RoleSeederTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_RoleSeeder_run_002
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Không tạo role khi tất cả đã tồn tại
      * Input: DB đã có USER, MODERATOR, ADMIN
      * Expected Output: roleRepo.save() KHÔNG được gọi
      * Notes: Idempotent - chạy lại không tạo trùng
      */
     @Test
-    @DisplayName("TC_AUTH_RoleSeeder_run_002: Không tạo role khi đã tồn tại")
-    void TC_AUTH_RoleSeeder_run_002() throws Exception {
+    @DisplayName("TC-FR-02-031: Không tạo role khi đã tồn tại")
+    void TC_FR_02_031() throws Exception {
         when(roleRepo.findByName("USER"))
                 .thenReturn(Optional.of(Role.builder().id(1L).name("USER").build()));
         when(roleRepo.findByName("MODERATOR"))
@@ -73,15 +73,15 @@ class RoleSeederTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_RoleSeeder_run_003
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Chỉ tạo role còn thiếu (partial)
      * Input: DB đã có USER, thiếu MODERATOR và ADMIN
      * Expected Output: roleRepo.save() được gọi 2 lần
      * Notes: Chỉ bổ sung role chưa có
      */
     @Test
-    @DisplayName("TC_AUTH_RoleSeeder_run_003: Chỉ tạo role còn thiếu")
-    void TC_AUTH_RoleSeeder_run_003() throws Exception {
+    @DisplayName("TC-FR-02-092: Chỉ tạo role còn thiếu")
+    void TC_FR_02_092() throws Exception {
         when(roleRepo.findByName("USER"))
                 .thenReturn(Optional.of(Role.builder().id(1L).name("USER").build()));
         when(roleRepo.findByName("MODERATOR")).thenReturn(Optional.empty());
@@ -96,15 +96,15 @@ class RoleSeederTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_RoleSeeder_run_004
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Kiểm tra đúng 3 role names được kiểm tra
      * Input: DB rỗng
      * Expected Output: findByName gọi với "USER", "MODERATOR", "ADMIN"
      * Notes: Kiểm tra tên role đúng
      */
     @Test
-    @DisplayName("TC_AUTH_RoleSeeder_run_004: Kiểm tra đúng 3 role names")
-    void TC_AUTH_RoleSeeder_run_004() throws Exception {
+    @DisplayName("TC-FR-06-026: Kiểm tra đúng 3 role names")
+    void TC_FR_06_026() throws Exception {
         when(roleRepo.findByName(anyString())).thenReturn(Optional.empty());
         when(roleRepo.save(any(Role.class)))
                 .thenReturn(Role.builder().id(1L).name("ROLE").build());
@@ -117,15 +117,15 @@ class RoleSeederTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_RoleSeeder_run_005
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Chỉ thiếu ADMIN role
      * Input: DB có USER và MODERATOR, thiếu ADMIN
      * Expected Output: roleRepo.save() được gọi 1 lần
      * Notes: Partial seeding - chỉ thiếu 1 role
      */
     @Test
-    @DisplayName("TC_AUTH_RoleSeeder_run_005: Chỉ thiếu ADMIN role")
-    void TC_AUTH_RoleSeeder_run_005() throws Exception {
+    @DisplayName("TC-FR-06-032: Chỉ thiếu ADMIN role")
+    void TC_FR_06_032() throws Exception {
         when(roleRepo.findByName("USER"))
                 .thenReturn(Optional.of(Role.builder().id(1L).name("USER").build()));
         when(roleRepo.findByName("MODERATOR"))

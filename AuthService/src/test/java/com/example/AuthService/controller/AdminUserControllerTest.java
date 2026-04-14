@@ -61,7 +61,7 @@ class AdminUserControllerTest {
     // ======================== GET ALL USERS ========================
 
     /**
-     * Test Case ID: TC_AUTH_AdminUserController_getAllUsers_001
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Admin lấy danh sách user thành công
      * Input: page=0, size=20, không filter
      * Expected Output: HTTP 200, danh sách user phân trang
@@ -69,8 +69,8 @@ class AdminUserControllerTest {
      */
     @Test
     @WithMockUser(roles = "ADMIN")
-    @DisplayName("TC_AUTH_AdminUserController_getAllUsers_001: Lấy danh sách user thành công")
-    void TC_AUTH_AdminUserController_getAllUsers_001() throws Exception {
+    @DisplayName("TC-FR-02-001: Lấy danh sách user thành công")
+    void TC_FR_02_001() throws Exception {
         when(userService.getAllUsers(0, 20, null, null, null)).thenReturn(List.of());
 
         mockMvc.perform(get("/api/admin/users"))
@@ -80,7 +80,7 @@ class AdminUserControllerTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_AdminUserController_getAllUsers_002
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Admin lấy danh sách user với keyword filter
      * Input: keyword="test", page=0, size=20
      * Expected Output: HTTP 200
@@ -88,8 +88,8 @@ class AdminUserControllerTest {
      */
     @Test
     @WithMockUser(roles = "ADMIN")
-    @DisplayName("TC_AUTH_AdminUserController_getAllUsers_002: Lấy danh sách user với keyword")
-    void TC_AUTH_AdminUserController_getAllUsers_002() throws Exception {
+    @DisplayName("TC-FR-02-001: Lấy danh sách user với keyword")
+    void TC_FR_02_001() throws Exception {
         when(userService.getAllUsers(0, 20, "test", null, null)).thenReturn(List.of());
 
         mockMvc.perform(get("/api/admin/users")
@@ -98,7 +98,7 @@ class AdminUserControllerTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_AdminUserController_getAllUsers_003
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Admin lấy danh sách user với filter roleId và enabled
      * Input: roleId=1, enabled=true
      * Expected Output: HTTP 200
@@ -106,8 +106,8 @@ class AdminUserControllerTest {
      */
     @Test
     @WithMockUser(roles = "ADMIN")
-    @DisplayName("TC_AUTH_AdminUserController_getAllUsers_003: Lấy user với filter roleId và enabled")
-    void TC_AUTH_AdminUserController_getAllUsers_003() throws Exception {
+    @DisplayName("TC-FR-02-001: Lấy user với filter roleId và enabled")
+    void TC_FR_02_001() throws Exception {
         when(userService.getAllUsers(0, 20, null, 1L, true)).thenReturn(List.of());
 
         mockMvc.perform(get("/api/admin/users")
@@ -119,7 +119,7 @@ class AdminUserControllerTest {
     // ======================== GET USER BY ID ========================
 
     /**
-     * Test Case ID: TC_AUTH_AdminUserController_getUserById_001
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Admin lấy thông tin user theo ID thành công
      * Input: id=1
      * Expected Output: HTTP 200, thông tin user
@@ -127,8 +127,8 @@ class AdminUserControllerTest {
      */
     @Test
     @WithMockUser(roles = "ADMIN")
-    @DisplayName("TC_AUTH_AdminUserController_getUserById_001: Lấy user theo ID thành công")
-    void TC_AUTH_AdminUserController_getUserById_001() throws Exception {
+    @DisplayName("TC-FR-02-001: Lấy user theo ID thành công")
+    void TC_FR_02_001() throws Exception {
         UserResponseDTO user = UserResponseDTO.builder()
                 .id(1L).email("user@test.com").name("Test User").roleName("USER").build();
 
@@ -140,7 +140,7 @@ class AdminUserControllerTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_AdminUserController_getUserById_002
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Admin lấy user không tồn tại
      * Input: id=999
      * Expected Output: HTTP 404
@@ -148,8 +148,8 @@ class AdminUserControllerTest {
      */
     @Test
     @WithMockUser(roles = "ADMIN")
-    @DisplayName("TC_AUTH_AdminUserController_getUserById_002: Lấy user - không tồn tại")
-    void TC_AUTH_AdminUserController_getUserById_002() throws Exception {
+    @DisplayName("TC-FR-02-001: Lấy user - không tồn tại")
+    void TC_FR_02_001() throws Exception {
         when(userService.getUserById(999L))
                 .thenThrow(new ResponseStatusException(NOT_FOUND, "Không tìm thấy user"));
 
@@ -160,7 +160,7 @@ class AdminUserControllerTest {
     // ======================== UPDATE USER ========================
 
     /**
-     * Test Case ID: TC_AUTH_AdminUserController_updateUser_001
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Admin cập nhật thông tin user thành công
      * Input: id=1, UserUpdateRequestDTO(name="Updated Name")
      * Expected Output: HTTP 200, user đã cập nhật
@@ -168,8 +168,8 @@ class AdminUserControllerTest {
      */
     @Test
     @WithMockUser(roles = "ADMIN")
-    @DisplayName("TC_AUTH_AdminUserController_updateUser_001: Cập nhật user thành công")
-    void TC_AUTH_AdminUserController_updateUser_001() throws Exception {
+    @DisplayName("TC-FR-02-001: Cập nhật user thành công")
+    void TC_FR_02_001() throws Exception {
         UserUpdateRequestDTO request = new UserUpdateRequestDTO();
         request.setName("Updated Name");
 
@@ -186,7 +186,7 @@ class AdminUserControllerTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_AdminUserController_updateUser_002
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Admin cập nhật user không tồn tại
      * Input: id=999
      * Expected Output: HTTP 404
@@ -194,8 +194,8 @@ class AdminUserControllerTest {
      */
     @Test
     @WithMockUser(roles = "ADMIN")
-    @DisplayName("TC_AUTH_AdminUserController_updateUser_002: Cập nhật user - không tồn tại")
-    void TC_AUTH_AdminUserController_updateUser_002() throws Exception {
+    @DisplayName("TC-FR-02-001: Cập nhật user - không tồn tại")
+    void TC_FR_02_001() throws Exception {
         UserUpdateRequestDTO request = new UserUpdateRequestDTO();
         request.setName("Name");
 
@@ -209,7 +209,7 @@ class AdminUserControllerTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_AdminUserController_updateUser_003
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Admin cập nhật role cho user
      * Input: id=1, UserUpdateRequestDTO(roleId=2)
      * Expected Output: HTTP 200
@@ -217,8 +217,8 @@ class AdminUserControllerTest {
      */
     @Test
     @WithMockUser(roles = "ADMIN")
-    @DisplayName("TC_AUTH_AdminUserController_updateUser_003: Cập nhật role cho user")
-    void TC_AUTH_AdminUserController_updateUser_003() throws Exception {
+    @DisplayName("TC-FR-02-001: Cập nhật role cho user")
+    void TC_FR_02_001() throws Exception {
         UserUpdateRequestDTO request = new UserUpdateRequestDTO();
         request.setRoleId(2L);
 
@@ -237,7 +237,7 @@ class AdminUserControllerTest {
     // ======================== DELETE USER ========================
 
     /**
-     * Test Case ID: TC_AUTH_AdminUserController_deleteUser_001
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Admin xóa user thành công
      * Input: id=1
      * Expected Output: HTTP 200, message "User deleted"
@@ -245,8 +245,8 @@ class AdminUserControllerTest {
      */
     @Test
     @WithMockUser(roles = "ADMIN")
-    @DisplayName("TC_AUTH_AdminUserController_deleteUser_001: Xóa user thành công")
-    void TC_AUTH_AdminUserController_deleteUser_001() throws Exception {
+    @DisplayName("TC-FR-02-001: Xóa user thành công")
+    void TC_FR_02_001() throws Exception {
         doNothing().when(userService).deleteUser(1L);
 
         mockMvc.perform(delete("/api/admin/users/1"))
@@ -255,7 +255,7 @@ class AdminUserControllerTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_AdminUserController_deleteUser_002
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Admin xóa user không tồn tại
      * Input: id=999
      * Expected Output: HTTP 404
@@ -263,8 +263,8 @@ class AdminUserControllerTest {
      */
     @Test
     @WithMockUser(roles = "ADMIN")
-    @DisplayName("TC_AUTH_AdminUserController_deleteUser_002: Xóa user - không tồn tại")
-    void TC_AUTH_AdminUserController_deleteUser_002() throws Exception {
+    @DisplayName("TC-FR-02-001: Xóa user - không tồn tại")
+    void TC_FR_02_001() throws Exception {
         doThrow(new ResponseStatusException(NOT_FOUND, "Không tìm thấy user"))
                 .when(userService).deleteUser(999L);
 
@@ -273,7 +273,7 @@ class AdminUserControllerTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_AdminUserController_deleteUser_003
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Admin xóa user có đơn hàng liên kết
      * Input: id=1 (có đơn hàng)
      * Expected Output: HTTP 500
@@ -281,8 +281,8 @@ class AdminUserControllerTest {
      */
     @Test
     @WithMockUser(roles = "ADMIN")
-    @DisplayName("TC_AUTH_AdminUserController_deleteUser_003: Xóa user có đơn hàng liên kết")
-    void TC_AUTH_AdminUserController_deleteUser_003() throws Exception {
+    @DisplayName("TC-FR-02-001: Xóa user có đơn hàng liên kết")
+    void TC_FR_02_001() throws Exception {
         doThrow(new RuntimeException("Không thể xóa user có đơn hàng"))
                 .when(userService).deleteUser(1L);
 
@@ -293,7 +293,7 @@ class AdminUserControllerTest {
     // ======================== CREATE USER ========================
 
     /**
-     * Test Case ID: TC_AUTH_AdminUserController_createUser_001
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Admin tạo user mới thành công
      * Input: UserUpdateRequestDTO(email="new@test.com", name="New User", password="pass123")
      * Expected Output: HTTP 201 Created
@@ -301,8 +301,8 @@ class AdminUserControllerTest {
      */
     @Test
     @WithMockUser(roles = "ADMIN")
-    @DisplayName("TC_AUTH_AdminUserController_createUser_001: Tạo user mới thành công")
-    void TC_AUTH_AdminUserController_createUser_001() throws Exception {
+    @DisplayName("TC-FR-02-001: Tạo user mới thành công")
+    void TC_FR_02_001() throws Exception {
         UserUpdateRequestDTO request = new UserUpdateRequestDTO();
         request.setEmail("new@test.com");
         request.setName("New User");
@@ -321,7 +321,7 @@ class AdminUserControllerTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_AdminUserController_createUser_002
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Admin tạo user với email đã tồn tại
      * Input: UserUpdateRequestDTO(email="existing@test.com")
      * Expected Output: HTTP 409 Conflict
@@ -329,8 +329,8 @@ class AdminUserControllerTest {
      */
     @Test
     @WithMockUser(roles = "ADMIN")
-    @DisplayName("TC_AUTH_AdminUserController_createUser_002: Tạo user - email đã tồn tại")
-    void TC_AUTH_AdminUserController_createUser_002() throws Exception {
+    @DisplayName("TC-FR-02-001: Tạo user - email đã tồn tại")
+    void TC_FR_02_001() throws Exception {
         UserUpdateRequestDTO request = new UserUpdateRequestDTO();
         request.setEmail("existing@test.com");
         request.setName("User");
@@ -346,7 +346,7 @@ class AdminUserControllerTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_AdminUserController_createUser_003
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Admin tạo user với role chỉ định
      * Input: UserUpdateRequestDTO(email="mod@test.com", roleId=2)
      * Expected Output: HTTP 201, roleName="MODERATOR"
@@ -354,8 +354,8 @@ class AdminUserControllerTest {
      */
     @Test
     @WithMockUser(roles = "ADMIN")
-    @DisplayName("TC_AUTH_AdminUserController_createUser_003: Tạo user với role MODERATOR")
-    void TC_AUTH_AdminUserController_createUser_003() throws Exception {
+    @DisplayName("TC-FR-02-001: Tạo user với role MODERATOR")
+    void TC_FR_02_001() throws Exception {
         UserUpdateRequestDTO request = new UserUpdateRequestDTO();
         request.setEmail("mod@test.com");
         request.setName("Moderator");

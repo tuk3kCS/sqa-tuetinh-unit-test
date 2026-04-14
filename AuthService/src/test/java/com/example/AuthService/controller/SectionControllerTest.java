@@ -68,7 +68,7 @@ class SectionControllerTest {
     // ======================== LIST BY DRUG ========================
 
     /**
-     * Test Case ID: TC_AUTH_SectionController_listByDrug_001
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Lấy danh sách sections theo drugId thành công
      * Input: drugId=1
      * Expected Output: HTTP 200, danh sách sections
@@ -76,8 +76,8 @@ class SectionControllerTest {
      */
     @Test
     @WithMockUser(roles = "USER")
-    @DisplayName("TC_AUTH_SectionController_listByDrug_001: Lấy sections theo drugId thành công")
-    void TC_AUTH_SectionController_listByDrug_001() throws Exception {
+    @DisplayName("TC-FR-02-001: Lấy sections theo drugId thành công")
+    void TC_FR_02_001() throws Exception {
         when(sectionService.listByDrug(1L)).thenReturn(List.of(createMockSection()));
 
         mockMvc.perform(get("/api/drugs/1/sections"))
@@ -87,7 +87,7 @@ class SectionControllerTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_SectionController_listByDrug_002
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Lấy sections cho thuốc không có section nào
      * Input: drugId=2 (không có sections)
      * Expected Output: HTTP 200, danh sách rỗng
@@ -95,8 +95,8 @@ class SectionControllerTest {
      */
     @Test
     @WithMockUser(roles = "USER")
-    @DisplayName("TC_AUTH_SectionController_listByDrug_002: Thuốc không có sections")
-    void TC_AUTH_SectionController_listByDrug_002() throws Exception {
+    @DisplayName("TC-FR-02-001: Thuốc không có sections")
+    void TC_FR_02_001() throws Exception {
         when(sectionService.listByDrug(2L)).thenReturn(List.of());
 
         mockMvc.perform(get("/api/drugs/2/sections"))
@@ -105,7 +105,7 @@ class SectionControllerTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_SectionController_listByDrug_003
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Lấy sections cho thuốc không tồn tại
      * Input: drugId=999
      * Expected Output: HTTP 500
@@ -113,8 +113,8 @@ class SectionControllerTest {
      */
     @Test
     @WithMockUser(roles = "USER")
-    @DisplayName("TC_AUTH_SectionController_listByDrug_003: Thuốc không tồn tại")
-    void TC_AUTH_SectionController_listByDrug_003() throws Exception {
+    @DisplayName("TC-FR-02-001: Thuốc không tồn tại")
+    void TC_FR_02_001() throws Exception {
         when(sectionService.listByDrug(999L))
                 .thenThrow(new RuntimeException("Không tìm thấy thuốc"));
 
@@ -125,7 +125,7 @@ class SectionControllerTest {
     // ======================== CREATE ========================
 
     /**
-     * Test Case ID: TC_AUTH_SectionController_create_001
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Tạo section mới cho thuốc thành công
      * Input: drugId=1, Section(title="Tác dụng phụ", content="...")
      * Expected Output: HTTP 200, section đã tạo
@@ -133,8 +133,8 @@ class SectionControllerTest {
      */
     @Test
     @WithMockUser(roles = "ADMIN")
-    @DisplayName("TC_AUTH_SectionController_create_001: Tạo section thành công")
-    void TC_AUTH_SectionController_create_001() throws Exception {
+    @DisplayName("TC-FR-02-001: Tạo section thành công")
+    void TC_FR_02_001() throws Exception {
         Section newSection = new Section();
         newSection.setId(2L);
         newSection.setTitle("Tác dụng phụ");
@@ -154,7 +154,7 @@ class SectionControllerTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_SectionController_create_002
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Tạo section cho thuốc không tồn tại
      * Input: drugId=999
      * Expected Output: HTTP 500
@@ -162,8 +162,8 @@ class SectionControllerTest {
      */
     @Test
     @WithMockUser(roles = "ADMIN")
-    @DisplayName("TC_AUTH_SectionController_create_002: Tạo section - thuốc không tồn tại")
-    void TC_AUTH_SectionController_create_002() throws Exception {
+    @DisplayName("TC-FR-02-001: Tạo section - thuốc không tồn tại")
+    void TC_FR_02_001() throws Exception {
         when(sectionService.create(eq(999L), any(Section.class)))
                 .thenThrow(new RuntimeException("Không tìm thấy thuốc"));
 
@@ -180,7 +180,7 @@ class SectionControllerTest {
     // ======================== GET ONE ========================
 
     /**
-     * Test Case ID: TC_AUTH_SectionController_getOne_001
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Lấy chi tiết section thành công
      * Input: id=1
      * Expected Output: HTTP 200, thông tin section
@@ -188,8 +188,8 @@ class SectionControllerTest {
      */
     @Test
     @WithMockUser(roles = "USER")
-    @DisplayName("TC_AUTH_SectionController_getOne_001: Lấy section theo ID thành công")
-    void TC_AUTH_SectionController_getOne_001() throws Exception {
+    @DisplayName("TC-FR-02-001: Lấy section theo ID thành công")
+    void TC_FR_02_001() throws Exception {
         when(sectionService.getById(1L)).thenReturn(createMockSection());
 
         mockMvc.perform(get("/api/sections/1"))
@@ -198,7 +198,7 @@ class SectionControllerTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_SectionController_getOne_002
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Lấy section không tồn tại
      * Input: id=999
      * Expected Output: HTTP 500
@@ -206,8 +206,8 @@ class SectionControllerTest {
      */
     @Test
     @WithMockUser(roles = "USER")
-    @DisplayName("TC_AUTH_SectionController_getOne_002: Section không tồn tại")
-    void TC_AUTH_SectionController_getOne_002() throws Exception {
+    @DisplayName("TC-FR-02-001: Section không tồn tại")
+    void TC_FR_02_001() throws Exception {
         when(sectionService.getById(999L))
                 .thenThrow(new RuntimeException("Không tìm thấy section"));
 
@@ -218,7 +218,7 @@ class SectionControllerTest {
     // ======================== UPDATE ========================
 
     /**
-     * Test Case ID: TC_AUTH_SectionController_update_001
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Cập nhật section thành công
      * Input: id=1, Section(title="Updated", content="New content")
      * Expected Output: HTTP 200, section đã cập nhật
@@ -226,8 +226,8 @@ class SectionControllerTest {
      */
     @Test
     @WithMockUser(roles = "ADMIN")
-    @DisplayName("TC_AUTH_SectionController_update_001: Cập nhật section thành công")
-    void TC_AUTH_SectionController_update_001() throws Exception {
+    @DisplayName("TC-FR-02-001: Cập nhật section thành công")
+    void TC_FR_02_001() throws Exception {
         Section updated = new Section();
         updated.setId(1L);
         updated.setTitle("Updated");
@@ -247,7 +247,7 @@ class SectionControllerTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_SectionController_update_002
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Cập nhật section không tồn tại
      * Input: id=999
      * Expected Output: HTTP 500
@@ -255,8 +255,8 @@ class SectionControllerTest {
      */
     @Test
     @WithMockUser(roles = "ADMIN")
-    @DisplayName("TC_AUTH_SectionController_update_002: Cập nhật section - không tồn tại")
-    void TC_AUTH_SectionController_update_002() throws Exception {
+    @DisplayName("TC-FR-02-001: Cập nhật section - không tồn tại")
+    void TC_FR_02_001() throws Exception {
         when(sectionService.update(eq(999L), any(Section.class)))
                 .thenThrow(new RuntimeException("Không tìm thấy section"));
 
@@ -273,7 +273,7 @@ class SectionControllerTest {
     // ======================== DELETE ========================
 
     /**
-     * Test Case ID: TC_AUTH_SectionController_delete_001
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Xóa section thành công
      * Input: id=1
      * Expected Output: HTTP 204 No Content
@@ -281,8 +281,8 @@ class SectionControllerTest {
      */
     @Test
     @WithMockUser(roles = "ADMIN")
-    @DisplayName("TC_AUTH_SectionController_delete_001: Xóa section thành công")
-    void TC_AUTH_SectionController_delete_001() throws Exception {
+    @DisplayName("TC-FR-02-001: Xóa section thành công")
+    void TC_FR_02_001() throws Exception {
         doNothing().when(sectionService).delete(1L);
 
         mockMvc.perform(delete("/api/sections/1"))
@@ -292,7 +292,7 @@ class SectionControllerTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_SectionController_delete_002
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Xóa section không tồn tại
      * Input: id=999
      * Expected Output: HTTP 500
@@ -300,8 +300,8 @@ class SectionControllerTest {
      */
     @Test
     @WithMockUser(roles = "ADMIN")
-    @DisplayName("TC_AUTH_SectionController_delete_002: Xóa section - không tồn tại")
-    void TC_AUTH_SectionController_delete_002() throws Exception {
+    @DisplayName("TC-FR-02-001: Xóa section - không tồn tại")
+    void TC_FR_02_001() throws Exception {
         doThrow(new RuntimeException("Không tìm thấy section"))
                 .when(sectionService).delete(999L);
 

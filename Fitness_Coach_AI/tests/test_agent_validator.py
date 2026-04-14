@@ -12,7 +12,7 @@ from app.agent.validator import validate_json
 # validate_json – Happy path
 # ============================================================
 
-# Test Case ID: TC_FITNESS_Validator_validate_json_001
+# Test Case ID: TC-FR-00-001alidator_validate_json_001
 # Test Objective: Kiểm tra parse JSON hợp lệ với đầy đủ required keys
 # Input: Chuỗi JSON hợp lệ, required_keys=["safe", "category"]
 # Expected Output: Dict chứa đúng giá trị đã truyền vào
@@ -25,7 +25,7 @@ def test_validate_json_valid_with_all_required_keys():
     assert result["confidence"] == 0.9
 
 
-# Test Case ID: TC_FITNESS_Validator_validate_json_002
+# Test Case ID: TC-FR-00-001alidator_validate_json_002
 # Test Objective: Kiểm tra parse JSON hợp lệ khi không truyền required_keys
 # Input: Chuỗi JSON hợp lệ, required_keys mặc định (None)
 # Expected Output: Dict chứa đúng giá trị, không raise exception
@@ -36,7 +36,7 @@ def test_validate_json_valid_no_required_keys():
     assert result == {"any_key": 42}
 
 
-# Test Case ID: TC_FITNESS_Validator_validate_json_003
+# Test Case ID: TC-FR-00-001alidator_validate_json_003
 # Test Objective: Kiểm tra parse JSON hợp lệ với required_keys rỗng
 # Input: Chuỗi JSON hợp lệ, required_keys=[]
 # Expected Output: Dict đầy đủ, không raise exception
@@ -51,7 +51,7 @@ def test_validate_json_valid_empty_required_keys():
 # validate_json – Thiếu key
 # ============================================================
 
-# Test Case ID: TC_FITNESS_Validator_validate_json_004
+# Test Case ID: TC-FR-00-001alidator_validate_json_004
 # Test Objective: Kiểm tra raise ValueError khi thiếu key bắt buộc
 # Input: JSON hợp lệ nhưng thiếu key "category"
 # Expected Output: Raise ValueError với message chứa "Missing key"
@@ -62,7 +62,7 @@ def test_validate_json_missing_required_key():
         validate_json(raw, required_keys=["safe", "category"])
 
 
-# Test Case ID: TC_FITNESS_Validator_validate_json_005
+# Test Case ID: TC-FR-00-001alidator_validate_json_005
 # Test Objective: Kiểm tra raise ValueError khi thiếu nhiều key (lỗi ở key đầu tiên)
 # Input: JSON rỗng {}, required_keys=["intent", "decision"]
 # Expected Output: Raise ValueError cho key đầu tiên thiếu
@@ -77,7 +77,7 @@ def test_validate_json_missing_multiple_required_keys():
 # validate_json – JSON không hợp lệ
 # ============================================================
 
-# Test Case ID: TC_FITNESS_Validator_validate_json_006
+# Test Case ID: TC-FR-00-001alidator_validate_json_006
 # Test Objective: Kiểm tra raise ValueError khi input không phải JSON
 # Input: Chuỗi văn bản bình thường "not json at all"
 # Expected Output: Raise ValueError với message "not valid JSON"
@@ -87,7 +87,7 @@ def test_validate_json_invalid_json_string():
         validate_json("not json at all")
 
 
-# Test Case ID: TC_FITNESS_Validator_validate_json_007
+# Test Case ID: TC-FR-00-001alidator_validate_json_007
 # Test Objective: Kiểm tra raise ValueError khi input là chuỗi rỗng
 # Input: Chuỗi rỗng ""
 # Expected Output: Raise ValueError
@@ -97,7 +97,7 @@ def test_validate_json_empty_string():
         validate_json("")
 
 
-# Test Case ID: TC_FITNESS_Validator_validate_json_008
+# Test Case ID: TC-FR-00-001alidator_validate_json_008
 # Test Objective: Kiểm tra JSON không hoàn chỉnh (bị cắt giữa chừng)
 # Input: Chuỗi '{"safe": true, "cat'
 # Expected Output: Raise ValueError
@@ -111,7 +111,7 @@ def test_validate_json_truncated_json():
 # validate_json – Edge cases
 # ============================================================
 
-# Test Case ID: TC_FITNESS_Validator_validate_json_009
+# Test Case ID: TC-FR-00-001alidator_validate_json_009
 # Test Objective: Kiểm tra JSON lồng nhau (nested) với required_keys ở cấp đầu
 # Input: JSON có object lồng nhau, required_keys=["plan"]
 # Expected Output: Dict đầy đủ, không raise exception
@@ -123,7 +123,7 @@ def test_validate_json_nested_json_with_required_top_key():
     assert "day1" in result["plan"]
 
 
-# Test Case ID: TC_FITNESS_Validator_validate_json_010
+# Test Case ID: TC-FR-00-001alidator_validate_json_010
 # Test Objective: Kiểm tra JSON array (không phải object) – không raise nếu không yêu cầu key
 # Input: JSON array '[1, 2, 3]' không có required_keys
 # Expected Output: List [1, 2, 3] – hàm trả về kết quả json.loads bình thường
@@ -134,7 +134,7 @@ def test_validate_json_array_no_required_keys():
     assert result == [1, 2, 3]
 
 
-# Test Case ID: TC_FITNESS_Validator_validate_json_011
+# Test Case ID: TC-FR-00-001alidator_validate_json_011
 # Test Objective: Kiểm tra key có giá trị None vẫn tồn tại (không bị coi là thiếu)
 # Input: JSON {"safe": None}, required_keys=["safe"]
 # Expected Output: Dict {"safe": None} – key tồn tại dù value là None

@@ -47,15 +47,15 @@ class AdminBootstrapRunnerTest {
     // ======================== RUN ========================
 
     /**
-     * Test Case ID: TC_AUTH_AdminBootstrapRunner_run_001
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Tạo admin user thành công khi enabled=true và password hợp lệ
      * Input: enabled=true, email="admin@test.com", password="admin123", name="Admin"
      * Expected Output: userRepository.save() được gọi 1 lần
      * Notes: Happy path - admin chưa tồn tại, tạo mới
      */
     @Test
-    @DisplayName("TC_AUTH_AdminBootstrapRunner_run_001: Tạo admin thành công")
-    void TC_AUTH_AdminBootstrapRunner_run_001() throws Exception {
+    @DisplayName("TC-FR-16-001: Tạo admin thành công")
+    void TC_FR_16_001() throws Exception {
         setFields(true, "admin@test.com", "admin123", "Admin");
 
         when(userRepository.existsByEmail("admin@test.com")).thenReturn(false);
@@ -69,15 +69,15 @@ class AdminBootstrapRunnerTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_AdminBootstrapRunner_run_002
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Bỏ qua khi enabled=false
      * Input: enabled=false
      * Expected Output: Không gọi bất kỳ repository nào
      * Notes: Feature bị tắt
      */
     @Test
-    @DisplayName("TC_AUTH_AdminBootstrapRunner_run_002: Bỏ qua khi disabled")
-    void TC_AUTH_AdminBootstrapRunner_run_002() throws Exception {
+    @DisplayName("TC-FR-02-001: Bỏ qua khi disabled")
+    void TC_FR_02_001() throws Exception {
         setFields(false, "admin@test.com", "admin123", "Admin");
 
         runner.run();
@@ -87,15 +87,15 @@ class AdminBootstrapRunnerTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_AdminBootstrapRunner_run_003
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Bỏ qua khi password rỗng
      * Input: enabled=true, password="" (rỗng)
      * Expected Output: Không gọi save
      * Notes: Không có mật khẩu → bỏ qua
      */
     @Test
-    @DisplayName("TC_AUTH_AdminBootstrapRunner_run_003: Bỏ qua khi password rỗng")
-    void TC_AUTH_AdminBootstrapRunner_run_003() throws Exception {
+    @DisplayName("TC-FR-02-001: Bỏ qua khi password rỗng")
+    void TC_FR_02_001() throws Exception {
         setFields(true, "admin@test.com", "", "Admin");
 
         runner.run();
@@ -104,15 +104,15 @@ class AdminBootstrapRunnerTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_AdminBootstrapRunner_run_004
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Bỏ qua khi admin email đã tồn tại
      * Input: enabled=true, email đã tồn tại trong DB
      * Expected Output: Không gọi save
      * Notes: Admin đã được tạo trước đó
      */
     @Test
-    @DisplayName("TC_AUTH_AdminBootstrapRunner_run_004: Bỏ qua khi admin đã tồn tại")
-    void TC_AUTH_AdminBootstrapRunner_run_004() throws Exception {
+    @DisplayName("TC-FR-02-001: Bỏ qua khi admin đã tồn tại")
+    void TC_FR_02_001() throws Exception {
         setFields(true, "admin@test.com", "admin123", "Admin");
 
         when(userRepository.existsByEmail("admin@test.com")).thenReturn(true);
@@ -123,15 +123,15 @@ class AdminBootstrapRunnerTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_AdminBootstrapRunner_run_005
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Bỏ qua khi password null
      * Input: enabled=true, password=null
      * Expected Output: Không gọi save
      * Notes: Password null → bỏ qua
      */
     @Test
-    @DisplayName("TC_AUTH_AdminBootstrapRunner_run_005: Bỏ qua khi password null")
-    void TC_AUTH_AdminBootstrapRunner_run_005() throws Exception {
+    @DisplayName("TC-FR-02-001: Bỏ qua khi password null")
+    void TC_FR_02_001() throws Exception {
         setFields(true, "admin@test.com", null, "Admin");
 
         runner.run();
@@ -140,15 +140,15 @@ class AdminBootstrapRunnerTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_AdminBootstrapRunner_run_006
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Ném IllegalStateException khi ADMIN role không tồn tại
      * Input: enabled=true, password hợp lệ, ADMIN role chưa seed
      * Expected Output: IllegalStateException
      * Notes: RoleSeeder chưa chạy
      */
     @Test
-    @DisplayName("TC_AUTH_AdminBootstrapRunner_run_006: Lỗi khi ADMIN role chưa tồn tại")
-    void TC_AUTH_AdminBootstrapRunner_run_006() {
+    @DisplayName("TC-FR-02-001: Lỗi khi ADMIN role chưa tồn tại")
+    void TC_FR_02_001() {
         setFields(true, "admin@test.com", "admin123", "Admin");
 
         when(userRepository.existsByEmail("admin@test.com")).thenReturn(false);
@@ -159,15 +159,15 @@ class AdminBootstrapRunnerTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_AdminBootstrapRunner_run_007
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Email được chuẩn hóa lowercase và trim trước khi kiểm tra
      * Input: email="  Admin@Test.COM  "
      * Expected Output: Kiểm tra và lưu với email "admin@test.com"
      * Notes: Chuẩn hóa email
      */
     @Test
-    @DisplayName("TC_AUTH_AdminBootstrapRunner_run_007: Email được chuẩn hóa")
-    void TC_AUTH_AdminBootstrapRunner_run_007() throws Exception {
+    @DisplayName("TC-FR-02-001: Email được chuẩn hóa")
+    void TC_FR_02_001() throws Exception {
         setFields(true, "  Admin@Test.COM  ", "admin123", "Admin");
 
         when(userRepository.existsByEmail("admin@test.com")).thenReturn(false);

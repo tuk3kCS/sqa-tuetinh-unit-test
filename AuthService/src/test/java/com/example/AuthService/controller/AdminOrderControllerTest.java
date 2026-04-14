@@ -78,7 +78,7 @@ class AdminOrderControllerTest {
     // ======================== GET ORDERS (ADMIN) ========================
 
     /**
-     * Test Case ID: TC_AUTH_AdminOrderController_getOrders_001
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Admin lấy danh sách đơn hàng không có filter
      * Input: Không có tham số filter
      * Expected Output: HTTP 200, danh sách đơn hàng phân trang
@@ -86,8 +86,8 @@ class AdminOrderControllerTest {
      */
     @Test
     @WithMockUser(roles = "ADMIN")
-    @DisplayName("TC_AUTH_AdminOrderController_getOrders_001: Admin lấy danh sách đơn hàng thành công")
-    void TC_AUTH_AdminOrderController_getOrders_001() throws Exception {
+    @DisplayName("TC-FR-02-001: Admin lấy danh sách đơn hàng thành công")
+    void TC_FR_02_001() throws Exception {
         Page<OrderResponse> page = new PageImpl<>(List.of());
         when(orderService.getOrdersForAdmin(any(), any(), any(), any(), any(), any(), any(), any(), anyInt(), anyInt()))
                 .thenReturn(page);
@@ -97,7 +97,7 @@ class AdminOrderControllerTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_AdminOrderController_getOrders_002
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Admin lấy đơn hàng có filter theo status
      * Input: status=PENDING, page=0, size=20
      * Expected Output: HTTP 200
@@ -105,8 +105,8 @@ class AdminOrderControllerTest {
      */
     @Test
     @WithMockUser(roles = "ADMIN")
-    @DisplayName("TC_AUTH_AdminOrderController_getOrders_002: Admin lấy đơn hàng filter theo status")
-    void TC_AUTH_AdminOrderController_getOrders_002() throws Exception {
+    @DisplayName("TC-FR-02-001: Admin lấy đơn hàng filter theo status")
+    void TC_FR_02_001() throws Exception {
         Page<OrderResponse> page = new PageImpl<>(List.of());
         when(orderService.getOrdersForAdmin(eq(OrderStatus.PENDING), any(), any(), any(), any(), any(), any(), any(), anyInt(), anyInt()))
                 .thenReturn(page);
@@ -117,7 +117,7 @@ class AdminOrderControllerTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_AdminOrderController_getOrders_003
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Admin lấy đơn hàng với nhiều filter kết hợp
      * Input: status=PAID, keyword="Nguyen", page=0, size=10
      * Expected Output: HTTP 200
@@ -125,8 +125,8 @@ class AdminOrderControllerTest {
      */
     @Test
     @WithMockUser(roles = "ADMIN")
-    @DisplayName("TC_AUTH_AdminOrderController_getOrders_003: Admin lấy đơn hàng với nhiều filter kết hợp")
-    void TC_AUTH_AdminOrderController_getOrders_003() throws Exception {
+    @DisplayName("TC-FR-02-001: Admin lấy đơn hàng với nhiều filter kết hợp")
+    void TC_FR_02_001() throws Exception {
         Page<OrderResponse> page = new PageImpl<>(List.of());
         when(orderService.getOrdersForAdmin(any(), any(), any(), any(), any(), any(), any(), any(), anyInt(), anyInt()))
                 .thenReturn(page);
@@ -142,7 +142,7 @@ class AdminOrderControllerTest {
     // ======================== APPROVE REFUND SINGLE ========================
 
     /**
-     * Test Case ID: TC_AUTH_AdminOrderController_approveRefundSingle_001
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Admin duyệt hoàn tiền cho 1 đơn hàng thành công
      * Input: orderId=1, admin đã đăng nhập
      * Expected Output: HTTP 200, BulkOrderActionResult thành công
@@ -150,8 +150,8 @@ class AdminOrderControllerTest {
      */
     @Test
     @WithMockUser(username = "admin@test.com", roles = "ADMIN")
-    @DisplayName("TC_AUTH_AdminOrderController_approveRefundSingle_001: Duyệt hoàn tiền 1 đơn thành công")
-    void TC_AUTH_AdminOrderController_approveRefundSingle_001() throws Exception {
+    @DisplayName("TC-FR-02-001: Duyệt hoàn tiền 1 đơn thành công")
+    void TC_FR_02_001() throws Exception {
         User admin = createAdminUser();
         when(userRepository.findByEmail("admin@test.com")).thenReturn(Optional.of(admin));
 
@@ -168,7 +168,7 @@ class AdminOrderControllerTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_AdminOrderController_approveRefundSingle_002
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Admin duyệt hoàn tiền thất bại (đơn không đúng trạng thái)
      * Input: orderId=1 (trạng thái không hợp lệ)
      * Expected Output: HTTP 400, BulkOrderActionResult có lỗi
@@ -176,8 +176,8 @@ class AdminOrderControllerTest {
      */
     @Test
     @WithMockUser(username = "admin@test.com", roles = "ADMIN")
-    @DisplayName("TC_AUTH_AdminOrderController_approveRefundSingle_002: Duyệt hoàn tiền thất bại")
-    void TC_AUTH_AdminOrderController_approveRefundSingle_002() throws Exception {
+    @DisplayName("TC-FR-02-001: Duyệt hoàn tiền thất bại")
+    void TC_FR_02_001() throws Exception {
         User admin = createAdminUser();
         when(userRepository.findByEmail("admin@test.com")).thenReturn(Optional.of(admin));
 
@@ -193,7 +193,7 @@ class AdminOrderControllerTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_AdminOrderController_approveRefundSingle_003
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Admin duyệt hoàn tiền khi admin không tìm thấy
      * Input: orderId=1, admin email không tồn tại trong DB
      * Expected Output: HTTP 500
@@ -201,8 +201,8 @@ class AdminOrderControllerTest {
      */
     @Test
     @WithMockUser(username = "ghost@test.com", roles = "ADMIN")
-    @DisplayName("TC_AUTH_AdminOrderController_approveRefundSingle_003: Duyệt hoàn tiền - admin không tồn tại")
-    void TC_AUTH_AdminOrderController_approveRefundSingle_003() throws Exception {
+    @DisplayName("TC-FR-02-001: Duyệt hoàn tiền - admin không tồn tại")
+    void TC_FR_02_001() throws Exception {
         when(userRepository.findByEmail("ghost@test.com")).thenReturn(Optional.empty());
 
         mockMvc.perform(put("/api/admin/orders/1/approve-refund"))
@@ -212,7 +212,7 @@ class AdminOrderControllerTest {
     // ======================== BULK CANCEL ========================
 
     /**
-     * Test Case ID: TC_AUTH_AdminOrderController_bulkCancel_001
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Admin hủy hàng loạt đơn hàng thành công
      * Input: orderIds=[1, 2, 3], admin đã đăng nhập
      * Expected Output: HTTP 200, BulkOrderActionResult
@@ -220,8 +220,8 @@ class AdminOrderControllerTest {
      */
     @Test
     @WithMockUser(username = "admin@test.com", roles = "ADMIN")
-    @DisplayName("TC_AUTH_AdminOrderController_bulkCancel_001: Hủy hàng loạt đơn hàng thành công")
-    void TC_AUTH_AdminOrderController_bulkCancel_001() throws Exception {
+    @DisplayName("TC-FR-02-001: Hủy hàng loạt đơn hàng thành công")
+    void TC_FR_02_001() throws Exception {
         User admin = createAdminUser();
         when(userRepository.findByEmail("admin@test.com")).thenReturn(Optional.of(admin));
 
@@ -243,7 +243,7 @@ class AdminOrderControllerTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_AdminOrderController_bulkCancel_002
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Admin hủy hàng loạt với danh sách rỗng
      * Input: orderIds=[], admin đã đăng nhập
      * Expected Output: HTTP 200 (service xử lý danh sách rỗng)
@@ -251,8 +251,8 @@ class AdminOrderControllerTest {
      */
     @Test
     @WithMockUser(username = "admin@test.com", roles = "ADMIN")
-    @DisplayName("TC_AUTH_AdminOrderController_bulkCancel_002: Hủy hàng loạt - danh sách rỗng")
-    void TC_AUTH_AdminOrderController_bulkCancel_002() throws Exception {
+    @DisplayName("TC-FR-02-001: Hủy hàng loạt - danh sách rỗng")
+    void TC_FR_02_001() throws Exception {
         User admin = createAdminUser();
         when(userRepository.findByEmail("admin@test.com")).thenReturn(Optional.of(admin));
 
@@ -275,7 +275,7 @@ class AdminOrderControllerTest {
     // ======================== BULK SHIP ========================
 
     /**
-     * Test Case ID: TC_AUTH_AdminOrderController_bulkShip_001
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Admin chuyển trạng thái giao hàng hàng loạt thành công
      * Input: orderIds=[1, 2]
      * Expected Output: HTTP 200, BulkOrderActionResult
@@ -283,8 +283,8 @@ class AdminOrderControllerTest {
      */
     @Test
     @WithMockUser(roles = "ADMIN")
-    @DisplayName("TC_AUTH_AdminOrderController_bulkShip_001: Giao hàng hàng loạt thành công")
-    void TC_AUTH_AdminOrderController_bulkShip_001() throws Exception {
+    @DisplayName("TC-FR-02-001: Giao hàng hàng loạt thành công")
+    void TC_FR_02_001() throws Exception {
         BulkOrderActionResult result = BulkOrderActionResult.builder()
                 .total(2).success(2).failed(0)
                 .successIds(List.of(1L, 2L)).errors(List.of())
@@ -302,7 +302,7 @@ class AdminOrderControllerTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_AdminOrderController_bulkShip_002
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Giao hàng hàng loạt khi một số đơn thất bại
      * Input: orderIds=[1, 2, 3] (1 đơn sai trạng thái)
      * Expected Output: HTTP 200, partial success
@@ -310,8 +310,8 @@ class AdminOrderControllerTest {
      */
     @Test
     @WithMockUser(roles = "ADMIN")
-    @DisplayName("TC_AUTH_AdminOrderController_bulkShip_002: Giao hàng hàng loạt - kết quả hỗn hợp")
-    void TC_AUTH_AdminOrderController_bulkShip_002() throws Exception {
+    @DisplayName("TC-FR-02-001: Giao hàng hàng loạt - kết quả hỗn hợp")
+    void TC_FR_02_001() throws Exception {
         BulkOrderActionResult result = BulkOrderActionResult.builder()
                 .total(3).success(2).failed(1)
                 .successIds(List.of(1L, 2L)).errors(List.of())
@@ -332,7 +332,7 @@ class AdminOrderControllerTest {
     // ======================== BULK COMPLETE ========================
 
     /**
-     * Test Case ID: TC_AUTH_AdminOrderController_bulkComplete_001
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Admin hoàn thành đơn hàng hàng loạt thành công
      * Input: orderIds=[1, 2]
      * Expected Output: HTTP 200, BulkOrderActionResult
@@ -340,8 +340,8 @@ class AdminOrderControllerTest {
      */
     @Test
     @WithMockUser(roles = "ADMIN")
-    @DisplayName("TC_AUTH_AdminOrderController_bulkComplete_001: Hoàn thành đơn hàng hàng loạt thành công")
-    void TC_AUTH_AdminOrderController_bulkComplete_001() throws Exception {
+    @DisplayName("TC-FR-02-001: Hoàn thành đơn hàng hàng loạt thành công")
+    void TC_FR_02_001() throws Exception {
         BulkOrderActionResult result = BulkOrderActionResult.builder()
                 .total(2).success(2).failed(0)
                 .successIds(List.of(1L, 2L)).errors(List.of())
@@ -359,7 +359,7 @@ class AdminOrderControllerTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_AdminOrderController_bulkComplete_002
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Hoàn thành đơn hàng hàng loạt khi tất cả thất bại
      * Input: orderIds=[1, 2] (tất cả không đúng trạng thái)
      * Expected Output: HTTP 200, tất cả failed
@@ -367,8 +367,8 @@ class AdminOrderControllerTest {
      */
     @Test
     @WithMockUser(roles = "ADMIN")
-    @DisplayName("TC_AUTH_AdminOrderController_bulkComplete_002: Hoàn thành hàng loạt - tất cả thất bại")
-    void TC_AUTH_AdminOrderController_bulkComplete_002() throws Exception {
+    @DisplayName("TC-FR-02-001: Hoàn thành hàng loạt - tất cả thất bại")
+    void TC_FR_02_001() throws Exception {
         BulkOrderActionResult result = BulkOrderActionResult.builder()
                 .total(2).success(0).failed(2)
                 .successIds(List.of()).errors(List.of())
@@ -386,7 +386,7 @@ class AdminOrderControllerTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_AdminOrderController_bulkComplete_003
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Hoàn thành 1 đơn hàng (single endpoint)
      * Input: orderId=1
      * Expected Output: HTTP 200
@@ -394,8 +394,8 @@ class AdminOrderControllerTest {
      */
     @Test
     @WithMockUser(roles = "ADMIN")
-    @DisplayName("TC_AUTH_AdminOrderController_bulkComplete_003: Hoàn thành 1 đơn hàng (single)")
-    void TC_AUTH_AdminOrderController_bulkComplete_003() throws Exception {
+    @DisplayName("TC-FR-02-001: Hoàn thành 1 đơn hàng (single)")
+    void TC_FR_02_001() throws Exception {
         BulkOrderActionResult result = BulkOrderActionResult.builder()
                 .total(1).success(1).failed(0)
                 .successIds(List.of(1L)).errors(List.of())

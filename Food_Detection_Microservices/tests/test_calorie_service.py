@@ -67,7 +67,7 @@ def _add_food_record(session, daily_log_id, food_name="Phở", calorie=450, quan
 # ADD FOOD RECORDS
 # ============================================================
 
-# Test Case ID: TC_FOOD_CalorieService_add_food_records_001
+# Test Case ID: TC-FR-00-001alorieService_add_food_records_001
 # Test Objective: Thêm một food record thành công vào ngày mới
 # Input: user_id=1, payload chứa 1 food item, không có daily_log trước đó
 # Expected Output: status 201, items_added=1, tạo mới DailyEnergyLog
@@ -105,7 +105,7 @@ def test_calorie_service_add_food_records_single_food(app, db_session):
     assert records[0].food_name == "Phở"
 
 
-# Test Case ID: TC_FOOD_CalorieService_add_food_records_002
+# Test Case ID: TC-FR-00-001alorieService_add_food_records_002
 # Test Objective: Thêm nhiều food records cùng lúc
 # Input: user_id=1, payload chứa 3 food items
 # Expected Output: status 201, items_added=3, tổng calo đúng
@@ -137,7 +137,7 @@ def test_calorie_service_add_food_records_multiple_foods(app, db_session):
     assert data["total_calorie_added"] == 1280
 
 
-# Test Case ID: TC_FOOD_CalorieService_add_food_records_003
+# Test Case ID: TC-FR-00-001alorieService_add_food_records_003
 # Test Objective: Trả lỗi khi không có food items
 # Input: user_id=1, payload với foods=[]
 # Expected Output: status 400, error message
@@ -153,7 +153,7 @@ def test_calorie_service_add_food_records_no_foods(app, db_session):
     assert data["error"] == "No food provided"
 
 
-# Test Case ID: TC_FOOD_CalorieService_add_food_records_004
+# Test Case ID: TC-FR-00-001alorieService_add_food_records_004
 # Test Objective: Thêm food vào ngày đã có DailyEnergyLog
 # Input: user_id=1, daily_log đã tồn tại với total_calorie_in=500
 # Expected Output: status 201, total_calorie_in_by_day cộng dồn
@@ -175,7 +175,7 @@ def test_calorie_service_add_food_records_existing_day(app, db_session):
     assert data["total_calorie_in_by_day"] == 1050  # 500 + 550
 
 
-# Test Case ID: TC_FOOD_CalorieService_add_food_records_005
+# Test Case ID: TC-FR-00-001alorieService_add_food_records_005
 # Test Objective: Thêm food không chỉ định log_date → dùng ngày hôm nay
 # Input: user_id=1, payload không có log_date
 # Expected Output: status 201, log_date = today
@@ -204,7 +204,7 @@ def test_calorie_service_add_food_records_default_date(app, db_session):
 # UPDATE FOOD RECORD
 # ============================================================
 
-# Test Case ID: TC_FOOD_CalorieService_update_food_record_001
+# Test Case ID: TC-FR-00-001alorieService_update_food_record_001
 # Test Objective: Cập nhật food record thành công
 # Input: user_id=1, payload chứa id, food_name mới, calorie mới
 # Expected Output: status 200, dữ liệu đã cập nhật
@@ -226,7 +226,7 @@ def test_calorie_service_update_food_record_valid(app, db_session):
     assert updated.food_name == "Bún bò Huế"
 
 
-# Test Case ID: TC_FOOD_CalorieService_update_food_record_002
+# Test Case ID: TC-FR-00-001alorieService_update_food_record_002
 # Test Objective: Trả lỗi khi không có id trong payload
 # Input: user_id=1, payload không có id
 # Expected Output: status 400, error "Food record id is required"
@@ -240,7 +240,7 @@ def test_calorie_service_update_food_record_missing_id(app, db_session):
     assert result["error"] == "Food record id is required"
 
 
-# Test Case ID: TC_FOOD_CalorieService_update_food_record_003
+# Test Case ID: TC-FR-00-001alorieService_update_food_record_003
 # Test Objective: Trả lỗi khi food record không tồn tại
 # Input: user_id=1, id=9999 không tồn tại
 # Expected Output: status 404, error "Food record not found"
@@ -254,7 +254,7 @@ def test_calorie_service_update_food_record_not_found(app, db_session):
     assert result["error"] == "Food record not found"
 
 
-# Test Case ID: TC_FOOD_CalorieService_update_food_record_004
+# Test Case ID: TC-FR-00-001alorieService_update_food_record_004
 # Test Objective: Trả lỗi khi user không sở hữu food record
 # Input: user_id=999 (không phải chủ sở hữu), id hợp lệ
 # Expected Output: status 403, error "Unauthorized"
@@ -271,7 +271,7 @@ def test_calorie_service_update_food_record_not_owned(app, db_session):
     assert result["error"] == "Unauthorized"
 
 
-# Test Case ID: TC_FOOD_CalorieService_update_food_record_005
+# Test Case ID: TC-FR-00-001alorieService_update_food_record_005
 # Test Objective: Cập nhật chỉ quantity, giữ nguyên food_name và calorie
 # Input: user_id=1, payload chỉ chứa id + quantity
 # Expected Output: status 200, quantity đã thay đổi, food_name giữ nguyên
@@ -293,7 +293,7 @@ def test_calorie_service_update_food_record_partial_update(app, db_session):
 # GET FOOD RECORDS
 # ============================================================
 
-# Test Case ID: TC_FOOD_CalorieService_get_food_records_001
+# Test Case ID: TC-FR-00-001alorieService_get_food_records_001
 # Test Objective: Lấy food records có dữ liệu thành công
 # Input: user_id=1, log_date có dữ liệu, 2 food records tồn tại
 # Expected Output: status 200, danh sách 2 foods, tổng calo đúng
@@ -315,7 +315,7 @@ def test_calorie_service_get_food_records_with_data(app, db_session):
     assert data["summary"]["total_calorie_in"] == 900
 
 
-# Test Case ID: TC_FOOD_CalorieService_get_food_records_002
+# Test Case ID: TC-FR-00-001alorieService_get_food_records_002
 # Test Objective: Trả danh sách rỗng khi không có daily log
 # Input: user_id=1, log_date không có dữ liệu
 # Expected Output: status 200, foods=[], total_calorie_in=0
@@ -332,7 +332,7 @@ def test_calorie_service_get_food_records_empty(app, db_session):
     assert data["summary"]["total_calorie_in"] == 0
 
 
-# Test Case ID: TC_FOOD_CalorieService_get_food_records_003
+# Test Case ID: TC-FR-00-001alorieService_get_food_records_003
 # Test Objective: Mặc định dùng ngày hôm nay khi không truyền log_date
 # Input: user_id=1, log_date=None
 # Expected Output: status 200, log_date = today
@@ -350,7 +350,7 @@ def test_calorie_service_get_food_records_no_date(app, db_session):
 # DELETE FOOD RECORD
 # ============================================================
 
-# Test Case ID: TC_FOOD_CalorieService_delete_food_record_001
+# Test Case ID: TC-FR-00-001alorieService_delete_food_record_001
 # Test Objective: Xóa food record thành công
 # Input: user_id=1, record_id hợp lệ
 # Expected Output: status 200, message "Food record deleted successfully"
@@ -371,7 +371,7 @@ def test_calorie_service_delete_food_record_valid(app, db_session):
     assert deleted is None
 
 
-# Test Case ID: TC_FOOD_CalorieService_delete_food_record_002
+# Test Case ID: TC-FR-00-001alorieService_delete_food_record_002
 # Test Objective: Trả lỗi khi food record không tồn tại
 # Input: user_id=1, record_id=9999
 # Expected Output: status 404, error "Food record not found"
@@ -384,7 +384,7 @@ def test_calorie_service_delete_food_record_not_found(app, db_session):
     assert result["error"] == "Food record not found"
 
 
-# Test Case ID: TC_FOOD_CalorieService_delete_food_record_003
+# Test Case ID: TC-FR-00-001alorieService_delete_food_record_003
 # Test Objective: Trả lỗi khi user không sở hữu food record
 # Input: user_id=999 (không phải chủ sở hữu), record_id hợp lệ
 # Expected Output: status 403, error "Unauthorized"

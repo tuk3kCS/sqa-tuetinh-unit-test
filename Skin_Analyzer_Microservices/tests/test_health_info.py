@@ -19,7 +19,7 @@ from app.utils.health_info import (
 # generate_health_issue_info
 # ============================================================
 
-# Test Case ID: TC_SKIN_HealthInfo_generate_health_issue_info_001
+# Test Case ID: TC-FR-07-001ealthInfo_generate_health_issue_info_001
 # Test Objective: Trả thông tin bệnh khi có disease classification với confidence cao
 # Input: results có requires_classification=True, disease_prediction "acne" conf=0.9
 # Expected Output: String chứa "Mụn trứng cá" (tên tiếng Việt)
@@ -43,7 +43,7 @@ def test_health_issue_info_known_disease():
     assert "Mụn trứng cá" in info
 
 
-# Test Case ID: TC_SKIN_HealthInfo_generate_health_issue_info_002
+# Test Case ID: TC-FR-07-001ealthInfo_generate_health_issue_info_002
 # Test Objective: Trả thông tin vấn đề thẩm mỹ khi không cần classification
 # Input: results có requires_classification=False, detected_class="Dark Circle"
 # Expected Output: String chứa "Quầng thâm mắt"
@@ -64,7 +64,7 @@ def test_health_issue_info_cosmetic_issue():
     assert "Quầng thâm mắt" in info
 
 
-# Test Case ID: TC_SKIN_HealthInfo_generate_health_issue_info_003
+# Test Case ID: TC-FR-07-001ealthInfo_generate_health_issue_info_003
 # Test Objective: Trả None khi confidence dưới ngưỡng MEDIUM
 # Input: combined_confidence < 0.5
 # Expected Output: None
@@ -86,7 +86,7 @@ def test_health_issue_info_low_confidence():
     assert info is None
 
 
-# Test Case ID: TC_SKIN_HealthInfo_generate_health_issue_info_004
+# Test Case ID: TC-FR-07-001ealthInfo_generate_health_issue_info_004
 # Test Objective: Xử lý nhiều issues – cả bệnh và thẩm mỹ
 # Input: 2 results – 1 bệnh da liễu + 1 vấn đề thẩm mỹ
 # Expected Output: String chứa cả tên bệnh và tên vấn đề thẩm mỹ
@@ -116,7 +116,7 @@ def test_health_issue_info_multiple_issues():
     assert "Bọng mắt" in info
 
 
-# Test Case ID: TC_SKIN_HealthInfo_generate_health_issue_info_005
+# Test Case ID: TC-FR-07-001ealthInfo_generate_health_issue_info_005
 # Test Objective: Trả None khi results rỗng
 # Input: results = [], confidences = []
 # Expected Output: None
@@ -126,7 +126,7 @@ def test_health_issue_info_empty_results():
     assert generate_health_issue_info([], []) is None
 
 
-# Test Case ID: TC_SKIN_HealthInfo_generate_health_issue_info_006
+# Test Case ID: TC-FR-07-001ealthInfo_generate_health_issue_info_006
 # Test Objective: Trả None khi disease class là "none" (da khỏe mạnh)
 # Input: disease_prediction class_name="none" với confidence cao
 # Expected Output: None (bỏ qua class "none")
@@ -149,7 +149,7 @@ def test_health_issue_info_none_disease():
 # generate_lifestyle_suggestions
 # ============================================================
 
-# Test Case ID: TC_SKIN_HealthInfo_generate_lifestyle_suggestions_001
+# Test Case ID: TC-FR-07-001ealthInfo_generate_lifestyle_suggestions_001
 # Test Objective: Trả gợi ý từ DISEASE_INFO khi có bệnh da liễu
 # Input: results với disease "acne", confidence cao
 # Expected Output: dict có "lifestyle" và "diet" lists chứa gợi ý acne
@@ -174,7 +174,7 @@ def test_lifestyle_suggestions_disease():
     assert any("bác sĩ" in s for s in suggestions["lifestyle"])
 
 
-# Test Case ID: TC_SKIN_HealthInfo_generate_lifestyle_suggestions_002
+# Test Case ID: TC-FR-07-001ealthInfo_generate_lifestyle_suggestions_002
 # Test Objective: Trả gợi ý từ COSMETIC_ISSUES khi có vấn đề thẩm mỹ
 # Input: results với detected_class="Eyebag"
 # Expected Output: dict có lifestyle chứa gợi ý cho bọng mắt
@@ -195,7 +195,7 @@ def test_lifestyle_suggestions_cosmetic():
     assert len(suggestions["diet"]) > 0
 
 
-# Test Case ID: TC_SKIN_HealthInfo_generate_lifestyle_suggestions_003
+# Test Case ID: TC-FR-07-001ealthInfo_generate_lifestyle_suggestions_003
 # Test Objective: Trả gợi ý mặc định (none) khi results rỗng
 # Input: results = []
 # Expected Output: DISEASE_INFO["none"] suggestions
@@ -208,7 +208,7 @@ def test_lifestyle_suggestions_empty_results():
     assert suggestions["diet"] == DISEASE_INFO["none"]["diet"]
 
 
-# Test Case ID: TC_SKIN_HealthInfo_generate_lifestyle_suggestions_004
+# Test Case ID: TC-FR-07-001ealthInfo_generate_lifestyle_suggestions_004
 # Test Objective: Trả gợi ý mặc định khi confidence thấp (không vấn đề nào vượt ngưỡng)
 # Input: classification conf rất thấp → combined < MEDIUM
 # Expected Output: Gợi ý mặc định (none)
@@ -228,7 +228,7 @@ def test_lifestyle_suggestions_low_confidence():
     assert suggestions["lifestyle"] == DISEASE_INFO["none"]["lifestyle"]
 
 
-# Test Case ID: TC_SKIN_HealthInfo_generate_lifestyle_suggestions_005
+# Test Case ID: TC-FR-07-001ealthInfo_generate_lifestyle_suggestions_005
 # Test Objective: Không có gợi ý trùng lặp khi nhiều vấn đề có chung gợi ý
 # Input: 2 bệnh khác nhau
 # Expected Output: Các suggestion không trùng nhau

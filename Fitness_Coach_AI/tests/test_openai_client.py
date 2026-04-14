@@ -23,7 +23,7 @@ def openai_client():
 # chat
 # ============================================================
 
-# Test Case ID: TC_FITNESS_OpenAIClient_chat_001
+# Test Case ID: TC-FR-00-001penAIClient_chat_001
 # Test Objective: Kiểm tra chat thành công – trả về output_text
 # Input: system_prompt và user_prompt hợp lệ
 # Expected Output: Chuỗi response từ API
@@ -38,7 +38,7 @@ def test_openai_chat_successful(openai_client):
     openai_client._mock_sdk.responses.create.assert_called_once()
 
 
-# Test Case ID: TC_FITNESS_OpenAIClient_chat_002
+# Test Case ID: TC-FR-00-001penAIClient_chat_002
 # Test Objective: Kiểm tra chat khi API raise exception
 # Input: API raise Exception
 # Expected Output: Exception được propagate lên caller
@@ -49,7 +49,7 @@ def test_openai_chat_api_error(openai_client):
         openai_client.chat("System", "User")
 
 
-# Test Case ID: TC_FITNESS_OpenAIClient_chat_003
+# Test Case ID: TC-FR-00-001penAIClient_chat_003
 # Test Objective: Kiểm tra chat gửi đúng format messages
 # Input: system_prompt="SP", user_prompt="UP"
 # Expected Output: API nhận đúng model và input messages
@@ -71,7 +71,7 @@ def test_openai_chat_correct_payload(openai_client):
 # moderate
 # ============================================================
 
-# Test Case ID: TC_FITNESS_OpenAIClient_moderate_001
+# Test Case ID: TC-FR-00-001penAIClient_moderate_001
 # Test Objective: Kiểm tra moderate trả kết quả flagged
 # Input: Nội dung bị flagged bởi moderation API
 # Expected Output: Dict chứa thông tin moderation (flagged result)
@@ -91,7 +91,7 @@ def test_openai_moderate_flagged_content(openai_client):
     assert result is mock_result
 
 
-# Test Case ID: TC_FITNESS_OpenAIClient_moderate_002
+# Test Case ID: TC-FR-00-001penAIClient_moderate_002
 # Test Objective: Kiểm tra moderate trả kết quả clean (không flagged)
 # Input: Nội dung bình thường
 # Expected Output: Dict kết quả moderation (không flagged)
@@ -106,7 +106,7 @@ def test_openai_moderate_clean_content(openai_client):
     assert result == mock_result
 
 
-# Test Case ID: TC_FITNESS_OpenAIClient_moderate_003
+# Test Case ID: TC-FR-00-001penAIClient_moderate_003
 # Test Objective: Kiểm tra moderate trả None khi API lỗi
 # Input: API raise Exception
 # Expected Output: None (exception bị bắt bên trong)
@@ -117,7 +117,7 @@ def test_openai_moderate_api_error(openai_client):
     assert result is None
 
 
-# Test Case ID: TC_FITNESS_OpenAIClient_moderate_004
+# Test Case ID: TC-FR-00-001penAIClient_moderate_004
 # Test Objective: Kiểm tra moderate khi response format không mong đợi
 # Input: API trả object không có "results" key hay .results attribute phù hợp
 # Expected Output: None (exception bị bắt)

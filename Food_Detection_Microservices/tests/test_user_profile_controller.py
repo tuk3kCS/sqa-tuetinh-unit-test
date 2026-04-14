@@ -49,7 +49,7 @@ def _create_profile(session, user_id=1):
 # GET /user-profile
 # ============================================================
 
-# Test Case ID: TC_FOOD_UserProfileController_get_user_profile_001
+# Test Case ID: TC-FR-00-001serProfileController_get_user_profile_001
 # Test Objective: Lấy profile thành công
 # Input: GET /user-profile với JWT hợp lệ, user có profile
 # Expected Output: status 200, dữ liệu profile
@@ -67,7 +67,7 @@ def test_get_user_profile_success(app, client, db_session):
     assert data["gender"] == "male"
 
 
-# Test Case ID: TC_FOOD_UserProfileController_get_user_profile_002
+# Test Case ID: TC-FR-00-001serProfileController_get_user_profile_002
 # Test Objective: Trả 404 khi không có profile
 # Input: GET /user-profile, user chưa tạo profile
 # Expected Output: status 404, error "Profile not found"
@@ -81,7 +81,7 @@ def test_get_user_profile_not_found(app, client, db_session):
     assert response.status_code == 404
 
 
-# Test Case ID: TC_FOOD_UserProfileController_get_user_profile_003
+# Test Case ID: TC-FR-00-001serProfileController_get_user_profile_003
 # Test Objective: Trả 401 khi không có JWT
 # Input: GET /user-profile không có Authorization header
 # Expected Output: status 401
@@ -96,7 +96,7 @@ def test_get_user_profile_no_jwt(app, client, db_session):
 # POST /user-profile
 # ============================================================
 
-# Test Case ID: TC_FOOD_UserProfileController_create_user_profile_001
+# Test Case ID: TC-FR-00-001serProfileController_create_user_profile_001
 # Test Objective: Tạo profile mới thành công
 # Input: POST với payload hợp lệ, auth service trả dữ liệu
 # Expected Output: status 201
@@ -118,7 +118,7 @@ def test_create_user_profile_success(mock_fetch, mock_upsert, app, client, db_se
     assert response.status_code == 201
 
 
-# Test Case ID: TC_FOOD_UserProfileController_create_user_profile_002
+# Test Case ID: TC-FR-00-001serProfileController_create_user_profile_002
 # Test Objective: Trả 400 khi profile đã tồn tại
 # Input: POST khi user đã có profile
 # Expected Output: status 400
@@ -140,7 +140,7 @@ def test_create_user_profile_already_exists(app, client, db_session):
 # PUT /user-profile
 # ============================================================
 
-# Test Case ID: TC_FOOD_UserProfileController_update_user_profile_001
+# Test Case ID: TC-FR-00-001serProfileController_update_user_profile_001
 # Test Objective: Cập nhật profile thành công
 # Input: PUT với activity_level mới
 # Expected Output: status 200
@@ -162,7 +162,7 @@ def test_update_user_profile_success(mock_upsert, app, client, db_session):
 # GET /user-profile/weight-history
 # ============================================================
 
-# Test Case ID: TC_FOOD_UserProfileController_weight_history_001
+# Test Case ID: TC-FR-00-001serProfileController_weight_history_001
 # Test Objective: Lấy lịch sử cân nặng thành công
 # Input: GET /weight-history, user có weight history
 # Expected Output: status 200, weight_history list
@@ -179,7 +179,7 @@ def test_get_weight_history_success(app, client, db_session):
     assert len(data["weight_history"]) >= 1
 
 
-# Test Case ID: TC_FOOD_UserProfileController_weight_history_002
+# Test Case ID: TC-FR-00-001serProfileController_weight_history_002
 # Test Objective: Trả 401 khi không có JWT
 # Input: GET /weight-history không có token
 # Expected Output: status 401
@@ -194,7 +194,7 @@ def test_get_weight_history_no_jwt(app, client, db_session):
 # GET /user-profile/ai/profile-input
 # ============================================================
 
-# Test Case ID: TC_FOOD_UserProfileController_ai_profile_input_001
+# Test Case ID: TC-FR-00-001serProfileController_ai_profile_input_001
 # Test Objective: Lấy AI profile input thành công
 # Input: GET /ai/profile-input, user có đầy đủ dữ liệu
 # Expected Output: status 200, dict chứa age, gender, etc.
@@ -212,7 +212,7 @@ def test_get_ai_profile_input_success(app, client, db_session):
     assert "gender" in data
 
 
-# Test Case ID: TC_FOOD_UserProfileController_ai_profile_input_002
+# Test Case ID: TC-FR-00-001serProfileController_ai_profile_input_002
 # Test Objective: Trả 400 khi thiếu dữ liệu
 # Input: GET /ai/profile-input, user không có profile
 # Expected Output: status 400, error message
@@ -232,7 +232,7 @@ def test_get_ai_profile_input_error(app, client, db_session):
 # GET /user-profile/ai/goal-input
 # ============================================================
 
-# Test Case ID: TC_FOOD_UserProfileController_ai_goal_input_001
+# Test Case ID: TC-FR-00-001serProfileController_ai_goal_input_001
 # Test Objective: Lấy AI goal input thành công
 # Input: GET /ai/goal-input, user có đầy đủ dữ liệu + daily log
 # Expected Output: status 200, dict chứa goal, calorie_target
@@ -257,7 +257,7 @@ def test_get_ai_goal_input_success(app, client, db_session):
     assert "calorie_target" in data
 
 
-# Test Case ID: TC_FOOD_UserProfileController_ai_goal_input_002
+# Test Case ID: TC-FR-00-001serProfileController_ai_goal_input_002
 # Test Objective: Trả 400 khi thiếu profile
 # Input: GET /ai/goal-input, user không có profile
 # Expected Output: status 400

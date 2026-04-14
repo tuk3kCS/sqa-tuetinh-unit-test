@@ -26,7 +26,7 @@ def clear_session_store():
 # get_session_memory
 # ============================================================
 
-# Test Case ID: TC_FITNESS_SessionMemory_get_session_memory_001
+# Test Case ID: TC-FR-00-001essionMemory_get_session_memory_001
 # Test Objective: Kiểm tra lấy session mới (chưa tồn tại)
 # Input: user_id="new_user" (chưa có trong store)
 # Expected Output: Dict rỗng {}
@@ -36,7 +36,7 @@ def test_get_session_memory_new_session():
     assert result == {}
 
 
-# Test Case ID: TC_FITNESS_SessionMemory_get_session_memory_002
+# Test Case ID: TC-FR-00-001essionMemory_get_session_memory_002
 # Test Objective: Kiểm tra lấy session đã tồn tại và chưa hết hạn
 # Input: user_id đã có session data
 # Expected Output: Dict chứa data đã lưu
@@ -48,7 +48,7 @@ def test_get_session_memory_existing_valid():
     assert len(result["chat_history"]) == 1
 
 
-# Test Case ID: TC_FITNESS_SessionMemory_get_session_memory_003
+# Test Case ID: TC-FR-00-001essionMemory_get_session_memory_003
 # Test Objective: Kiểm tra session hết hạn → trả {} và xóa khỏi store
 # Input: Session có updated_at quá TTL (30 phút)
 # Expected Output: Dict rỗng {}
@@ -64,7 +64,7 @@ def test_get_session_memory_expired(mock_now):
     assert "user2" not in _session_store
 
 
-# Test Case ID: TC_FITNESS_SessionMemory_get_session_memory_004
+# Test Case ID: TC-FR-00-001essionMemory_get_session_memory_004
 # Test Objective: Kiểm tra session đúng biên hết hạn (TTL chính xác)
 # Input: Thời gian trôi qua đúng bằng SESSION_TTL_SECONDS
 # Expected Output: Dict rỗng {} (vì > là strict, nhưng bằng thì không expired)
@@ -83,7 +83,7 @@ def test_get_session_memory_at_ttl_boundary(mock_now):
 # update_session_memory
 # ============================================================
 
-# Test Case ID: TC_FITNESS_SessionMemory_update_session_memory_001
+# Test Case ID: TC-FR-00-001essionMemory_update_session_memory_001
 # Test Objective: Kiểm tra cập nhật session mới
 # Input: user_id="user5", data mới
 # Expected Output: Session được lưu vào store
@@ -94,7 +94,7 @@ def test_update_session_memory_new():
     assert _session_store["user5"]["data"]["last_intent"] == "chat"
 
 
-# Test Case ID: TC_FITNESS_SessionMemory_update_session_memory_002
+# Test Case ID: TC-FR-00-001essionMemory_update_session_memory_002
 # Test Objective: Kiểm tra cập nhật session đã tồn tại (ghi đè data)
 # Input: Session đã tồn tại → update với data mới
 # Expected Output: Data mới ghi đè data cũ hoàn toàn
@@ -106,7 +106,7 @@ def test_update_session_memory_overwrite():
     assert "old" not in _session_store["user6"]["data"]
 
 
-# Test Case ID: TC_FITNESS_SessionMemory_update_session_memory_003
+# Test Case ID: TC-FR-00-001essionMemory_update_session_memory_003
 # Test Objective: Kiểm tra updated_at được set đúng
 # Input: Cập nhật session
 # Expected Output: updated_at gần với thời gian hiện tại
@@ -117,7 +117,7 @@ def test_update_session_memory_timestamp(mock_now):
     assert _session_store["user7"]["updated_at"] == 5000.0
 
 
-# Test Case ID: TC_FITNESS_SessionMemory_update_session_memory_004
+# Test Case ID: TC-FR-00-001essionMemory_update_session_memory_004
 # Test Objective: Kiểm tra update với data rỗng
 # Input: data={} (rỗng)
 # Expected Output: Session được lưu với data rỗng

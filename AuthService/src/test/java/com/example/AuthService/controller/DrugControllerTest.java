@@ -79,7 +79,7 @@ class DrugControllerTest {
     // ======================== LIST ========================
 
     /**
-     * Test Case ID: TC_AUTH_DrugController_list_001
+     * Test Case ID: TC-FR-15-201
      * Test Objective: Lấy danh sách thuốc thành công (không filter)
      * Input: User đã đăng nhập, không có tham số filter
      * Expected Output: HTTP 200, page thuốc
@@ -87,8 +87,8 @@ class DrugControllerTest {
      */
     @Test
     @WithMockUser(roles = "USER")
-    @DisplayName("TC_AUTH_DrugController_list_001: Lấy danh sách thuốc thành công")
-    void TC_AUTH_DrugController_list_001() throws Exception {
+    @DisplayName("TC-FR-15-201: Lấy danh sách thuốc thành công")
+    void TC_FR_15_201() throws Exception {
         DrugResponse drug = DrugResponse.builder()
                 .id(1L).name("Paracetamol").price(BigDecimal.valueOf(15000)).build();
         Page<DrugResponse> page = new PageImpl<>(List.of(drug));
@@ -102,7 +102,7 @@ class DrugControllerTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_DrugController_list_002
+     * Test Case ID: TC-FR-15-202
      * Test Objective: Lấy danh sách thuốc với filter tìm kiếm
      * Input: q="para", minPrice=10000, maxPrice=50000
      * Expected Output: HTTP 200
@@ -110,8 +110,8 @@ class DrugControllerTest {
      */
     @Test
     @WithMockUser(roles = "USER")
-    @DisplayName("TC_AUTH_DrugController_list_002: Lấy danh sách thuốc với filter")
-    void TC_AUTH_DrugController_list_002() throws Exception {
+    @DisplayName("TC-FR-15-202: Lấy danh sách thuốc với filter")
+    void TC_FR_15_202() throws Exception {
         Page<DrugResponse> page = new PageImpl<>(List.of());
         when(drugService.getDrugs(any(), any(), anyBoolean())).thenReturn(page);
 
@@ -124,7 +124,7 @@ class DrugControllerTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_DrugController_list_003
+     * Test Case ID: TC-FR-15-203
      * Test Objective: Admin thấy cả thuốc inactive
      * Input: Admin đã đăng nhập
      * Expected Output: HTTP 200, isAdmin=true khi gọi service
@@ -132,8 +132,8 @@ class DrugControllerTest {
      */
     @Test
     @WithMockUser(roles = "ADMIN")
-    @DisplayName("TC_AUTH_DrugController_list_003: Admin xem danh sách thuốc (bao gồm inactive)")
-    void TC_AUTH_DrugController_list_003() throws Exception {
+    @DisplayName("TC-FR-15-203: Admin xem danh sách thuốc (bao gồm inactive)")
+    void TC_FR_15_203() throws Exception {
         Page<DrugResponse> page = new PageImpl<>(List.of());
         when(drugService.getDrugs(any(), any(), eq(true))).thenReturn(page);
 
@@ -144,7 +144,7 @@ class DrugControllerTest {
     // ======================== SUGGEST ========================
 
     /**
-     * Test Case ID: TC_AUTH_DrugController_suggest_001
+     * Test Case ID: TC-FR-15-204
      * Test Objective: Gợi ý autocomplete thành công
      * Input: q="para", limit=10
      * Expected Output: HTTP 200, danh sách tên thuốc gợi ý
@@ -152,8 +152,8 @@ class DrugControllerTest {
      */
     @Test
     @WithMockUser(roles = "USER")
-    @DisplayName("TC_AUTH_DrugController_suggest_001: Gợi ý tên thuốc thành công")
-    void TC_AUTH_DrugController_suggest_001() throws Exception {
+    @DisplayName("TC-FR-15-204: Gợi ý tên thuốc thành công")
+    void TC_FR_15_204() throws Exception {
         when(drugService.suggestNames("para", 10))
                 .thenReturn(List.of("Paracetamol", "Paracetamol Extra"));
 
@@ -166,7 +166,7 @@ class DrugControllerTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_DrugController_suggest_002
+     * Test Case ID: TC-FR-15-205
      * Test Objective: Gợi ý khi không có kết quả
      * Input: q="xyznotfound"
      * Expected Output: HTTP 200, danh sách rỗng
@@ -174,8 +174,8 @@ class DrugControllerTest {
      */
     @Test
     @WithMockUser(roles = "USER")
-    @DisplayName("TC_AUTH_DrugController_suggest_002: Gợi ý - không tìm thấy kết quả")
-    void TC_AUTH_DrugController_suggest_002() throws Exception {
+    @DisplayName("TC-FR-15-205: Gợi ý - không tìm thấy kết quả")
+    void TC_FR_15_205() throws Exception {
         when(drugService.suggestNames("xyznotfound", 10)).thenReturn(List.of());
 
         mockMvc.perform(get("/api/drugs/suggest")
@@ -186,7 +186,7 @@ class DrugControllerTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_DrugController_suggest_003
+     * Test Case ID: TC-FR-15-206
      * Test Objective: Gợi ý với limit tùy chỉnh
      * Input: q="para", limit=3
      * Expected Output: HTTP 200, tối đa 3 kết quả
@@ -194,8 +194,8 @@ class DrugControllerTest {
      */
     @Test
     @WithMockUser(roles = "USER")
-    @DisplayName("TC_AUTH_DrugController_suggest_003: Gợi ý với limit tùy chỉnh")
-    void TC_AUTH_DrugController_suggest_003() throws Exception {
+    @DisplayName("TC-FR-15-206: Gợi ý với limit tùy chỉnh")
+    void TC_FR_15_206() throws Exception {
         when(drugService.suggestNames("para", 3))
                 .thenReturn(List.of("Paracetamol", "Paracetamol Extra", "Paramol"));
 
@@ -210,7 +210,7 @@ class DrugControllerTest {
     // ======================== GET DRUG ========================
 
     /**
-     * Test Case ID: TC_AUTH_DrugController_getDrug_001
+     * Test Case ID: TC-FR-15-207
      * Test Objective: Lấy chi tiết thuốc theo ID thành công
      * Input: id=1
      * Expected Output: HTTP 200, thông tin thuốc
@@ -218,8 +218,8 @@ class DrugControllerTest {
      */
     @Test
     @WithMockUser(roles = "USER")
-    @DisplayName("TC_AUTH_DrugController_getDrug_001: Lấy chi tiết thuốc thành công")
-    void TC_AUTH_DrugController_getDrug_001() throws Exception {
+    @DisplayName("TC-FR-15-207: Lấy chi tiết thuốc thành công")
+    void TC_FR_15_207() throws Exception {
         Drug drug = Drug.builder()
                 .id(1L).name("Paracetamol")
                 .price(BigDecimal.valueOf(15000))
@@ -233,7 +233,7 @@ class DrugControllerTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_DrugController_getDrug_002
+     * Test Case ID: TC-FR-15-208
      * Test Objective: Lấy thuốc không tồn tại
      * Input: id=999
      * Expected Output: HTTP 500 (RuntimeException)
@@ -241,8 +241,8 @@ class DrugControllerTest {
      */
     @Test
     @WithMockUser(roles = "USER")
-    @DisplayName("TC_AUTH_DrugController_getDrug_002: Lấy thuốc không tồn tại")
-    void TC_AUTH_DrugController_getDrug_002() throws Exception {
+    @DisplayName("TC-FR-15-208: Lấy thuốc không tồn tại")
+    void TC_FR_15_208() throws Exception {
         when(drugService.getDrugById(999L))
                 .thenThrow(new RuntimeException("Không tìm thấy thuốc"));
 
@@ -253,7 +253,7 @@ class DrugControllerTest {
     // ======================== CREATE DRUG WITH IMAGE ========================
 
     /**
-     * Test Case ID: TC_AUTH_DrugController_createDrugWithImage_001
+     * Test Case ID: TC-FR-15-209
      * Test Objective: Tạo thuốc mới kèm ảnh thành công
      * Input: drug JSON + image file
      * Expected Output: HTTP 200, thông tin thuốc đã tạo
@@ -261,8 +261,8 @@ class DrugControllerTest {
      */
     @Test
     @WithMockUser(roles = "ADMIN")
-    @DisplayName("TC_AUTH_DrugController_createDrugWithImage_001: Tạo thuốc mới kèm ảnh thành công")
-    void TC_AUTH_DrugController_createDrugWithImage_001() throws Exception {
+    @DisplayName("TC-FR-15-209: Tạo thuốc mới kèm ảnh thành công")
+    void TC_FR_15_209() throws Exception {
         Drug createdDrug = Drug.builder()
                 .id(1L).name("New Drug")
                 .price(BigDecimal.valueOf(20000))
@@ -284,7 +284,7 @@ class DrugControllerTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_DrugController_createDrugWithImage_002
+     * Test Case ID: TC-FR-15-210
      * Test Objective: Tạo thuốc với JSON không hợp lệ
      * Input: drug JSON không parse được
      * Expected Output: HTTP 500 (Exception từ ObjectMapper)
@@ -292,8 +292,8 @@ class DrugControllerTest {
      */
     @Test
     @WithMockUser(roles = "ADMIN")
-    @DisplayName("TC_AUTH_DrugController_createDrugWithImage_002: Tạo thuốc - JSON không hợp lệ")
-    void TC_AUTH_DrugController_createDrugWithImage_002() throws Exception {
+    @DisplayName("TC-FR-15-210: Tạo thuốc - JSON không hợp lệ")
+    void TC_FR_15_210() throws Exception {
         MockMultipartFile drugPart = new MockMultipartFile("drug", "", "application/json", "{invalid-json}".getBytes());
         MockMultipartFile imagePart = new MockMultipartFile("image", "test.jpg", "image/jpeg", "fake-image".getBytes());
 
@@ -305,7 +305,7 @@ class DrugControllerTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_DrugController_createDrugWithImage_003
+     * Test Case ID: TC-FR-15-211
      * Test Objective: Tạo thuốc khi service ném lỗi (trùng tên)
      * Input: drug JSON hợp lệ, tên thuốc đã tồn tại
      * Expected Output: HTTP 500
@@ -313,8 +313,8 @@ class DrugControllerTest {
      */
     @Test
     @WithMockUser(roles = "ADMIN")
-    @DisplayName("TC_AUTH_DrugController_createDrugWithImage_003: Tạo thuốc - service ném lỗi")
-    void TC_AUTH_DrugController_createDrugWithImage_003() throws Exception {
+    @DisplayName("TC-FR-15-211: Tạo thuốc - service ném lỗi")
+    void TC_FR_15_211() throws Exception {
         when(drugService.createDrugWithImage(any(Drug.class), any()))
                 .thenThrow(new RuntimeException("Tên thuốc đã tồn tại"));
 
@@ -332,7 +332,7 @@ class DrugControllerTest {
     // ======================== UPDATE DRUG ========================
 
     /**
-     * Test Case ID: TC_AUTH_DrugController_updateDrug_001
+     * Test Case ID: TC-FR-15-212
      * Test Objective: Cập nhật thuốc thành công
      * Input: id=1, drug JSON + image (optional)
      * Expected Output: HTTP 200, thuốc đã cập nhật
@@ -340,8 +340,8 @@ class DrugControllerTest {
      */
     @Test
     @WithMockUser(roles = "ADMIN")
-    @DisplayName("TC_AUTH_DrugController_updateDrug_001: Cập nhật thuốc thành công")
-    void TC_AUTH_DrugController_updateDrug_001() throws Exception {
+    @DisplayName("TC-FR-15-212: Cập nhật thuốc thành công")
+    void TC_FR_15_212() throws Exception {
         Drug updatedDrug = Drug.builder()
                 .id(1L).name("Updated Drug")
                 .price(BigDecimal.valueOf(25000))
@@ -361,7 +361,7 @@ class DrugControllerTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_DrugController_updateDrug_002
+     * Test Case ID: TC-FR-15-213
      * Test Objective: Cập nhật thuốc không tồn tại
      * Input: id=999, drug JSON
      * Expected Output: HTTP 500
@@ -369,8 +369,8 @@ class DrugControllerTest {
      */
     @Test
     @WithMockUser(roles = "ADMIN")
-    @DisplayName("TC_AUTH_DrugController_updateDrug_002: Cập nhật thuốc không tồn tại")
-    void TC_AUTH_DrugController_updateDrug_002() throws Exception {
+    @DisplayName("TC-FR-15-213: Cập nhật thuốc không tồn tại")
+    void TC_FR_15_213() throws Exception {
         when(drugService.updateDrugWithImage(eq(999L), any(Drug.class), any()))
                 .thenThrow(new RuntimeException("Không tìm thấy thuốc"));
 
@@ -387,7 +387,7 @@ class DrugControllerTest {
     // ======================== DELETE DRUG ========================
 
     /**
-     * Test Case ID: TC_AUTH_DrugController_deleteDrug_001
+     * Test Case ID: TC-FR-15-214
      * Test Objective: Xóa thuốc thành công
      * Input: id=1
      * Expected Output: HTTP 204 No Content
@@ -395,8 +395,8 @@ class DrugControllerTest {
      */
     @Test
     @WithMockUser(roles = "ADMIN")
-    @DisplayName("TC_AUTH_DrugController_deleteDrug_001: Xóa thuốc thành công")
-    void TC_AUTH_DrugController_deleteDrug_001() throws Exception {
+    @DisplayName("TC-FR-15-214: Xóa thuốc thành công")
+    void TC_FR_15_214() throws Exception {
         doNothing().when(drugService).deleteDrug(1L);
 
         mockMvc.perform(delete("/api/drugs/1").with(authAs("admin", "ADMIN")))
@@ -406,7 +406,7 @@ class DrugControllerTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_DrugController_deleteDrug_002
+     * Test Case ID: TC-FR-15-215
      * Test Objective: Xóa thuốc không tồn tại
      * Input: id=999
      * Expected Output: HTTP 500
@@ -414,8 +414,8 @@ class DrugControllerTest {
      */
     @Test
     @WithMockUser(roles = "ADMIN")
-    @DisplayName("TC_AUTH_DrugController_deleteDrug_002: Xóa thuốc không tồn tại")
-    void TC_AUTH_DrugController_deleteDrug_002() throws Exception {
+    @DisplayName("TC-FR-15-215: Xóa thuốc không tồn tại")
+    void TC_FR_15_215() throws Exception {
         doThrow(new RuntimeException("Không tìm thấy thuốc"))
                 .when(drugService).deleteDrug(999L);
 
@@ -424,7 +424,7 @@ class DrugControllerTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_DrugController_deleteDrug_003
+     * Test Case ID: TC-FR-15-216
      * Test Objective: Xóa thuốc đang có đơn hàng liên quan
      * Input: id=1 (thuốc có order liên kết)
      * Expected Output: HTTP 500
@@ -432,8 +432,8 @@ class DrugControllerTest {
      */
     @Test
     @WithMockUser(roles = "ADMIN")
-    @DisplayName("TC_AUTH_DrugController_deleteDrug_003: Xóa thuốc đang có đơn hàng liên kết")
-    void TC_AUTH_DrugController_deleteDrug_003() throws Exception {
+    @DisplayName("TC-FR-15-216: Xóa thuốc đang có đơn hàng liên kết")
+    void TC_FR_15_216() throws Exception {
         doThrow(new RuntimeException("Không thể xóa thuốc đang có đơn hàng"))
                 .when(drugService).deleteDrug(1L);
 

@@ -27,7 +27,7 @@ def _create_test_image_bytes():
 # GET /api/v1/health
 # ============================================================
 
-# Test Case ID: TC_SKIN_Routes_health_001
+# Test Case ID: TC-FR-07-001outes_health_001
 # Test Objective: Health endpoint trả 200 + {"status": "ok"}
 # Input: GET /api/v1/health
 # Expected Output: HTTP 200, JSON {"status": "ok"}
@@ -39,7 +39,7 @@ def test_health_endpoint(client):
     assert resp.get_json() == {"status": "ok"}
 
 
-# Test Case ID: TC_SKIN_Routes_health_002
+# Test Case ID: TC-FR-07-001outes_health_002
 # Test Objective: Root endpoint trả 200 "OK"
 # Input: GET /
 # Expected Output: HTTP 200, body "OK"
@@ -55,7 +55,7 @@ def test_root_endpoint(client):
 # POST /api/v1/analyze – auth checks
 # ============================================================
 
-# Test Case ID: TC_SKIN_Routes_analyze_001
+# Test Case ID: TC-FR-07-001outes_analyze_001
 # Test Objective: Trả 401 khi không có JWT
 # Input: POST /api/v1/analyze không header Authorization
 # Expected Output: HTTP 401 hoặc 422
@@ -66,7 +66,7 @@ def test_analyze_missing_jwt(client):
     assert resp.status_code in (401, 422)
 
 
-# Test Case ID: TC_SKIN_Routes_analyze_002
+# Test Case ID: TC-FR-07-001outes_analyze_002
 # Test Objective: Trả 400 khi không upload ảnh
 # Input: POST /api/v1/analyze với JWT nhưng không có file
 # Expected Output: HTTP 400, "No image uploaded"
@@ -82,7 +82,7 @@ def test_analyze_no_image(client, mock_jwt_identity):
 # POST /api/v1/analyze – no detections (da bình thường)
 # ============================================================
 
-# Test Case ID: TC_SKIN_Routes_analyze_003
+# Test Case ID: TC-FR-07-001outes_analyze_003
 # Test Objective: Trả kết quả trống khi detection không phát hiện gì
 # Input: Ảnh hợp lệ, detection model trả []
 # Expected Output: HTTP 200, detection=[], total_detections=0
@@ -114,7 +114,7 @@ def test_analyze_no_detections(mock_det_cls, mock_b64, mock_upload, client, mock
 # POST /api/v1/analyze – có detections (phát hiện vấn đề)
 # ============================================================
 
-# Test Case ID: TC_SKIN_Routes_analyze_004
+# Test Case ID: TC-FR-07-001outes_analyze_004
 # Test Objective: Trả kết quả phân tích đầy đủ khi phát hiện vấn đề da
 # Input: Ảnh hợp lệ, detection trả 1 kết quả không cần classification
 # Expected Output: HTTP 200, detection có 1 phần tử, annotated_image_url có giá trị
@@ -154,7 +154,7 @@ def test_analyze_with_detections_no_classification(
     assert data["detection"][0]["requires_classification"] is False
 
 
-# Test Case ID: TC_SKIN_Routes_analyze_005
+# Test Case ID: TC-FR-07-001outes_analyze_005
 # Test Objective: Trả kết quả với classification khi class cần phân loại thêm
 # Input: Detection trả class "acne scar" (trong CLASSES_REQUIRING_CLASSIFICATION)
 # Expected Output: detection[0].requires_classification=True, disease_prediction có giá trị

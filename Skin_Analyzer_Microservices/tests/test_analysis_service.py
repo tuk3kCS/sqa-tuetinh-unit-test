@@ -49,7 +49,7 @@ def _seed_entity(session, user_id=1, diagnosis="eczema", confidence=0.85):
 # save_analysis_from_request
 # ============================================================
 
-# Test Case ID: TC_SKIN_AnalysisService_save_analysis_from_request_001
+# Test Case ID: TC-FR-07-001nalysisService_save_analysis_from_request_001
 # Test Objective: Lưu thành công khi DTO hợp lệ có detection
 # Input: user_id=1, dto hợp lệ với detection=[{detected_class, confidence}]
 # Expected Output: Trả về AnalysisResult, DB có bản ghi tương ứng
@@ -71,7 +71,7 @@ def test_analysis_service_save_analysis_from_request_valid_dto(app, db_session):
         assert entity.ai_diagnosis == "acne"
 
 
-# Test Case ID: TC_SKIN_AnalysisService_save_analysis_from_request_002
+# Test Case ID: TC-FR-07-001nalysisService_save_analysis_from_request_002
 # Test Objective: Lưu thành công khi detection rỗng (không phát hiện bệnh)
 # Input: user_id=2, dto.detection = []
 # Expected Output: AnalysisResult có aiDiagnosis = None, aiConfidence = None
@@ -91,7 +91,7 @@ def test_analysis_service_save_analysis_from_request_empty_detection(app, db_ses
         assert entity.ai_diagnosis is None
 
 
-# Test Case ID: TC_SKIN_AnalysisService_save_analysis_from_request_003
+# Test Case ID: TC-FR-07-001nalysisService_save_analysis_from_request_003
 # Test Objective: Lưu DTO có nhiều detections – chỉ lấy cái đầu tiên
 # Input: dto.detection có 3 phần tử
 # Expected Output: AnalysisResult chỉ chứa detection[0]
@@ -112,7 +112,7 @@ def test_analysis_service_save_analysis_from_request_multiple_detections(app, db
         assert result.aiConfidence == 0.9
 
 
-# Test Case ID: TC_SKIN_AnalysisService_save_analysis_from_request_004
+# Test Case ID: TC-FR-07-001nalysisService_save_analysis_from_request_004
 # Test Objective: Kiểm tra suggestions được lưu đúng format JSON
 # Input: lifestyle_suggestions chứa lifestyle và diet arrays
 # Expected Output: entity.suggestions trùng khớp dữ liệu đầu vào
@@ -133,7 +133,7 @@ def test_analysis_service_save_analysis_from_request_suggestions_saved(app, db_s
 # update_doctor_note
 # ============================================================
 
-# Test Case ID: TC_SKIN_AnalysisService_update_doctor_note_001
+# Test Case ID: TC-FR-07-001nalysisService_update_doctor_note_001
 # Test Objective: Cập nhật ghi chú bác sĩ thành công khi record thuộc đúng user
 # Input: record_id hợp lệ, doctor_note mới, user_id chính chủ
 # Expected Output: Trả về AnalysisResult có doctorNote đã cập nhật
@@ -158,7 +158,7 @@ def test_analysis_service_update_doctor_note_valid(app, db_session):
         assert refreshed.doctor_updated_at is not None
 
 
-# Test Case ID: TC_SKIN_AnalysisService_update_doctor_note_002
+# Test Case ID: TC-FR-07-001nalysisService_update_doctor_note_002
 # Test Objective: Trả None khi record_id không tồn tại
 # Input: record_id=999999 (không tồn tại)
 # Expected Output: None
@@ -174,7 +174,7 @@ def test_analysis_service_update_doctor_note_not_found(app, db_session):
         assert result is None
 
 
-# Test Case ID: TC_SKIN_AnalysisService_update_doctor_note_003
+# Test Case ID: TC-FR-07-001nalysisService_update_doctor_note_003
 # Test Objective: Trả None khi user_id không khớp chủ sở hữu record
 # Input: record thuộc user_id=10, gọi với user_id=99
 # Expected Output: None
@@ -195,7 +195,7 @@ def test_analysis_service_update_doctor_note_wrong_user(app, db_session):
         assert refreshed.doctor_note is None
 
 
-# Test Case ID: TC_SKIN_AnalysisService_update_doctor_note_004
+# Test Case ID: TC-FR-07-001nalysisService_update_doctor_note_004
 # Test Objective: Cập nhật lại doctor_note đã có (overwrite)
 # Input: record đã có doctor_note, gọi lại với note mới
 # Expected Output: doctor_note được ghi đè, doctor_updated_at cập nhật
@@ -219,7 +219,7 @@ def test_analysis_service_update_doctor_note_overwrite(app, db_session):
 # get_history_by_user
 # ============================================================
 
-# Test Case ID: TC_SKIN_AnalysisService_get_history_by_user_001
+# Test Case ID: TC-FR-07-001nalysisService_get_history_by_user_001
 # Test Objective: Trả danh sách AnalysisResult khi user có lịch sử
 # Input: user_id=30 có 2 bản ghi trong DB
 # Expected Output: List 2 AnalysisResult, sắp xếp mới nhất trước
@@ -248,7 +248,7 @@ def test_analysis_service_get_history_by_user_with_data(app, db_session):
         assert results[1].aiDiagnosis == "acne"
 
 
-# Test Case ID: TC_SKIN_AnalysisService_get_history_by_user_002
+# Test Case ID: TC-FR-07-001nalysisService_get_history_by_user_002
 # Test Objective: Trả list rỗng khi user không có lịch sử
 # Input: user_id=999 không có bản ghi
 # Expected Output: []
@@ -260,7 +260,7 @@ def test_analysis_service_get_history_by_user_empty(app, db_session):
         assert results == []
 
 
-# Test Case ID: TC_SKIN_AnalysisService_get_history_by_user_003
+# Test Case ID: TC-FR-07-001nalysisService_get_history_by_user_003
 # Test Objective: Không trả bản ghi của user khác (isolation)
 # Input: DB có bản ghi user_id=40 và user_id=41, query user_id=40
 # Expected Output: Chỉ trả bản ghi của user 40

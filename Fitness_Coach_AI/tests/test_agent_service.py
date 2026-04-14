@@ -12,7 +12,7 @@ from app.services.agent_service import AgentService
 # AgentService.chat
 # ============================================================
 
-# Test Case ID: TC_FITNESS_AgentService_chat_001
+# Test Case ID: TC-FR-00-001gentService_chat_001
 # Test Objective: Kiểm tra chat delegate tới handle_chat đúng tham số
 # Input: llm mock, user_id=1, message="Xin chào"
 # Expected Output: Kết quả từ handle_chat
@@ -26,7 +26,7 @@ def test_agent_service_chat(mock_handle_chat):
     mock_handle_chat.assert_called_once_with(llm=llm, user_id=1, message="Xin chào")
 
 
-# Test Case ID: TC_FITNESS_AgentService_chat_002
+# Test Case ID: TC-FR-00-001gentService_chat_002
 # Test Objective: Kiểm tra chat propagate exception từ handle_chat
 # Input: handle_chat raise Exception
 # Expected Output: Exception propagate lên
@@ -42,7 +42,7 @@ def test_agent_service_chat_error(mock_handle_chat):
 # AgentService.get_meal_plan
 # ============================================================
 
-# Test Case ID: TC_FITNESS_AgentService_get_meal_plan_001
+# Test Case ID: TC-FR-00-001gentService_get_meal_plan_001
 # Test Objective: Kiểm tra lấy meal plan khi có plan trong state
 # Input: user_id=1, state chứa meal_plan
 # Expected Output: Dict type="message" với plan data
@@ -62,7 +62,7 @@ def test_agent_service_get_meal_plan_found(mock_state):
     assert result["start_date"] == "2026-04-13"
 
 
-# Test Case ID: TC_FITNESS_AgentService_get_meal_plan_002
+# Test Case ID: TC-FR-00-001gentService_get_meal_plan_002
 # Test Objective: Kiểm tra khi không có meal plan → no_plan
 # Input: user_id=1, state rỗng
 # Expected Output: Dict type="no_plan"
@@ -74,7 +74,7 @@ def test_agent_service_get_meal_plan_not_found(mock_state):
     assert result["type"] == "no_plan"
 
 
-# Test Case ID: TC_FITNESS_AgentService_get_meal_plan_003
+# Test Case ID: TC-FR-00-001gentService_get_meal_plan_003
 # Test Objective: Kiểm tra khi state có meal_plan nhưng giá trị None
 # Input: state={"meal_plan": None}
 # Expected Output: Dict type="no_plan"
@@ -90,7 +90,7 @@ def test_agent_service_get_meal_plan_none_value(mock_state):
 # AgentService.create_meal_plan
 # ============================================================
 
-# Test Case ID: TC_FITNESS_AgentService_create_meal_plan_001
+# Test Case ID: TC-FR-00-001gentService_create_meal_plan_001
 # Test Objective: Kiểm tra tạo meal plan delegate tới core.create_meal_plan
 # Input: llm, user_id, goal_input DTO
 # Expected Output: Kết quả từ create_meal_plan
@@ -109,7 +109,7 @@ def test_agent_service_create_meal_plan(mock_create):
 # AgentService.get_workout_plan
 # ============================================================
 
-# Test Case ID: TC_FITNESS_AgentService_get_workout_plan_001
+# Test Case ID: TC-FR-00-001gentService_get_workout_plan_001
 # Test Objective: Kiểm tra lấy workout plan khi tồn tại
 # Input: user_id=1, state chứa workout_plan
 # Expected Output: Dict type="message" với plan data
@@ -128,7 +128,7 @@ def test_agent_service_get_workout_plan_found(mock_state):
     assert result["plan"] == {"Monday": {}}
 
 
-# Test Case ID: TC_FITNESS_AgentService_get_workout_plan_002
+# Test Case ID: TC-FR-00-001gentService_get_workout_plan_002
 # Test Objective: Kiểm tra khi không có workout plan → no_plan
 # Input: user_id=1, state rỗng
 # Expected Output: Dict type="no_plan"
@@ -144,7 +144,7 @@ def test_agent_service_get_workout_plan_not_found(mock_state):
 # AgentService.create_workout_plan
 # ============================================================
 
-# Test Case ID: TC_FITNESS_AgentService_create_workout_plan_001
+# Test Case ID: TC-FR-00-001gentService_create_workout_plan_001
 # Test Objective: Kiểm tra tạo workout plan delegate tới core.create_workout_plan
 # Input: llm, user_id, profile_input DTO
 # Expected Output: Kết quả từ create_workout_plan

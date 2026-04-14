@@ -55,15 +55,15 @@ class DrugServiceImplTest {
     // ==================== CREATE DRUG ====================
 
     /**
-     * Test Case ID: TC_AUTH_DrugServiceImpl_createDrug_001
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Tạo thuốc mới thành công
      * Input: Drug entity hợp lệ
      * Expected Output: Drug được lưu vào DB
      * Notes: CheckDB – drug mới xuất hiện trong DB
      */
     @Test
-    @DisplayName("TC_AUTH_DrugServiceImpl_createDrug_001: Tạo thuốc thành công")
-    void TC_AUTH_DrugServiceImpl_createDrug_001() {
+    @DisplayName("TC-FR-12-015: Tạo thuốc thành công")
+    void TC_FR_12_015() {
         when(drugRepository.save(drug)).thenReturn(drug);
 
         Drug result = drugService.createDrug(drug);
@@ -73,15 +73,15 @@ class DrugServiceImplTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_DrugServiceImpl_createDrug_002
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Tạo thuốc với sections, set quan hệ drug cho từng section
      * Input: Drug có danh sách sections
      * Expected Output: Mỗi section có drug được gán đúng
      * Notes: Kiểm tra nhánh drug.getSections() != null
      */
     @Test
-    @DisplayName("TC_AUTH_DrugServiceImpl_createDrug_002: Tạo thuốc có sections → set drug cho sections")
-    void TC_AUTH_DrugServiceImpl_createDrug_002() {
+    @DisplayName("TC-FR-14-040: Tạo thuốc có sections → set drug cho sections")
+    void TC_FR_14_040() {
         Section section = new Section();
         section.setTitle("Composition");
         drug.setSections(new ArrayList<>(List.of(section)));
@@ -94,15 +94,15 @@ class DrugServiceImplTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_DrugServiceImpl_createDrug_003
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Tạo thuốc với sections = null
      * Input: Drug có sections = null
      * Expected Output: Không throw exception
      * Notes: Kiểm tra nhánh drug.getSections() == null
      */
     @Test
-    @DisplayName("TC_AUTH_DrugServiceImpl_createDrug_003: Sections null → không lỗi")
-    void TC_AUTH_DrugServiceImpl_createDrug_003() {
+    @DisplayName("TC-FR-15-001: Sections null → không lỗi")
+    void TC_FR_15_001() {
         drug.setSections(null);
         when(drugRepository.save(drug)).thenReturn(drug);
 
@@ -114,15 +114,15 @@ class DrugServiceImplTest {
     // ==================== CREATE DRUG WITH IMAGE ====================
 
     /**
-     * Test Case ID: TC_AUTH_DrugServiceImpl_createDrugWithImage_001
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Tạo thuốc có upload ảnh thành công
      * Input: Drug + MultipartFile hợp lệ
      * Expected Output: Drug có image URL từ Cloudinary
      * Notes: CheckDB – drug.image = URL trả về từ cloudinary
      */
     @Test
-    @DisplayName("TC_AUTH_DrugServiceImpl_createDrugWithImage_001: Upload ảnh thành công")
-    void TC_AUTH_DrugServiceImpl_createDrugWithImage_001() {
+    @DisplayName("TC-FR-15-002: Upload ảnh thành công")
+    void TC_FR_15_002() {
         MultipartFile mockFile = mock(MultipartFile.class);
         when(cloudinaryService.uploadImage(mockFile)).thenReturn("https://cloudinary.com/img.jpg");
         when(drugRepository.save(any(Drug.class))).thenAnswer(inv -> inv.getArgument(0));
@@ -135,15 +135,15 @@ class DrugServiceImplTest {
     // ==================== UPDATE DRUG ACTIVE ====================
 
     /**
-     * Test Case ID: TC_AUTH_DrugServiceImpl_updateDrugActive_001
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Cập nhật trạng thái active thành công
      * Input: Drug id hợp lệ, active = false
      * Expected Output: Drug.isActive = false
      * Notes: CheckDB – isActive thay đổi
      */
     @Test
-    @DisplayName("TC_AUTH_DrugServiceImpl_updateDrugActive_001: Set active = false thành công")
-    void TC_AUTH_DrugServiceImpl_updateDrugActive_001() {
+    @DisplayName("TC-FR-15-003: Set active = false thành công")
+    void TC_FR_15_003() {
         when(drugRepository.findById(1L)).thenReturn(Optional.of(drug));
         when(drugRepository.save(drug)).thenReturn(drug);
 
@@ -153,15 +153,15 @@ class DrugServiceImplTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_DrugServiceImpl_updateDrugActive_002
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Cập nhật active thất bại khi drug không tồn tại
      * Input: Drug id = 999
      * Expected Output: RuntimeException "Không tìm thấy thuốc"
      * Notes: Kiểm tra nhánh findById trả về empty
      */
     @Test
-    @DisplayName("TC_AUTH_DrugServiceImpl_updateDrugActive_002: Drug không tồn tại → exception")
-    void TC_AUTH_DrugServiceImpl_updateDrugActive_002() {
+    @DisplayName("TC-FR-15-004: Drug không tồn tại → exception")
+    void TC_FR_15_004() {
         when(drugRepository.findById(999L)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> drugService.updateDrugActive(999L, true))
@@ -172,15 +172,15 @@ class DrugServiceImplTest {
     // ==================== UPDATE DRUG WITH IMAGE ====================
 
     /**
-     * Test Case ID: TC_AUTH_DrugServiceImpl_updateDrugWithImage_001
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Cập nhật thuốc có ảnh mới thành công
      * Input: Drug id hợp lệ, có ảnh mới upload
      * Expected Output: Drug.image = URL mới, các field cơ bản được cập nhật
      * Notes: Kiểm tra nhánh image != null && !image.isEmpty()
      */
     @Test
-    @DisplayName("TC_AUTH_DrugServiceImpl_updateDrugWithImage_001: Cập nhật có ảnh mới")
-    void TC_AUTH_DrugServiceImpl_updateDrugWithImage_001() {
+    @DisplayName("TC-FR-15-005: Cập nhật có ảnh mới")
+    void TC_FR_15_005() {
         Drug updated = Drug.builder()
                 .name("Updated Name").title("Updated Title")
                 .price(BigDecimal.valueOf(60000)).importPrice(BigDecimal.valueOf(35000))
@@ -200,15 +200,15 @@ class DrugServiceImplTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_DrugServiceImpl_updateDrugWithImage_002
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Cập nhật thuốc không có ảnh mới (giữ ảnh cũ)
      * Input: image = null
      * Expected Output: Drug.image giữ nguyên
      * Notes: Kiểm tra nhánh image == null
      */
     @Test
-    @DisplayName("TC_AUTH_DrugServiceImpl_updateDrugWithImage_002: Không có ảnh → giữ ảnh cũ")
-    void TC_AUTH_DrugServiceImpl_updateDrugWithImage_002() {
+    @DisplayName("TC-FR-15-006: Không có ảnh → giữ ảnh cũ")
+    void TC_FR_15_006() {
         drug.setImage("old-image.jpg");
         Drug updated = Drug.builder()
                 .name("X").title("Y")
@@ -225,15 +225,15 @@ class DrugServiceImplTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_DrugServiceImpl_updateDrugWithImage_003
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Cập nhật thuốc thất bại khi drug không tồn tại
      * Input: id = 999
      * Expected Output: RuntimeException "Drug not found"
      * Notes: Kiểm tra nhánh findById trả về empty
      */
     @Test
-    @DisplayName("TC_AUTH_DrugServiceImpl_updateDrugWithImage_003: Drug không tồn tại → exception")
-    void TC_AUTH_DrugServiceImpl_updateDrugWithImage_003() {
+    @DisplayName("TC-FR-15-007: Drug không tồn tại → exception")
+    void TC_FR_15_007() {
         when(drugRepository.findById(999L)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> drugService.updateDrugWithImage(999L, drug, null))
@@ -244,15 +244,15 @@ class DrugServiceImplTest {
     // ==================== DELETE DRUG ====================
 
     /**
-     * Test Case ID: TC_AUTH_DrugServiceImpl_deleteDrug_001
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Xóa thuốc thành công
      * Input: Drug id tồn tại
      * Expected Output: deleteById được gọi
      * Notes: CheckDB – drug bị xóa khỏi DB
      */
     @Test
-    @DisplayName("TC_AUTH_DrugServiceImpl_deleteDrug_001: Xóa thành công")
-    void TC_AUTH_DrugServiceImpl_deleteDrug_001() {
+    @DisplayName("TC-FR-15-008: Xóa thành công")
+    void TC_FR_15_008() {
         when(drugRepository.existsById(1L)).thenReturn(true);
 
         drugService.deleteDrug(1L);
@@ -261,15 +261,15 @@ class DrugServiceImplTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_DrugServiceImpl_deleteDrug_002
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Xóa thuốc thất bại khi không tồn tại
      * Input: Drug id không tồn tại
      * Expected Output: RuntimeException "Drug not found"
      * Notes: Kiểm tra nhánh existsById == false
      */
     @Test
-    @DisplayName("TC_AUTH_DrugServiceImpl_deleteDrug_002: Drug không tồn tại → exception")
-    void TC_AUTH_DrugServiceImpl_deleteDrug_002() {
+    @DisplayName("TC-FR-15-009: Drug không tồn tại → exception")
+    void TC_FR_15_009() {
         when(drugRepository.existsById(999L)).thenReturn(false);
 
         assertThatThrownBy(() -> drugService.deleteDrug(999L))
@@ -280,15 +280,15 @@ class DrugServiceImplTest {
     // ==================== GET DRUG BY ID ====================
 
     /**
-     * Test Case ID: TC_AUTH_DrugServiceImpl_getDrugById_001
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Lấy thuốc theo id thành công
      * Input: id hợp lệ
      * Expected Output: Drug entity
      * Notes: Happy path
      */
     @Test
-    @DisplayName("TC_AUTH_DrugServiceImpl_getDrugById_001: Tìm thuốc thành công")
-    void TC_AUTH_DrugServiceImpl_getDrugById_001() {
+    @DisplayName("TC-FR-15-010: Tìm thuốc thành công")
+    void TC_FR_15_010() {
         when(drugRepository.findById(1L)).thenReturn(Optional.of(drug));
 
         Drug result = drugService.getDrugById(1L);
@@ -297,15 +297,15 @@ class DrugServiceImplTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_DrugServiceImpl_getDrugById_002
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Lấy thuốc thất bại khi id không tồn tại
      * Input: id = 999
      * Expected Output: RuntimeException "Drug not found"
      * Notes: Kiểm tra nhánh findById empty
      */
     @Test
-    @DisplayName("TC_AUTH_DrugServiceImpl_getDrugById_002: Drug không tồn tại → exception")
-    void TC_AUTH_DrugServiceImpl_getDrugById_002() {
+    @DisplayName("TC-FR-15-011: Drug không tồn tại → exception")
+    void TC_FR_15_011() {
         when(drugRepository.findById(999L)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> drugService.getDrugById(999L))
@@ -316,15 +316,15 @@ class DrugServiceImplTest {
     // ==================== GET DRUGS (PAGED) ====================
 
     /**
-     * Test Case ID: TC_AUTH_DrugServiceImpl_getDrugs_001
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Lấy danh sách thuốc phân trang cho admin
      * Input: isAdmin = true, pageable hợp lệ
      * Expected Output: Page<DrugResponse> có nội dung
      * Notes: Admin không bị ép filter isActive = true
      */
     @Test
-    @DisplayName("TC_AUTH_DrugServiceImpl_getDrugs_001: Admin xem danh sách thuốc")
-    void TC_AUTH_DrugServiceImpl_getDrugs_001() {
+    @DisplayName("TC-FR-15-012: Admin xem danh sách thuốc")
+    void TC_FR_15_012() {
         DrugFilter filter = new DrugFilter();
         Pageable pageable = PageRequest.of(0, 10, Sort.by("id").descending());
         Page<Drug> drugPage = new PageImpl<>(List.of(drug), pageable, 1);
@@ -339,15 +339,15 @@ class DrugServiceImplTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_DrugServiceImpl_getDrugs_002
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Lấy danh sách thuốc cho user – chỉ thấy active
      * Input: isAdmin = false
      * Expected Output: filter.isActive tự động set true
      * Notes: Kiểm tra nhánh !isAdmin → setIsActive(true)
      */
     @Test
-    @DisplayName("TC_AUTH_DrugServiceImpl_getDrugs_002: User chỉ thấy thuốc active")
-    void TC_AUTH_DrugServiceImpl_getDrugs_002() {
+    @DisplayName("TC-FR-15-013: User chỉ thấy thuốc active")
+    void TC_FR_15_013() {
         DrugFilter filter = new DrugFilter();
         Pageable pageable = PageRequest.of(0, 10, Sort.by("id").descending());
         Page<Drug> drugPage = new PageImpl<>(List.of(drug), pageable, 1);
@@ -361,15 +361,15 @@ class DrugServiceImplTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_DrugServiceImpl_getDrugs_003
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Pageable null → sử dụng default sort
      * Input: pageable = null
      * Expected Output: Không throw exception, default sort by id desc
      * Notes: Kiểm tra nhánh pageable == null
      */
     @Test
-    @DisplayName("TC_AUTH_DrugServiceImpl_getDrugs_003: Pageable null → default")
-    void TC_AUTH_DrugServiceImpl_getDrugs_003() {
+    @DisplayName("TC-FR-15-014: Pageable null → default")
+    void TC_FR_15_014() {
         DrugFilter filter = new DrugFilter();
         Page<Drug> drugPage = new PageImpl<>(List.of(drug));
 
@@ -384,15 +384,15 @@ class DrugServiceImplTest {
     // ==================== SUGGEST NAMES ====================
 
     /**
-     * Test Case ID: TC_AUTH_DrugServiceImpl_suggestNames_001
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Gợi ý tên thuốc thành công
      * Input: q = "para", limit = 5
      * Expected Output: Danh sách tên thuốc chứa "para"
      * Notes: Happy path
      */
     @Test
-    @DisplayName("TC_AUTH_DrugServiceImpl_suggestNames_001: Gợi ý tên thành công")
-    void TC_AUTH_DrugServiceImpl_suggestNames_001() {
+    @DisplayName("TC-FR-15-015: Gợi ý tên thành công")
+    void TC_FR_15_015() {
         when(drugRepository.suggestNames(eq("para"), any(PageRequest.class)))
                 .thenReturn(List.of("Paracetamol", "Paracetamol 500"));
 
@@ -402,15 +402,15 @@ class DrugServiceImplTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_DrugServiceImpl_suggestNames_002
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Gợi ý với q = null → sử dụng chuỗi rỗng
      * Input: q = null, limit = 10
      * Expected Output: Không throw exception
      * Notes: Kiểm tra nhánh q == null → ""
      */
     @Test
-    @DisplayName("TC_AUTH_DrugServiceImpl_suggestNames_002: q null → sử dụng chuỗi rỗng")
-    void TC_AUTH_DrugServiceImpl_suggestNames_002() {
+    @DisplayName("TC-FR-15-016: q null → sử dụng chuỗi rỗng")
+    void TC_FR_15_016() {
         when(drugRepository.suggestNames(eq(""), any(PageRequest.class)))
                 .thenReturn(List.of());
 
@@ -420,15 +420,15 @@ class DrugServiceImplTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_DrugServiceImpl_suggestNames_003
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Limit <= 0 → sử dụng default 10
      * Input: limit = 0
      * Expected Output: PageRequest.of(0, 10) được sử dụng
      * Notes: Kiểm tra nhánh limit <= 0
      */
     @Test
-    @DisplayName("TC_AUTH_DrugServiceImpl_suggestNames_003: Limit <= 0 → default 10")
-    void TC_AUTH_DrugServiceImpl_suggestNames_003() {
+    @DisplayName("TC-FR-15-018: Limit <= 0 → default 10")
+    void TC_FR_15_018() {
         when(drugRepository.suggestNames(anyString(), any(PageRequest.class)))
                 .thenReturn(List.of());
 
@@ -438,15 +438,15 @@ class DrugServiceImplTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_DrugServiceImpl_suggestNames_004
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Limit > 20 → sử dụng default 10
      * Input: limit = 50
      * Expected Output: PageRequest.of(0, 10) được sử dụng
      * Notes: Kiểm tra nhánh limit > 20
      */
     @Test
-    @DisplayName("TC_AUTH_DrugServiceImpl_suggestNames_004: Limit > 20 → default 10")
-    void TC_AUTH_DrugServiceImpl_suggestNames_004() {
+    @DisplayName("TC-FR-15-022: Limit > 20 → default 10")
+    void TC_FR_15_022() {
         when(drugRepository.suggestNames(anyString(), any(PageRequest.class)))
                 .thenReturn(List.of());
 

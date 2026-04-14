@@ -57,7 +57,7 @@ def _setup_user_and_log(session, user_id=1):
 # POST /food-records
 # ============================================================
 
-# Test Case ID: TC_FOOD_CalorieController_add_food_records_001
+# Test Case ID: TC-FR-00-001alorieController_add_food_records_001
 # Test Objective: Thêm food records thành công qua endpoint
 # Input: POST với JSON chứa foods, JWT hợp lệ
 # Expected Output: status 201, dữ liệu thành công
@@ -78,7 +78,7 @@ def test_add_food_records_success(app, client, db_session):
     assert data["items_added"] == 1
 
 
-# Test Case ID: TC_FOOD_CalorieController_add_food_records_002
+# Test Case ID: TC-FR-00-001alorieController_add_food_records_002
 # Test Objective: Trả lỗi 401 khi không có JWT
 # Input: POST không có Authorization header
 # Expected Output: status 401
@@ -92,7 +92,7 @@ def test_add_food_records_no_jwt(app, client, db_session):
     assert response.status_code == 401
 
 
-# Test Case ID: TC_FOOD_CalorieController_add_food_records_003
+# Test Case ID: TC-FR-00-001alorieController_add_food_records_003
 # Test Objective: Trả lỗi 400 khi foods rỗng
 # Input: POST với foods=[]
 # Expected Output: status 400, error message
@@ -114,7 +114,7 @@ def test_add_food_records_empty_foods(app, client, db_session):
 # PUT /food-records/<id>
 # ============================================================
 
-# Test Case ID: TC_FOOD_CalorieController_update_food_record_001
+# Test Case ID: TC-FR-00-001alorieController_update_food_record_001
 # Test Objective: Cập nhật food record thành công
 # Input: PUT với food_name mới, JWT hợp lệ
 # Expected Output: status 200, food_name đã thay đổi
@@ -138,7 +138,7 @@ def test_update_food_record_success(app, client, db_session):
     assert response.status_code == 200
 
 
-# Test Case ID: TC_FOOD_CalorieController_update_food_record_002
+# Test Case ID: TC-FR-00-001alorieController_update_food_record_002
 # Test Objective: Trả lỗi 404 khi record không tồn tại
 # Input: PUT với id=9999
 # Expected Output: status 404
@@ -158,7 +158,7 @@ def test_update_food_record_not_found(app, client, db_session):
 # GET /food-records
 # ============================================================
 
-# Test Case ID: TC_FOOD_CalorieController_get_food_records_001
+# Test Case ID: TC-FR-00-001alorieController_get_food_records_001
 # Test Objective: Lấy food records thành công
 # Input: GET với log_date, JWT hợp lệ
 # Expected Output: status 200, danh sách foods
@@ -186,7 +186,7 @@ def test_get_food_records_success(app, client, db_session):
     assert len(data["foods"]) >= 1
 
 
-# Test Case ID: TC_FOOD_CalorieController_get_food_records_002
+# Test Case ID: TC-FR-00-001alorieController_get_food_records_002
 # Test Objective: Trả 401 khi không có JWT
 # Input: GET không có Authorization header
 # Expected Output: status 401
@@ -201,7 +201,7 @@ def test_get_food_records_no_jwt(app, client, db_session):
 # DELETE /food-records/<id>
 # ============================================================
 
-# Test Case ID: TC_FOOD_CalorieController_delete_food_record_001
+# Test Case ID: TC-FR-00-001alorieController_delete_food_record_001
 # Test Objective: Xóa food record thành công
 # Input: DELETE với id hợp lệ, JWT hợp lệ
 # Expected Output: status 200
@@ -225,7 +225,7 @@ def test_delete_food_record_success(app, client, db_session):
     assert response.status_code == 200
 
 
-# Test Case ID: TC_FOOD_CalorieController_delete_food_record_002
+# Test Case ID: TC-FR-00-001alorieController_delete_food_record_002
 # Test Objective: Trả lỗi 404 khi record không tồn tại
 # Input: DELETE với id=9999
 # Expected Output: status 404

@@ -36,7 +36,7 @@ def _create_image_file():
 # GET /detect - Health Check
 # ============================================================
 
-# Test Case ID: TC_FOOD_FoodDetectionController_detect_001
+# Test Case ID: TC-FR-00-001oodDetectionController_detect_001
 # Test Objective: Health check endpoint trả "ready"
 # Input: GET /api/v2/detect với JWT
 # Expected Output: status 200, {"status": "ready"}
@@ -55,7 +55,7 @@ def test_detect_health_check(app, client, db_session):
 # POST /detect - Valid Image
 # ============================================================
 
-# Test Case ID: TC_FOOD_FoodDetectionController_detect_002
+# Test Case ID: TC-FR-00-001oodDetectionController_detect_002
 # Test Objective: Phát hiện thực phẩm thành công với ảnh hợp lệ
 # Input: POST với file ảnh JPEG, FoodDetectionService trả detections
 # Expected Output: status 200, detection list, nutrition_analysis
@@ -101,7 +101,7 @@ def test_detect_valid_image_with_detections(mock_fds_cls, mock_ns_cls, app, clie
     assert data["nutrition_analysis"]["items_count"] == 1
 
 
-# Test Case ID: TC_FOOD_FoodDetectionController_detect_003
+# Test Case ID: TC-FR-00-001oodDetectionController_detect_003
 # Test Objective: Trả lỗi 400 khi không upload ảnh
 # Input: POST không có file image
 # Expected Output: status 400, error "No image uploaded"
@@ -122,7 +122,7 @@ def test_detect_no_image(app, client, db_session):
     assert data["error"] == "No image uploaded"
 
 
-# Test Case ID: TC_FOOD_FoodDetectionController_detect_004
+# Test Case ID: TC-FR-00-001oodDetectionController_detect_004
 # Test Objective: Trả kết quả rỗng khi không phát hiện thực phẩm
 # Input: POST ảnh hợp lệ, FoodDetectionService trả rỗng
 # Expected Output: status 200, detection=[], total_nutrition Calories=0
@@ -152,7 +152,7 @@ def test_detect_no_detections(mock_fds_cls, app, client, db_session):
     assert data["nutrition_analysis"]["items_count"] == 0
 
 
-# Test Case ID: TC_FOOD_FoodDetectionController_detect_005
+# Test Case ID: TC-FR-00-001oodDetectionController_detect_005
 # Test Objective: Trả 401 khi không có JWT
 # Input: POST không có Authorization header
 # Expected Output: status 401
@@ -170,7 +170,7 @@ def test_detect_no_jwt(app, client, db_session):
     assert response.status_code == 401
 
 
-# Test Case ID: TC_FOOD_FoodDetectionController_detect_006
+# Test Case ID: TC-FR-00-001oodDetectionController_detect_006
 # Test Objective: Trả 502 khi detection service bị lỗi
 # Input: POST ảnh hợp lệ, detect_foods raise Exception
 # Expected Output: status 502, error message

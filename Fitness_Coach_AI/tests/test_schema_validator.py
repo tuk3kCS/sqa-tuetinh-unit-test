@@ -23,7 +23,7 @@ SAMPLE_SCHEMA = {
 # validate_with_schema – JSON string input
 # ============================================================
 
-# Test Case ID: TC_FITNESS_SchemaValidator_validate_with_schema_001
+# Test Case ID: TC-FR-00-001chemaValidator_validate_with_schema_001
 # Test Objective: Kiểm tra JSON string hợp lệ khớp schema
 # Input: JSON string khớp hoàn toàn với schema
 # Expected Output: Dict chứa đúng giá trị
@@ -35,7 +35,7 @@ def test_validate_with_schema_valid_json_string():
     assert result["category"] == "general"
 
 
-# Test Case ID: TC_FITNESS_SchemaValidator_validate_with_schema_002
+# Test Case ID: TC-FR-00-001chemaValidator_validate_with_schema_002
 # Test Objective: Kiểm tra JSON string hợp lệ nhưng vi phạm schema
 # Input: category="invalid_value" (không nằm trong enum)
 # Expected Output: Raise ValueError "Schema validation failed"
@@ -46,7 +46,7 @@ def test_validate_with_schema_schema_violation():
         validate_with_schema(raw, SAMPLE_SCHEMA)
 
 
-# Test Case ID: TC_FITNESS_SchemaValidator_validate_with_schema_003
+# Test Case ID: TC-FR-00-001chemaValidator_validate_with_schema_003
 # Test Objective: Kiểm tra raise khi input không phải JSON
 # Input: Chuỗi văn bản "not json"
 # Expected Output: Raise ValueError "not valid JSON"
@@ -56,7 +56,7 @@ def test_validate_with_schema_invalid_json():
         validate_with_schema("not json at all", SAMPLE_SCHEMA)
 
 
-# Test Case ID: TC_FITNESS_SchemaValidator_validate_with_schema_004
+# Test Case ID: TC-FR-00-001chemaValidator_validate_with_schema_004
 # Test Objective: Kiểm tra JSON thiếu required field "category"
 # Input: JSON chỉ có "safe" nhưng schema yêu cầu cả "category"
 # Expected Output: Raise ValueError "Schema validation failed"
@@ -67,7 +67,7 @@ def test_validate_with_schema_missing_required():
         validate_with_schema(raw, SAMPLE_SCHEMA)
 
 
-# Test Case ID: TC_FITNESS_SchemaValidator_validate_with_schema_005
+# Test Case ID: TC-FR-00-001chemaValidator_validate_with_schema_005
 # Test Objective: Kiểm tra JSON với wrong type (safe phải là boolean)
 # Input: safe="yes" (string thay vì boolean)
 # Expected Output: Raise ValueError "Schema validation failed"
@@ -82,7 +82,7 @@ def test_validate_with_schema_wrong_type():
 # validate_with_schema – File-like object input
 # ============================================================
 
-# Test Case ID: TC_FITNESS_SchemaValidator_validate_with_schema_006
+# Test Case ID: TC-FR-00-001chemaValidator_validate_with_schema_006
 # Test Objective: Kiểm tra input là file-like object (StringIO)
 # Input: io.StringIO chứa JSON hợp lệ
 # Expected Output: Dict chứa đúng giá trị
@@ -99,7 +99,7 @@ def test_validate_with_schema_file_like_object():
 # validate_with_schema – Dict input (fallback)
 # ============================================================
 
-# Test Case ID: TC_FITNESS_SchemaValidator_validate_with_schema_007
+# Test Case ID: TC-FR-00-001chemaValidator_validate_with_schema_007
 # Test Objective: Kiểm tra input là dict (đã parse sẵn – coerce to str)
 # Input: Dict object → str(dict) → json.loads
 # Expected Output: Raise ValueError (str(dict) tạo ra Python repr, không phải JSON)
@@ -113,7 +113,7 @@ def test_validate_with_schema_dict_input_fails():
 # validate_with_schema – Extra fields (schema không cấm)
 # ============================================================
 
-# Test Case ID: TC_FITNESS_SchemaValidator_validate_with_schema_008
+# Test Case ID: TC-FR-00-001chemaValidator_validate_with_schema_008
 # Test Objective: Kiểm tra JSON có extra fields (schema không có additionalProperties: false)
 # Input: JSON với key phụ "extra_field"
 # Expected Output: Dict chứa cả extra fields – validate vẫn pass
@@ -128,7 +128,7 @@ def test_validate_with_schema_extra_fields_allowed():
 # validate_with_schema – Empty string
 # ============================================================
 
-# Test Case ID: TC_FITNESS_SchemaValidator_validate_with_schema_009
+# Test Case ID: TC-FR-00-001chemaValidator_validate_with_schema_009
 # Test Objective: Kiểm tra chuỗi rỗng → raise
 # Input: ""
 # Expected Output: Raise ValueError
@@ -154,7 +154,7 @@ PLANNER_SCHEMA = {
 }
 
 
-# Test Case ID: TC_FITNESS_SchemaValidator_validate_with_schema_010
+# Test Case ID: TC-FR-00-001chemaValidator_validate_with_schema_010
 # Test Objective: Kiểm tra planner schema hợp lệ
 # Input: JSON đúng planner schema
 # Expected Output: Dict đầy đủ
@@ -169,7 +169,7 @@ def test_validate_with_schema_planner_valid():
     assert result["confidence"] == 0.85
 
 
-# Test Case ID: TC_FITNESS_SchemaValidator_validate_with_schema_011
+# Test Case ID: TC-FR-00-001chemaValidator_validate_with_schema_011
 # Test Objective: Kiểm tra planner schema với confidence ngoài range
 # Input: confidence=1.5 (> maximum 1.0)
 # Expected Output: Raise ValueError "Schema validation failed"

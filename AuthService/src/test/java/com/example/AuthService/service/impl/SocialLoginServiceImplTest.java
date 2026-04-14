@@ -51,15 +51,15 @@ class SocialLoginServiceImplTest {
     // ==================== UPSERT GOOGLE USER ====================
 
     /**
-     * Test Case ID: TC_AUTH_SocialLoginServiceImpl_upsertGoogleUser_001
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Tạo user mới khi chưa tồn tại (cả googleAccountId và email đều mới)
      * Input: OAuth2User với sub, email, name, picture mới
      * Expected Output: User mới được tạo với role USER
      * Notes: CheckDB – user mới với googleAccountId, email, name, photoUrl
      */
     @Test
-    @DisplayName("TC_AUTH_SocialLoginServiceImpl_upsertGoogleUser_001: User mới → tạo mới")
-    void TC_AUTH_SocialLoginServiceImpl_upsertGoogleUser_001() {
+    @DisplayName("TC-FR-02-001: User mới → tạo mới")
+    void TC_FR_02_001() {
         OAuth2User oauth = mockOAuth2User("google-sub-123", "new@gmail.com", "New User", "https://pic.jpg");
 
         when(userRepo.findByGoogleAccountId("google-sub-123")).thenReturn(Optional.empty());
@@ -79,15 +79,15 @@ class SocialLoginServiceImplTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_SocialLoginServiceImpl_upsertGoogleUser_002
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Cập nhật user đã tồn tại theo googleAccountId
      * Input: OAuth2User với sub đã tồn tại trong DB
      * Expected Output: User được cập nhật name, email, photoUrl
      * Notes: CheckDB – thông tin user được cập nhật
      */
     @Test
-    @DisplayName("TC_AUTH_SocialLoginServiceImpl_upsertGoogleUser_002: User tồn tại → cập nhật")
-    void TC_AUTH_SocialLoginServiceImpl_upsertGoogleUser_002() {
+    @DisplayName("TC-FR-02-001: User tồn tại → cập nhật")
+    void TC_FR_02_001() {
         User existingUser = User.builder().id(1L).email("old@gmail.com")
                 .name("Old Name").googleAccountId("google-sub-123").build();
         OAuth2User oauth = mockOAuth2User("google-sub-123", "updated@gmail.com", "Updated Name", "https://new-pic.jpg");
@@ -103,15 +103,15 @@ class SocialLoginServiceImplTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_SocialLoginServiceImpl_upsertGoogleUser_003
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Hợp nhất tài khoản khi tìm được user theo email (fallback)
      * Input: Google sub mới nhưng email đã tồn tại
      * Expected Output: User hiện có được gán googleAccountId mới
      * Notes: Kiểm tra nhánh fallback findByEmail
      */
     @Test
-    @DisplayName("TC_AUTH_SocialLoginServiceImpl_upsertGoogleUser_003: Hợp nhất theo email")
-    void TC_AUTH_SocialLoginServiceImpl_upsertGoogleUser_003() {
+    @DisplayName("TC-FR-02-001: Hợp nhất theo email")
+    void TC_FR_02_001() {
         User existingUser = User.builder().id(1L).email("user@gmail.com")
                 .name("Existing").googleAccountId(null).build();
         OAuth2User oauth = mockOAuth2User("new-sub-456", "user@gmail.com", "Existing Updated", null);
@@ -127,15 +127,15 @@ class SocialLoginServiceImplTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_SocialLoginServiceImpl_upsertGoogleUser_004
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Thất bại khi Google sub (account id) bị thiếu
      * Input: OAuth2User không có sub attribute
      * Expected Output: IllegalStateException "Google 'sub' (account id) is missing"
      * Notes: Kiểm tra nhánh sub == null/blank
      */
     @Test
-    @DisplayName("TC_AUTH_SocialLoginServiceImpl_upsertGoogleUser_004: Sub null → exception")
-    void TC_AUTH_SocialLoginServiceImpl_upsertGoogleUser_004() {
+    @DisplayName("TC-FR-02-001: Sub null → exception")
+    void TC_FR_02_001() {
         OAuth2User oauth = mockOAuth2User(null, "user@gmail.com", "Name", null);
 
         assertThatThrownBy(() -> socialLoginService.upsertGoogleUser(oauth))
@@ -144,15 +144,15 @@ class SocialLoginServiceImplTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_SocialLoginServiceImpl_upsertGoogleUser_005
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Tạo user mới thất bại khi role USER không tồn tại
      * Input: Sub và email mới, roleRepo trả về empty
      * Expected Output: IllegalStateException "Default role 'USER' not found"
      * Notes: Kiểm tra nhánh roleRepo.findByName trả về empty
      */
     @Test
-    @DisplayName("TC_AUTH_SocialLoginServiceImpl_upsertGoogleUser_005: Role USER không tồn tại → exception")
-    void TC_AUTH_SocialLoginServiceImpl_upsertGoogleUser_005() {
+    @DisplayName("TC-FR-02-001: Role USER không tồn tại → exception")
+    void TC_FR_02_001() {
         OAuth2User oauth = mockOAuth2User("sub-789", "new@gmail.com", "New", null);
 
         when(userRepo.findByGoogleAccountId("sub-789")).thenReturn(Optional.empty());

@@ -17,7 +17,7 @@ BASE_URL = UserProfileClient.BASE_URL
 # get_ai_profile_input
 # ============================================================
 
-# Test Case ID: TC_FITNESS_UserProfileClient_get_ai_profile_input_001
+# Test Case ID: TC-FR-00-001serProfileClient_get_ai_profile_input_001
 # Test Objective: Kiểm tra lấy profile thành công
 # Input: API trả 200 với JSON profile data
 # Expected Output: Dict profile data
@@ -41,7 +41,7 @@ def test_get_ai_profile_input_success():
     assert responses.calls[0].request.headers["Authorization"] == "Bearer valid-token"
 
 
-# Test Case ID: TC_FITNESS_UserProfileClient_get_ai_profile_input_002
+# Test Case ID: TC-FR-00-001serProfileClient_get_ai_profile_input_002
 # Test Objective: Kiểm tra khi API trả HTTP 401
 # Input: API trả 401 Unauthorized
 # Expected Output: Raise HTTPError
@@ -58,7 +58,7 @@ def test_get_ai_profile_input_http_401():
         UserProfileClient.get_ai_profile_input("bad-token")
 
 
-# Test Case ID: TC_FITNESS_UserProfileClient_get_ai_profile_input_003
+# Test Case ID: TC-FR-00-001serProfileClient_get_ai_profile_input_003
 # Test Objective: Kiểm tra khi API trả HTTP 500
 # Input: API trả 500 Internal Server Error
 # Expected Output: Raise HTTPError
@@ -75,7 +75,7 @@ def test_get_ai_profile_input_http_500():
         UserProfileClient.get_ai_profile_input("token")
 
 
-# Test Case ID: TC_FITNESS_UserProfileClient_get_ai_profile_input_004
+# Test Case ID: TC-FR-00-001serProfileClient_get_ai_profile_input_004
 # Test Objective: Kiểm tra khi timeout
 # Input: API không phản hồi trong thời gian timeout
 # Expected Output: Raise ConnectionError
@@ -91,7 +91,7 @@ def test_get_ai_profile_input_timeout():
         UserProfileClient.get_ai_profile_input("token")
 
 
-# Test Case ID: TC_FITNESS_UserProfileClient_get_ai_profile_input_005
+# Test Case ID: TC-FR-00-001serProfileClient_get_ai_profile_input_005
 # Test Objective: Kiểm tra Authorization header được gửi đúng format
 # Input: access_token="my-jwt-token"
 # Expected Output: Header Authorization: "Bearer my-jwt-token"
@@ -112,7 +112,7 @@ def test_get_ai_profile_input_auth_header():
 # get_ai_goal_input
 # ============================================================
 
-# Test Case ID: TC_FITNESS_UserProfileClient_get_ai_goal_input_001
+# Test Case ID: TC-FR-00-001serProfileClient_get_ai_goal_input_001
 # Test Objective: Kiểm tra lấy goal input thành công
 # Input: API trả 200 với goal data
 # Expected Output: Dict goal data
@@ -135,7 +135,7 @@ def test_get_ai_goal_input_success():
     assert result == goal_data
 
 
-# Test Case ID: TC_FITNESS_UserProfileClient_get_ai_goal_input_002
+# Test Case ID: TC-FR-00-001serProfileClient_get_ai_goal_input_002
 # Test Objective: Kiểm tra khi API trả lỗi 404
 # Input: API trả 404
 # Expected Output: Raise HTTPError
@@ -152,7 +152,7 @@ def test_get_ai_goal_input_http_404():
         UserProfileClient.get_ai_goal_input("token")
 
 
-# Test Case ID: TC_FITNESS_UserProfileClient_get_ai_goal_input_003
+# Test Case ID: TC-FR-00-001serProfileClient_get_ai_goal_input_003
 # Test Objective: Kiểm tra khi connection error
 # Input: API không thể kết nối
 # Expected Output: Raise ConnectionError

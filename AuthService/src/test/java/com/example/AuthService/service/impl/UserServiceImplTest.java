@@ -66,15 +66,15 @@ class UserServiceImplTest {
     // ==================== GET USER PROFILE BY EMAIL ====================
 
     /**
-     * Test Case ID: TC_AUTH_UserServiceImpl_getUserProfileByEmail_001
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Lấy profile user theo email thành công
      * Input: email hợp lệ
      * Expected Output: UserProfileResponse chứa thông tin đầy đủ
      * Notes: Happy path
      */
     @Test
-    @DisplayName("TC_AUTH_UserServiceImpl_getUserProfileByEmail_001: Lấy profile thành công")
-    void TC_AUTH_UserServiceImpl_getUserProfileByEmail_001() {
+    @DisplayName("TC-FR-01-012: Lấy profile thành công")
+    void TC_FR_01_012() {
         when(userRepository.findByEmail("user@test.com")).thenReturn(Optional.of(user));
 
         UserProfileResponse result = userService.getUserProfileByEmail("user@test.com");
@@ -86,15 +86,15 @@ class UserServiceImplTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_UserServiceImpl_getUserProfileByEmail_002
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Lấy profile thất bại khi email không tồn tại
      * Input: email không có trong DB
      * Expected Output: RuntimeException "User not found"
      * Notes: Kiểm tra nhánh findByEmail trả về empty
      */
     @Test
-    @DisplayName("TC_AUTH_UserServiceImpl_getUserProfileByEmail_002: Email không tồn tại → exception")
-    void TC_AUTH_UserServiceImpl_getUserProfileByEmail_002() {
+    @DisplayName("TC-FR-02-017: Email không tồn tại → exception")
+    void TC_FR_02_017() {
         when(userRepository.findByEmail("ghost@test.com")).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> userService.getUserProfileByEmail("ghost@test.com"))
@@ -103,15 +103,15 @@ class UserServiceImplTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_UserServiceImpl_getUserProfileByEmail_003
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Profile với role = null, country = null
      * Input: User không có role và country
      * Expected Output: roleName = null, countryName = null
      * Notes: Kiểm tra nhánh role == null, country == null
      */
     @Test
-    @DisplayName("TC_AUTH_UserServiceImpl_getUserProfileByEmail_003: Role/Country null")
-    void TC_AUTH_UserServiceImpl_getUserProfileByEmail_003() {
+    @DisplayName("TC-FR-02-018: Role/Country null")
+    void TC_FR_02_018() {
         User noRoleUser = User.builder().id(2L).email("norole@test.com")
                 .name("No Role").role(null).country(null).build();
         when(userRepository.findByEmail("norole@test.com")).thenReturn(Optional.of(noRoleUser));
@@ -125,15 +125,15 @@ class UserServiceImplTest {
     // ==================== GET ALL USERS ====================
 
     /**
-     * Test Case ID: TC_AUTH_UserServiceImpl_getAllUsers_001
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Lấy danh sách users phân trang thành công
      * Input: page=0, size=10, không filter
      * Expected Output: List<UserResponseDTO> có phần tử
      * Notes: Happy path
      */
     @Test
-    @DisplayName("TC_AUTH_UserServiceImpl_getAllUsers_001: Lấy danh sách users thành công")
-    void TC_AUTH_UserServiceImpl_getAllUsers_001() {
+    @DisplayName("TC-FR-02-019: Lấy danh sách users thành công")
+    void TC_FR_02_019() {
         Page<User> page = new PageImpl<>(List.of(user));
         when(userRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(page);
 
@@ -146,15 +146,15 @@ class UserServiceImplTest {
     // ==================== GET USER BY ID ====================
 
     /**
-     * Test Case ID: TC_AUTH_UserServiceImpl_getUserById_001
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Lấy user theo id thành công
      * Input: id = 1
      * Expected Output: UserResponseDTO
      * Notes: Happy path
      */
     @Test
-    @DisplayName("TC_AUTH_UserServiceImpl_getUserById_001: Lấy user theo id thành công")
-    void TC_AUTH_UserServiceImpl_getUserById_001() {
+    @DisplayName("TC-FR-06-001: Lấy user theo id thành công")
+    void TC_FR_06_001() {
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 
         UserResponseDTO result = userService.getUserById(1L);
@@ -163,15 +163,15 @@ class UserServiceImplTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_UserServiceImpl_getUserById_002
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Lấy user thất bại khi id không tồn tại
      * Input: id = 999
      * Expected Output: RuntimeException "User not found"
      * Notes: Kiểm tra nhánh findById trả về empty
      */
     @Test
-    @DisplayName("TC_AUTH_UserServiceImpl_getUserById_002: User không tồn tại → exception")
-    void TC_AUTH_UserServiceImpl_getUserById_002() {
+    @DisplayName("TC-FR-06-010: User không tồn tại → exception")
+    void TC_FR_06_010() {
         when(userRepository.findById(999L)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> userService.getUserById(999L))
@@ -182,15 +182,15 @@ class UserServiceImplTest {
     // ==================== UPDATE USER ====================
 
     /**
-     * Test Case ID: TC_AUTH_UserServiceImpl_updateUser_001
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Cập nhật user đầy đủ thông tin thành công
      * Input: UserUpdateRequestDTO với tất cả fields
      * Expected Output: UserResponseDTO cập nhật
      * Notes: CheckDB – tất cả fields được cập nhật
      */
     @Test
-    @DisplayName("TC_AUTH_UserServiceImpl_updateUser_001: Cập nhật đầy đủ thành công")
-    void TC_AUTH_UserServiceImpl_updateUser_001() {
+    @DisplayName("TC-FR-06-011: Cập nhật đầy đủ thành công")
+    void TC_FR_06_011() {
         UserUpdateRequestDTO req = new UserUpdateRequestDTO();
         req.setName("Updated Name");
         req.setGender("Female");
@@ -212,15 +212,15 @@ class UserServiceImplTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_UserServiceImpl_updateUser_002
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Cập nhật email thất bại khi email mới đã tồn tại
      * Input: email mới trùng với user khác
      * Expected Output: RuntimeException "Email already exists"
      * Notes: Kiểm tra nhánh existsByEmail == true
      */
     @Test
-    @DisplayName("TC_AUTH_UserServiceImpl_updateUser_002: Email mới đã tồn tại → exception")
-    void TC_AUTH_UserServiceImpl_updateUser_002() {
+    @DisplayName("TC-FR-06-012: Email mới đã tồn tại → exception")
+    void TC_FR_06_012() {
         UserUpdateRequestDTO req = new UserUpdateRequestDTO();
         req.setEmail("existing@test.com");
 
@@ -233,15 +233,15 @@ class UserServiceImplTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_UserServiceImpl_updateUser_003
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Cập nhật role và country thành công
      * Input: roleId = 2, countryId = 1
      * Expected Output: User có role và country mới
      * Notes: CheckDB – role và country được cập nhật
      */
     @Test
-    @DisplayName("TC_AUTH_UserServiceImpl_updateUser_003: Cập nhật role/country thành công")
-    void TC_AUTH_UserServiceImpl_updateUser_003() {
+    @DisplayName("TC-FR-06-013: Cập nhật role/country thành công")
+    void TC_FR_06_013() {
         Role adminRole = Role.builder().id(2L).name("ADMIN").build();
         UserUpdateRequestDTO req = new UserUpdateRequestDTO();
         req.setRoleId(2L);
@@ -258,15 +258,15 @@ class UserServiceImplTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_UserServiceImpl_updateUser_004
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Cập nhật với password blank → không đổi password
      * Input: password = "   "
      * Expected Output: Password giữ nguyên
      * Notes: Kiểm tra nhánh password.isBlank()
      */
     @Test
-    @DisplayName("TC_AUTH_UserServiceImpl_updateUser_004: Password blank → không đổi")
-    void TC_AUTH_UserServiceImpl_updateUser_004() {
+    @DisplayName("TC-FR-06-014: Password blank → không đổi")
+    void TC_FR_06_014() {
         String originalPwd = user.getPassword();
         UserUpdateRequestDTO req = new UserUpdateRequestDTO();
         req.setPassword("   ");
@@ -283,15 +283,15 @@ class UserServiceImplTest {
     // ==================== DELETE USER ====================
 
     /**
-     * Test Case ID: TC_AUTH_UserServiceImpl_deleteUser_001
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Xóa user thành công
      * Input: id hợp lệ
      * Expected Output: user được xóa
      * Notes: CheckDB – user bị xóa khỏi DB
      */
     @Test
-    @DisplayName("TC_AUTH_UserServiceImpl_deleteUser_001: Xóa user thành công")
-    void TC_AUTH_UserServiceImpl_deleteUser_001() {
+    @DisplayName("TC-FR-06-015: Xóa user thành công")
+    void TC_FR_06_015() {
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 
         userService.deleteUser(1L);
@@ -300,15 +300,15 @@ class UserServiceImplTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_UserServiceImpl_deleteUser_002
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Xóa user thất bại khi không tồn tại
      * Input: id = 999
      * Expected Output: RuntimeException "User not found"
      * Notes: Kiểm tra nhánh findById trả về empty
      */
     @Test
-    @DisplayName("TC_AUTH_UserServiceImpl_deleteUser_002: User không tồn tại → exception")
-    void TC_AUTH_UserServiceImpl_deleteUser_002() {
+    @DisplayName("TC-FR-06-024: User không tồn tại → exception")
+    void TC_FR_06_024() {
         when(userRepository.findById(999L)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> userService.deleteUser(999L))
@@ -319,15 +319,15 @@ class UserServiceImplTest {
     // ==================== CREATE USER ====================
 
     /**
-     * Test Case ID: TC_AUTH_UserServiceImpl_createUser_001
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Tạo user mới thành công
      * Input: UserUpdateRequestDTO với email và password
      * Expected Output: UserResponseDTO
      * Notes: CheckDB – user mới được lưu vào DB, password encoded
      */
     @Test
-    @DisplayName("TC_AUTH_UserServiceImpl_createUser_001: Tạo user thành công")
-    void TC_AUTH_UserServiceImpl_createUser_001() {
+    @DisplayName("TC-FR-06-027: Tạo user thành công")
+    void TC_FR_06_027() {
         UserUpdateRequestDTO req = new UserUpdateRequestDTO();
         req.setEmail("new@test.com");
         req.setPassword("password123");
@@ -348,15 +348,15 @@ class UserServiceImplTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_UserServiceImpl_createUser_002
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Tạo user thất bại khi email đã tồn tại
      * Input: email trùng trong DB
      * Expected Output: RuntimeException "User with email already exists"
      * Notes: Kiểm tra nhánh existsByEmail == true
      */
     @Test
-    @DisplayName("TC_AUTH_UserServiceImpl_createUser_002: Email đã tồn tại → exception")
-    void TC_AUTH_UserServiceImpl_createUser_002() {
+    @DisplayName("TC-FR-02-001: Email đã tồn tại → exception")
+    void TC_FR_02_001() {
         UserUpdateRequestDTO req = new UserUpdateRequestDTO();
         req.setEmail("existing@test.com");
         req.setPassword("pwd");
@@ -369,15 +369,15 @@ class UserServiceImplTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_UserServiceImpl_createUser_003
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Tạo user thất bại khi email hoặc password null
      * Input: email = null
      * Expected Output: RuntimeException "Email and password are required"
      * Notes: Kiểm tra nhánh email == null || password == null
      */
     @Test
-    @DisplayName("TC_AUTH_UserServiceImpl_createUser_003: Email/Password null → exception")
-    void TC_AUTH_UserServiceImpl_createUser_003() {
+    @DisplayName("TC-FR-02-001: Email/Password null → exception")
+    void TC_FR_02_001() {
         UserUpdateRequestDTO req = new UserUpdateRequestDTO();
         req.setEmail(null);
         req.setPassword(null);
@@ -390,15 +390,15 @@ class UserServiceImplTest {
     // ==================== UPDATE MY PROFILE ====================
 
     /**
-     * Test Case ID: TC_AUTH_UserServiceImpl_updateMyProfile_001
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Cập nhật profile cá nhân thành công
      * Input: email, UserUpdateRequestDTO hợp lệ
      * Expected Output: UserProfileResponse cập nhật
      * Notes: CheckDB – thông tin profile được cập nhật
      */
     @Test
-    @DisplayName("TC_AUTH_UserServiceImpl_updateMyProfile_001: Cập nhật profile thành công")
-    void TC_AUTH_UserServiceImpl_updateMyProfile_001() {
+    @DisplayName("TC-FR-02-001: Cập nhật profile thành công")
+    void TC_FR_02_001() {
         UserUpdateRequestDTO req = new UserUpdateRequestDTO();
         req.setName("New Name");
         req.setGender("Female");
@@ -417,15 +417,15 @@ class UserServiceImplTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_UserServiceImpl_updateMyProfile_002
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Cập nhật profile không đổi password (password null)
      * Input: password = null
      * Expected Output: Password giữ nguyên
      * Notes: Kiểm tra nhánh password == null
      */
     @Test
-    @DisplayName("TC_AUTH_UserServiceImpl_updateMyProfile_002: Password null → không đổi")
-    void TC_AUTH_UserServiceImpl_updateMyProfile_002() {
+    @DisplayName("TC-FR-02-001: Password null → không đổi")
+    void TC_FR_02_001() {
         String originalPwd = user.getPassword();
         UserUpdateRequestDTO req = new UserUpdateRequestDTO();
         req.setName("Same Name");
@@ -439,15 +439,15 @@ class UserServiceImplTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_UserServiceImpl_updateMyProfile_003
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Cập nhật profile thất bại khi user không tồn tại
      * Input: email không có trong DB
      * Expected Output: RuntimeException "User not found"
      * Notes: Kiểm tra nhánh findByEmail trả về empty
      */
     @Test
-    @DisplayName("TC_AUTH_UserServiceImpl_updateMyProfile_003: User không tồn tại → exception")
-    void TC_AUTH_UserServiceImpl_updateMyProfile_003() {
+    @DisplayName("TC-FR-02-001: User không tồn tại → exception")
+    void TC_FR_02_001() {
         when(userRepository.findByEmail("ghost@test.com")).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> userService.updateMyProfile("ghost@test.com", new UserUpdateRequestDTO()))

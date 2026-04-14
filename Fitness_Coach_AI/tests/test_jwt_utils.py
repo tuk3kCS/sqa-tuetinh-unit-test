@@ -12,7 +12,7 @@ from app.utils.jwt_utils import get_access_token, get_user_id_from_token
 # get_access_token
 # ============================================================
 
-# Test Case ID: TC_FITNESS_JWTUtils_get_access_token_001
+# Test Case ID: TC-FR-02-001tils_get_access_token_001
 # Test Objective: Kiểm tra lấy token thành công từ Authorization header
 # Input: Request với header Authorization: "Bearer abc123"
 # Expected Output: "abc123"
@@ -24,7 +24,7 @@ def test_get_access_token_valid():
     assert result == "abc123"
 
 
-# Test Case ID: TC_FITNESS_JWTUtils_get_access_token_002
+# Test Case ID: TC-FR-02-001tils_get_access_token_002
 # Test Objective: Kiểm tra raise ValueError khi thiếu Authorization header
 # Input: Request không có Authorization header
 # Expected Output: Raise ValueError "Authorization header missing"
@@ -36,7 +36,7 @@ def test_get_access_token_missing_header():
         get_access_token(request)
 
 
-# Test Case ID: TC_FITNESS_JWTUtils_get_access_token_003
+# Test Case ID: TC-FR-02-001tils_get_access_token_003
 # Test Objective: Kiểm tra raise ValueError khi header sai format
 # Input: Authorization: "InvalidFormat"
 # Expected Output: Raise ValueError "Invalid Authorization header format"
@@ -48,7 +48,7 @@ def test_get_access_token_malformed_header():
         get_access_token(request)
 
 
-# Test Case ID: TC_FITNESS_JWTUtils_get_access_token_004
+# Test Case ID: TC-FR-02-001tils_get_access_token_004
 # Test Objective: Kiểm tra raise ValueError khi prefix không phải "Bearer"
 # Input: Authorization: "Token abc123"
 # Expected Output: Raise ValueError "Invalid Authorization header format"
@@ -60,7 +60,7 @@ def test_get_access_token_wrong_prefix():
         get_access_token(request)
 
 
-# Test Case ID: TC_FITNESS_JWTUtils_get_access_token_005
+# Test Case ID: TC-FR-02-001tils_get_access_token_005
 # Test Objective: Kiểm tra khi header có quá nhiều parts
 # Input: Authorization: "Bearer token extra_part"
 # Expected Output: Raise ValueError (len(parts) != 2)
@@ -72,7 +72,7 @@ def test_get_access_token_too_many_parts():
         get_access_token(request)
 
 
-# Test Case ID: TC_FITNESS_JWTUtils_get_access_token_006
+# Test Case ID: TC-FR-02-001tils_get_access_token_006
 # Test Objective: Kiểm tra case insensitive "BEARER" prefix
 # Input: Authorization: "BEARER abc123"
 # Expected Output: "abc123"
@@ -88,7 +88,7 @@ def test_get_access_token_case_insensitive():
 # get_user_id_from_token
 # ============================================================
 
-# Test Case ID: TC_FITNESS_JWTUtils_get_user_id_from_token_001
+# Test Case ID: TC-FR-02-001tils_get_user_id_from_token_001
 # Test Objective: Kiểm tra lấy userId từ JWT claims
 # Input: JWT claims chứa {"userId": 42}
 # Expected Output: 42
@@ -100,7 +100,7 @@ def test_get_user_id_from_token_valid(mock_get_jwt):
     assert result == 42
 
 
-# Test Case ID: TC_FITNESS_JWTUtils_get_user_id_from_token_002
+# Test Case ID: TC-FR-02-001tils_get_user_id_from_token_002
 # Test Objective: Kiểm tra khi claims không có key "userId"
 # Input: JWT claims rỗng
 # Expected Output: None (dict.get trả None khi key không tồn tại)
@@ -112,7 +112,7 @@ def test_get_user_id_from_token_missing_claim(mock_get_jwt):
     assert result is None
 
 
-# Test Case ID: TC_FITNESS_JWTUtils_get_user_id_from_token_003
+# Test Case ID: TC-FR-02-001tils_get_user_id_from_token_003
 # Test Objective: Kiểm tra khi userId là string (kiểu dữ liệu khác)
 # Input: JWT claims {"userId": "123"}
 # Expected Output: "123" (trả nguyên giá trị, không convert)

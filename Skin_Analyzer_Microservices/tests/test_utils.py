@@ -30,7 +30,7 @@ def _create_test_image(width=200, height=200):
 # calculate_iou
 # ============================================================
 
-# Test Case ID: TC_SKIN_Utils_calculate_iou_001
+# Test Case ID: TC-FR-07-001tils_calculate_iou_001
 # Test Objective: IoU = 1.0 khi hai box trùng hoàn toàn
 # Input: box1 = box2 = [0, 0, 100, 100]
 # Expected Output: 1.0
@@ -40,7 +40,7 @@ def test_calculate_iou_identical_boxes():
     assert calculate_iou([0, 0, 100, 100], [0, 0, 100, 100]) == 1.0
 
 
-# Test Case ID: TC_SKIN_Utils_calculate_iou_002
+# Test Case ID: TC-FR-07-001tils_calculate_iou_002
 # Test Objective: IoU = 0.0 khi hai box không giao nhau
 # Input: box1 = [0, 0, 50, 50], box2 = [100, 100, 200, 200]
 # Expected Output: 0.0
@@ -50,7 +50,7 @@ def test_calculate_iou_no_overlap():
     assert calculate_iou([0, 0, 50, 50], [100, 100, 200, 200]) == 0.0
 
 
-# Test Case ID: TC_SKIN_Utils_calculate_iou_003
+# Test Case ID: TC-FR-07-001tils_calculate_iou_003
 # Test Objective: IoU chính xác khi hai box giao nhau một phần
 # Input: box1 = [0, 0, 100, 100], box2 = [50, 50, 150, 150]
 # Expected Output: ~0.142857 (2500 / 17500)
@@ -61,7 +61,7 @@ def test_calculate_iou_partial_overlap():
     assert iou == pytest.approx(2500 / 17500, rel=1e-3)
 
 
-# Test Case ID: TC_SKIN_Utils_calculate_iou_004
+# Test Case ID: TC-FR-07-001tils_calculate_iou_004
 # Test Objective: IoU = 0 khi union area = 0 (box thoái hóa)
 # Input: box1 = [0, 0, 0, 0], box2 = [0, 0, 0, 0]
 # Expected Output: 0.0
@@ -71,7 +71,7 @@ def test_calculate_iou_zero_area():
     assert calculate_iou([0, 0, 0, 0], [0, 0, 0, 0]) == 0.0
 
 
-# Test Case ID: TC_SKIN_Utils_calculate_iou_005
+# Test Case ID: TC-FR-07-001tils_calculate_iou_005
 # Test Objective: IoU khi box1 nằm hoàn toàn trong box2
 # Input: box1 = [25, 25, 75, 75], box2 = [0, 0, 100, 100]
 # Expected Output: 2500/10000 = 0.25
@@ -86,7 +86,7 @@ def test_calculate_iou_contained_box():
 # apply_nms
 # ============================================================
 
-# Test Case ID: TC_SKIN_Utils_apply_nms_001
+# Test Case ID: TC-FR-07-001tils_apply_nms_001
 # Test Objective: NMS gộp 2 bbox gần nhau cùng class
 # Input: 2 detections cùng class, IoU > 0.5
 # Expected Output: 1 detection (merged)
@@ -102,7 +102,7 @@ def test_apply_nms_merge_overlapping():
     assert result[0]["confidence"] == 0.9  # Giữ confidence cao nhất
 
 
-# Test Case ID: TC_SKIN_Utils_apply_nms_002
+# Test Case ID: TC-FR-07-001tils_apply_nms_002
 # Test Objective: NMS giữ nguyên detections không giao nhau
 # Input: 2 detections cùng class, bbox xa nhau
 # Expected Output: 2 detections
@@ -117,7 +117,7 @@ def test_apply_nms_keep_separate():
     assert len(result) == 2
 
 
-# Test Case ID: TC_SKIN_Utils_apply_nms_003
+# Test Case ID: TC-FR-07-001tils_apply_nms_003
 # Test Objective: NMS trả list rỗng khi input rỗng
 # Input: []
 # Expected Output: []
@@ -127,7 +127,7 @@ def test_apply_nms_empty_input():
     assert apply_nms([]) == []
 
 
-# Test Case ID: TC_SKIN_Utils_apply_nms_004
+# Test Case ID: TC-FR-07-001tils_apply_nms_004
 # Test Objective: NMS không gộp cross-class detections
 # Input: 2 detections khác class, bbox trùng
 # Expected Output: 2 detections
@@ -146,7 +146,7 @@ def test_apply_nms_different_classes():
 # deduplicate_by_label
 # ============================================================
 
-# Test Case ID: TC_SKIN_Utils_deduplicate_by_label_001
+# Test Case ID: TC-FR-07-001tils_deduplicate_by_label_001
 # Test Objective: Giữ 1 detection duy nhất per label (confidence cao nhất)
 # Input: 3 detections cùng class "acne" với confidence khác nhau
 # Expected Output: 1 detection có confidence cao nhất
@@ -163,7 +163,7 @@ def test_deduplicate_by_label_same_class():
     assert result[0]["confidence"] == 0.9
 
 
-# Test Case ID: TC_SKIN_Utils_deduplicate_by_label_002
+# Test Case ID: TC-FR-07-001tils_deduplicate_by_label_002
 # Test Objective: Giữ nguyên khi mỗi detection là class khác nhau
 # Input: 2 detections khác class
 # Expected Output: 2 detections, sắp xếp confidence giảm dần
@@ -179,7 +179,7 @@ def test_deduplicate_by_label_different_classes():
     assert result[0]["confidence"] >= result[1]["confidence"]
 
 
-# Test Case ID: TC_SKIN_Utils_deduplicate_by_label_003
+# Test Case ID: TC-FR-07-001tils_deduplicate_by_label_003
 # Test Objective: Trả list rỗng khi input rỗng
 # Input: []
 # Expected Output: []
@@ -193,7 +193,7 @@ def test_deduplicate_by_label_empty():
 # crop_regions
 # ============================================================
 
-# Test Case ID: TC_SKIN_Utils_crop_regions_001
+# Test Case ID: TC-FR-07-001tils_crop_regions_001
 # Test Objective: Crop đúng vùng từ ảnh theo bbox
 # Input: Ảnh 200×200, 1 detection bbox [10, 10, 50, 50]
 # Expected Output: List 1 ảnh crop kích thước 40×40
@@ -207,7 +207,7 @@ def test_crop_regions_single():
     assert crops[0].size == (40, 40)
 
 
-# Test Case ID: TC_SKIN_Utils_crop_regions_002
+# Test Case ID: TC-FR-07-001tils_crop_regions_002
 # Test Objective: Crop nhiều vùng cùng lúc
 # Input: 2 detections với bbox khác nhau
 # Expected Output: List 2 ảnh crop
@@ -223,7 +223,7 @@ def test_crop_regions_multiple():
     assert len(crops) == 2
 
 
-# Test Case ID: TC_SKIN_Utils_crop_regions_003
+# Test Case ID: TC-FR-07-001tils_crop_regions_003
 # Test Objective: Crop list rỗng khi không có detection
 # Input: Ảnh hợp lệ, detections=[]
 # Expected Output: []
@@ -237,7 +237,7 @@ def test_crop_regions_empty():
 # draw_boxes
 # ============================================================
 
-# Test Case ID: TC_SKIN_Utils_draw_boxes_001
+# Test Case ID: TC-FR-07-001tils_draw_boxes_001
 # Test Objective: draw_boxes trả về Image sau khi vẽ bbox
 # Input: Ảnh 200×200, 1 detection
 # Expected Output: PIL Image cùng kích thước, không lỗi
@@ -251,7 +251,7 @@ def test_draw_boxes_returns_image():
     assert result.size == (200, 200)
 
 
-# Test Case ID: TC_SKIN_Utils_draw_boxes_002
+# Test Case ID: TC-FR-07-001tils_draw_boxes_002
 # Test Objective: draw_boxes hoạt động với list detections rỗng
 # Input: Ảnh hợp lệ, detections=[]
 # Expected Output: PIL Image không thay đổi
@@ -267,7 +267,7 @@ def test_draw_boxes_empty_detections():
 # image_to_base64
 # ============================================================
 
-# Test Case ID: TC_SKIN_Utils_image_to_base64_001
+# Test Case ID: TC-FR-07-001tils_image_to_base64_001
 # Test Objective: Chuyển PIL Image sang base64 string hợp lệ
 # Input: Ảnh PIL RGB 100×100
 # Expected Output: String base64 decode được thành bytes
@@ -281,7 +281,7 @@ def test_image_to_base64_valid():
     assert len(decoded) > 0
 
 
-# Test Case ID: TC_SKIN_Utils_image_to_base64_002
+# Test Case ID: TC-FR-07-001tils_image_to_base64_002
 # Test Objective: Kiểm tra format PNG
 # Input: Ảnh PIL, format="PNG"
 # Expected Output: Base64 string, decode bắt đầu bằng PNG signature
@@ -298,7 +298,7 @@ def test_image_to_base64_png_format():
 # upload_base64_to_cloudinary
 # ============================================================
 
-# Test Case ID: TC_SKIN_Utils_upload_base64_to_cloudinary_001
+# Test Case ID: TC-FR-07-001tils_upload_base64_to_cloudinary_001
 # Test Objective: Fallback data URI khi không có Cloudinary credentials
 # Input: base64 string, không set CLOUDINARY env vars
 # Expected Output: String bắt đầu bằng "data:image/jpeg;base64,"
@@ -318,7 +318,7 @@ def test_upload_cloudinary_fallback_no_credentials(mock_config):
     assert result.startswith("data:image/jpeg;base64,")
 
 
-# Test Case ID: TC_SKIN_Utils_upload_base64_to_cloudinary_002
+# Test Case ID: TC-FR-07-001tils_upload_base64_to_cloudinary_002
 # Test Objective: Upload thành công khi có Cloudinary credentials
 # Input: base64 string, CLOUDINARY_URL set
 # Expected Output: URL từ Cloudinary response
@@ -337,7 +337,7 @@ def test_upload_cloudinary_success(mock_upload):
     mock_upload.assert_called_once()
 
 
-# Test Case ID: TC_SKIN_Utils_upload_base64_to_cloudinary_003
+# Test Case ID: TC-FR-07-001tils_upload_base64_to_cloudinary_003
 # Test Objective: Xử lý base64 có prefix "data:image..." (strip prefix)
 # Input: "data:image/jpeg;base64,{actual_base64}"
 # Expected Output: Upload thành công (prefix bị loại bỏ)

@@ -68,15 +68,15 @@ class ImportInvoiceServiceImplTest {
     // ==================== CREATE ====================
 
     /**
-     * Test Case ID: TC_AUTH_ImportInvoiceServiceImpl_create_001
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Tạo phiếu nhập thành công từ request
      * Input: ImportInvoiceRequest hợp lệ với 1 drug
      * Expected Output: ImportInvoiceResponse chứa thông tin phiếu nhập
      * Notes: CheckDB – phiếu nhập mới được lưu vào DB
      */
     @Test
-    @DisplayName("TC_AUTH_ImportInvoiceServiceImpl_create_001: Tạo phiếu nhập thành công")
-    void TC_AUTH_ImportInvoiceServiceImpl_create_001() {
+    @DisplayName("TC-FR-02-001: Tạo phiếu nhập thành công")
+    void TC_FR_02_001() {
         ImportInvoiceDetailRequest detailReq = new ImportInvoiceDetailRequest();
         detailReq.setDrugName("Paracetamol");
         detailReq.setQuantity(50);
@@ -99,15 +99,15 @@ class ImportInvoiceServiceImplTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_ImportInvoiceServiceImpl_create_002
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Tạo phiếu nhập thất bại khi drug không tồn tại
      * Input: ImportInvoiceRequest với drugName không có trong DB
      * Expected Output: RuntimeException "Không tìm thấy thuốc"
      * Notes: Kiểm tra nhánh drugRepository.findByNameIgnoreCase trả về empty
      */
     @Test
-    @DisplayName("TC_AUTH_ImportInvoiceServiceImpl_create_002: Drug không tồn tại → exception")
-    void TC_AUTH_ImportInvoiceServiceImpl_create_002() {
+    @DisplayName("TC-FR-02-001: Drug không tồn tại → exception")
+    void TC_FR_02_001() {
         ImportInvoiceDetailRequest detailReq = new ImportInvoiceDetailRequest();
         detailReq.setDrugName("NonExistent");
         detailReq.setQuantity(10);
@@ -126,15 +126,15 @@ class ImportInvoiceServiceImplTest {
     // ==================== GET BY ID ====================
 
     /**
-     * Test Case ID: TC_AUTH_ImportInvoiceServiceImpl_getById_001
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Lấy phiếu nhập theo id thành công
      * Input: id hợp lệ
      * Expected Output: ImportInvoiceResponse
      * Notes: Happy path
      */
     @Test
-    @DisplayName("TC_AUTH_ImportInvoiceServiceImpl_getById_001: Lấy phiếu nhập thành công")
-    void TC_AUTH_ImportInvoiceServiceImpl_getById_001() {
+    @DisplayName("TC-FR-02-001: Lấy phiếu nhập thành công")
+    void TC_FR_02_001() {
         when(invoiceRepository.findById(1L)).thenReturn(Optional.of(invoice));
 
         ImportInvoiceResponse result = invoiceService.getById(1L);
@@ -144,15 +144,15 @@ class ImportInvoiceServiceImplTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_ImportInvoiceServiceImpl_getById_002
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Lấy phiếu nhập thất bại khi không tồn tại
      * Input: id = 999
      * Expected Output: RuntimeException "Invoice not found"
      * Notes: Kiểm tra nhánh findById trả về empty
      */
     @Test
-    @DisplayName("TC_AUTH_ImportInvoiceServiceImpl_getById_002: Không tồn tại → exception")
-    void TC_AUTH_ImportInvoiceServiceImpl_getById_002() {
+    @DisplayName("TC-FR-02-001: Không tồn tại → exception")
+    void TC_FR_02_001() {
         when(invoiceRepository.findById(999L)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> invoiceService.getById(999L))
@@ -163,15 +163,15 @@ class ImportInvoiceServiceImplTest {
     // ==================== GET ALL ====================
 
     /**
-     * Test Case ID: TC_AUTH_ImportInvoiceServiceImpl_getAll_001
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Lấy tất cả phiếu nhập không có keyword
      * Input: keyword = null
      * Expected Output: Page<ImportInvoiceResponse> từ findAll
      * Notes: Kiểm tra nhánh keyword == null → findAll
      */
     @Test
-    @DisplayName("TC_AUTH_ImportInvoiceServiceImpl_getAll_001: Không keyword → findAll")
-    void TC_AUTH_ImportInvoiceServiceImpl_getAll_001() {
+    @DisplayName("TC-FR-02-001: Không keyword → findAll")
+    void TC_FR_02_001() {
         Pageable pageable = PageRequest.of(0, 10);
         Page<ImportInvoice> page = new PageImpl<>(List.of(invoice));
 
@@ -184,15 +184,15 @@ class ImportInvoiceServiceImplTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_ImportInvoiceServiceImpl_getAll_002
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Lấy phiếu nhập có keyword filter
      * Input: keyword = "Invoice"
      * Expected Output: Page<ImportInvoiceResponse> từ findByNameContaining
      * Notes: Kiểm tra nhánh keyword != null → findByNameContainingIgnoreCase
      */
     @Test
-    @DisplayName("TC_AUTH_ImportInvoiceServiceImpl_getAll_002: Có keyword → filter theo tên")
-    void TC_AUTH_ImportInvoiceServiceImpl_getAll_002() {
+    @DisplayName("TC-FR-02-001: Có keyword → filter theo tên")
+    void TC_FR_02_001() {
         Pageable pageable = PageRequest.of(0, 10);
         Page<ImportInvoice> page = new PageImpl<>(List.of(invoice));
 
@@ -205,15 +205,15 @@ class ImportInvoiceServiceImplTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_ImportInvoiceServiceImpl_getAll_003
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Keyword trống → dùng findAll thay vì filter
      * Input: keyword = "   " (blank)
      * Expected Output: Gọi findAll
      * Notes: Kiểm tra nhánh keyword.isBlank()
      */
     @Test
-    @DisplayName("TC_AUTH_ImportInvoiceServiceImpl_getAll_003: Keyword blank → findAll")
-    void TC_AUTH_ImportInvoiceServiceImpl_getAll_003() {
+    @DisplayName("TC-FR-02-001: Keyword blank → findAll")
+    void TC_FR_02_001() {
         Pageable pageable = PageRequest.of(0, 10);
         Page<ImportInvoice> page = new PageImpl<>(List.of());
 
@@ -227,15 +227,15 @@ class ImportInvoiceServiceImplTest {
     // ==================== DELETE ====================
 
     /**
-     * Test Case ID: TC_AUTH_ImportInvoiceServiceImpl_delete_001
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Xóa phiếu nhập thành công
      * Input: id hợp lệ
      * Expected Output: deleteById được gọi
      * Notes: CheckDB – phiếu nhập bị xóa
      */
     @Test
-    @DisplayName("TC_AUTH_ImportInvoiceServiceImpl_delete_001: Xóa thành công")
-    void TC_AUTH_ImportInvoiceServiceImpl_delete_001() {
+    @DisplayName("TC-FR-02-001: Xóa thành công")
+    void TC_FR_02_001() {
         invoiceService.delete(1L);
 
         verify(invoiceRepository).deleteById(1L);

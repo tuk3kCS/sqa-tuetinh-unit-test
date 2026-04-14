@@ -7,7 +7,7 @@ from unittest.mock import patch, MagicMock, call
 from app.jobs.daily_log_job import daily_log_job
 
 
-# Test Case ID: TC_FOOD_DailyLogJob_daily_log_job_001
+# Test Case ID: TC-FR-00-001ailyLogJob_daily_log_job_001
 # Test Objective: Job gọi create_daily_logs_for_all_users đúng cách
 # Input: Flask app object
 # Expected Output: create_daily_logs_for_all_users được gọi 1 lần
@@ -19,7 +19,7 @@ def test_daily_log_job_calls_create(mock_create, app):
     mock_create.assert_called_once()
 
 
-# Test Case ID: TC_FOOD_DailyLogJob_daily_log_job_002
+# Test Case ID: TC-FR-00-001ailyLogJob_daily_log_job_002
 # Test Objective: Job in thông báo START và END
 # Input: Flask app object
 # Expected Output: print được gọi với "START" và "END"
@@ -36,7 +36,7 @@ def test_daily_log_job_prints_messages(mock_print, mock_create, app):
     assert any("END" in c for c in calls)
 
 
-# Test Case ID: TC_FOOD_DailyLogJob_daily_log_job_003
+# Test Case ID: TC-FR-00-001ailyLogJob_daily_log_job_003
 # Test Objective: Job sử dụng app_context đúng cách
 # Input: Flask app mock
 # Expected Output: app.app_context() được gọi

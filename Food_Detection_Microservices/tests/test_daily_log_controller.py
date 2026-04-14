@@ -49,7 +49,7 @@ def _create_full_user(session, user_id=1):
 # GET /daily-logs
 # ============================================================
 
-# Test Case ID: TC_FOOD_DailyLogController_get_daily_logs_001
+# Test Case ID: TC-FR-00-001ailyLogController_get_daily_logs_001
 # Test Objective: Lấy daily logs thành công
 # Input: GET /daily-logs với start_date/end_date, JWT hợp lệ
 # Expected Output: status 200, danh sách logs
@@ -78,7 +78,7 @@ def test_get_daily_logs_success(app, client, db_session):
     assert len(data["logs"]) == 1
 
 
-# Test Case ID: TC_FOOD_DailyLogController_get_daily_logs_002
+# Test Case ID: TC-FR-00-001ailyLogController_get_daily_logs_002
 # Test Objective: Trả 401 khi không có JWT
 # Input: GET /daily-logs không có token
 # Expected Output: status 401
@@ -89,7 +89,7 @@ def test_get_daily_logs_no_jwt(app, client, db_session):
     assert response.status_code == 401
 
 
-# Test Case ID: TC_FOOD_DailyLogController_get_daily_logs_003
+# Test Case ID: TC-FR-00-001ailyLogController_get_daily_logs_003
 # Test Objective: Trả danh sách rỗng khi không có dữ liệu
 # Input: GET /daily-logs, user không có logs
 # Expected Output: status 200, logs=[]
@@ -112,7 +112,7 @@ def test_get_daily_logs_empty(app, client, db_session):
 # POST /daily-logs/generate
 # ============================================================
 
-# Test Case ID: TC_FOOD_DailyLogController_generate_daily_logs_001
+# Test Case ID: TC-FR-00-001ailyLogController_generate_daily_logs_001
 # Test Objective: Gọi generate daily logs thành công (không chỉ định date)
 # Input: POST /generate, JSON rỗng
 # Expected Output: status 200
@@ -133,7 +133,7 @@ def test_generate_daily_logs_success(app, client, db_session):
     assert data["status"] == "success"
 
 
-# Test Case ID: TC_FOOD_DailyLogController_generate_daily_logs_002
+# Test Case ID: TC-FR-00-001ailyLogController_generate_daily_logs_002
 # Test Objective: Generate với date cụ thể
 # Input: POST /generate với date="2025-12-25"
 # Expected Output: status 200, log_date = "2025-12-25"
@@ -154,7 +154,7 @@ def test_generate_daily_logs_with_date(app, client, db_session):
     assert data["data"]["log_date"] == "2025-12-25"
 
 
-# Test Case ID: TC_FOOD_DailyLogController_generate_daily_logs_003
+# Test Case ID: TC-FR-00-001ailyLogController_generate_daily_logs_003
 # Test Objective: Trả lỗi 400 khi date format sai
 # Input: POST /generate với date="invalid"
 # Expected Output: status 400, error message
@@ -176,7 +176,7 @@ def test_generate_daily_logs_invalid_date(app, client, db_session):
 # POST /daily-logs/steps
 # ============================================================
 
-# Test Case ID: TC_FOOD_DailyLogController_update_steps_001
+# Test Case ID: TC-FR-00-001ailyLogController_update_steps_001
 # Test Objective: Cập nhật steps thành công
 # Input: POST /daily-logs/steps với steps=10000
 # Expected Output: status 200, total_steps=10000
@@ -202,7 +202,7 @@ def test_update_steps_success(app, client, db_session):
     assert response.status_code == 200
 
 
-# Test Case ID: TC_FOOD_DailyLogController_update_steps_002
+# Test Case ID: TC-FR-00-001ailyLogController_update_steps_002
 # Test Objective: Trả lỗi 400 khi steps thiếu hoặc âm
 # Input: POST /daily-logs/steps với steps=-1
 # Expected Output: status 400
@@ -222,7 +222,7 @@ def test_update_steps_invalid(app, client, db_session):
     assert "steps" in data["error"]
 
 
-# Test Case ID: TC_FOOD_DailyLogController_update_steps_003
+# Test Case ID: TC-FR-00-001ailyLogController_update_steps_003
 # Test Objective: Trả 401 khi không có JWT
 # Input: POST /daily-logs/steps không có token
 # Expected Output: status 401

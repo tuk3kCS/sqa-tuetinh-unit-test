@@ -48,15 +48,15 @@ class AdminStatisticsServiceImplTest {
     // ==================== GET REVENUE SUMMARY ====================
 
     /**
-     * Test Case ID: TC_AUTH_AdminStatisticsServiceImpl_getRevenueSummary_001
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Lấy tổng quan doanh thu chế độ SALES_ALL
      * Input: RevenueStatsFilter mode = SALES_ALL, có from/to
      * Expected Output: RevenueSummaryDto chứa các trường doanh thu
      * Notes: Happy path – chế độ tính cả VNPAY + COD
      */
     @Test
-    @DisplayName("TC_AUTH_AdminStatisticsServiceImpl_getRevenueSummary_001: SALES_ALL thành công")
-    void TC_AUTH_AdminStatisticsServiceImpl_getRevenueSummary_001() {
+    @DisplayName("TC-FR-18-001: SALES_ALL thành công")
+    void TC_FR_18_001() {
         RevenueStatsFilter filter = new RevenueStatsFilter();
         filter.setFrom(LocalDateTime.now().minusDays(30));
         filter.setTo(LocalDateTime.now());
@@ -82,15 +82,15 @@ class AdminStatisticsServiceImplTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_AdminStatisticsServiceImpl_getRevenueSummary_002
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Lấy doanh thu chế độ CASHFLOW_VNPAY_ONLY
      * Input: mode = CASHFLOW_VNPAY_ONLY
      * Expected Output: codRevenue = 0, chỉ tính VNPAY
      * Notes: Kiểm tra nhánh mode == CASHFLOW_VNPAY_ONLY → codRevenue = ZERO
      */
     @Test
-    @DisplayName("TC_AUTH_AdminStatisticsServiceImpl_getRevenueSummary_002: CASHFLOW_VNPAY_ONLY")
-    void TC_AUTH_AdminStatisticsServiceImpl_getRevenueSummary_002() {
+    @DisplayName("TC-FR-18-002: CASHFLOW_VNPAY_ONLY")
+    void TC_FR_18_002() {
         RevenueStatsFilter filter = new RevenueStatsFilter();
         filter.setFrom(LocalDateTime.now().minusDays(7));
         filter.setTo(LocalDateTime.now());
@@ -116,15 +116,15 @@ class AdminStatisticsServiceImplTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_AdminStatisticsServiceImpl_getRevenueSummary_003
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Xử lý from/to null → sử dụng default
      * Input: from = null, to = null
      * Expected Output: Không throw exception, sử dụng default 30 ngày
      * Notes: Kiểm tra requireFrom/requireTo với null
      */
     @Test
-    @DisplayName("TC_AUTH_AdminStatisticsServiceImpl_getRevenueSummary_003: From/To null → default")
-    void TC_AUTH_AdminStatisticsServiceImpl_getRevenueSummary_003() {
+    @DisplayName("TC-FR-18-003: From/To null → default")
+    void TC_FR_18_003() {
         RevenueStatsFilter filter = new RevenueStatsFilter();
         filter.setFrom(null);
         filter.setTo(null);
@@ -152,15 +152,15 @@ class AdminStatisticsServiceImplTest {
     // ==================== GET REVENUE TIME SERIES ====================
 
     /**
-     * Test Case ID: TC_AUTH_AdminStatisticsServiceImpl_getRevenueTimeSeries_001
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Lấy time series doanh thu theo ngày
      * Input: groupBy = DAY
      * Expected Output: RevenueTimeSeriesDto với groupBy = DAY
      * Notes: Happy path
      */
     @Test
-    @DisplayName("TC_AUTH_AdminStatisticsServiceImpl_getRevenueTimeSeries_001: GroupBy DAY")
-    void TC_AUTH_AdminStatisticsServiceImpl_getRevenueTimeSeries_001() {
+    @DisplayName("TC-FR-18-004: GroupBy DAY")
+    void TC_FR_18_004() {
         RevenueStatsFilter filter = new RevenueStatsFilter();
         filter.setFrom(LocalDateTime.now().minusDays(3));
         filter.setTo(LocalDateTime.now());
@@ -181,15 +181,15 @@ class AdminStatisticsServiceImplTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_AdminStatisticsServiceImpl_getRevenueTimeSeries_002
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Time series với groupBy WEEK
      * Input: groupBy = WEEK
      * Expected Output: RevenueTimeSeriesDto với groupBy = WEEK
      * Notes: Kiểm tra bucket alignment cho tuần
      */
     @Test
-    @DisplayName("TC_AUTH_AdminStatisticsServiceImpl_getRevenueTimeSeries_002: GroupBy WEEK")
-    void TC_AUTH_AdminStatisticsServiceImpl_getRevenueTimeSeries_002() {
+    @DisplayName("TC-FR-18-005: GroupBy WEEK")
+    void TC_FR_18_005() {
         RevenueStatsFilter filter = new RevenueStatsFilter();
         filter.setFrom(LocalDateTime.now().minusDays(14));
         filter.setTo(LocalDateTime.now());
@@ -211,15 +211,15 @@ class AdminStatisticsServiceImplTest {
     // ==================== GET TOP PRODUCTS ====================
 
     /**
-     * Test Case ID: TC_AUTH_AdminStatisticsServiceImpl_getTopProducts_001
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Lấy top sản phẩm bán chạy chế độ SALES_ALL
      * Input: topN = 5, mode = SALES_ALL
      * Expected Output: Page<TopProductDto>
      * Notes: Happy path – merge vnpay + cod
      */
     @Test
-    @DisplayName("TC_AUTH_AdminStatisticsServiceImpl_getTopProducts_001: Top products SALES_ALL")
-    void TC_AUTH_AdminStatisticsServiceImpl_getTopProducts_001() {
+    @DisplayName("TC-FR-18-006: Top products SALES_ALL")
+    void TC_FR_18_006() {
         RevenueStatsFilter filter = new RevenueStatsFilter();
         filter.setFrom(LocalDateTime.now().minusDays(30));
         filter.setTo(LocalDateTime.now());
@@ -240,15 +240,15 @@ class AdminStatisticsServiceImplTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_AdminStatisticsServiceImpl_getTopProducts_002
+     * Test Case ID: TC-FR-02-001
      * Test Objective: topN null → default 10
      * Input: topN = null
      * Expected Output: Không throw exception, default topN = 10
      * Notes: Kiểm tra nhánh topN == null → default 10
      */
     @Test
-    @DisplayName("TC_AUTH_AdminStatisticsServiceImpl_getTopProducts_002: topN null → default 10")
-    void TC_AUTH_AdminStatisticsServiceImpl_getTopProducts_002() {
+    @DisplayName("TC-FR-18-007: topN null → default 10")
+    void TC_FR_18_007() {
         RevenueStatsFilter filter = new RevenueStatsFilter();
         filter.setFrom(LocalDateTime.now().minusDays(7));
         filter.setTo(LocalDateTime.now());

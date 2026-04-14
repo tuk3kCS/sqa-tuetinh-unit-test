@@ -29,15 +29,15 @@ class SmtpEmailServiceTest {
     // ==================== SEND ====================
 
     /**
-     * Test Case ID: TC_AUTH_SmtpEmailService_send_001
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Gửi email thành công
      * Input: to, subject, html hợp lệ
      * Expected Output: mailSender.send được gọi
      * Notes: Happy path – email được gửi qua SMTP
      */
     @Test
-    @DisplayName("TC_AUTH_SmtpEmailService_send_001: Gửi email thành công")
-    void TC_AUTH_SmtpEmailService_send_001() {
+    @DisplayName("TC-FR-02-001: Gửi email thành công")
+    void TC_FR_02_001() {
         ReflectionTestUtils.setField(smtpEmailService, "fromAddress", "noreply@test.com");
         when(mailSender.createMimeMessage()).thenReturn(mimeMessage);
 
@@ -47,15 +47,15 @@ class SmtpEmailServiceTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_SmtpEmailService_send_002
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Gửi email thất bại → RuntimeException
      * Input: mailSender.send throw exception
      * Expected Output: RuntimeException "Failed to send email"
      * Notes: Kiểm tra nhánh catch Exception
      */
     @Test
-    @DisplayName("TC_AUTH_SmtpEmailService_send_002: Gửi thất bại → RuntimeException")
-    void TC_AUTH_SmtpEmailService_send_002() {
+    @DisplayName("TC-FR-02-001: Gửi thất bại → RuntimeException")
+    void TC_FR_02_001() {
         ReflectionTestUtils.setField(smtpEmailService, "fromAddress", "noreply@test.com");
         when(mailSender.createMimeMessage()).thenReturn(mimeMessage);
         doThrow(new RuntimeException("SMTP error")).when(mailSender).send(any(MimeMessage.class));
@@ -66,15 +66,15 @@ class SmtpEmailServiceTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_SmtpEmailService_send_003
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Gửi email thất bại khi createMimeMessage lỗi
      * Input: mailSender.createMimeMessage throw exception
      * Expected Output: RuntimeException "Failed to send email"
      * Notes: Kiểm tra lỗi ở bước tạo MimeMessage
      */
     @Test
-    @DisplayName("TC_AUTH_SmtpEmailService_send_003: createMimeMessage lỗi → RuntimeException")
-    void TC_AUTH_SmtpEmailService_send_003() {
+    @DisplayName("TC-FR-02-001: createMimeMessage lỗi → RuntimeException")
+    void TC_FR_02_001() {
         ReflectionTestUtils.setField(smtpEmailService, "fromAddress", "noreply@test.com");
         when(mailSender.createMimeMessage()).thenThrow(new RuntimeException("Connection refused"));
 

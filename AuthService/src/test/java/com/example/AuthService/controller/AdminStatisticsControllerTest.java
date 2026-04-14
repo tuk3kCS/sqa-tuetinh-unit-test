@@ -58,7 +58,7 @@ class AdminStatisticsControllerTest {
     // ======================== REVENUE SUMMARY ========================
 
     /**
-     * Test Case ID: TC_AUTH_AdminStatisticsController_revenueSummary_001
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Lấy tổng hợp doanh thu thành công
      * Input: Không có filter (mặc định)
      * Expected Output: HTTP 200, RevenueSummaryDto
@@ -66,8 +66,8 @@ class AdminStatisticsControllerTest {
      */
     @Test
     @WithMockUser(roles = "ADMIN")
-    @DisplayName("TC_AUTH_AdminStatisticsController_revenueSummary_001: Lấy tổng hợp doanh thu thành công")
-    void TC_AUTH_AdminStatisticsController_revenueSummary_001() throws Exception {
+    @DisplayName("TC-FR-02-001: Lấy tổng hợp doanh thu thành công")
+    void TC_FR_02_001() throws Exception {
         RevenueSummaryDto summary = RevenueSummaryDto.builder()
                 .grossRevenue(BigDecimal.valueOf(1000000))
                 .netRevenue(BigDecimal.valueOf(900000))
@@ -83,7 +83,7 @@ class AdminStatisticsControllerTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_AdminStatisticsController_revenueSummary_002
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Lấy doanh thu với filter khoảng thời gian
      * Input: from=2025-01-01, to=2025-01-31
      * Expected Output: HTTP 200
@@ -91,8 +91,8 @@ class AdminStatisticsControllerTest {
      */
     @Test
     @WithMockUser(roles = "ADMIN")
-    @DisplayName("TC_AUTH_AdminStatisticsController_revenueSummary_002: Doanh thu với filter thời gian")
-    void TC_AUTH_AdminStatisticsController_revenueSummary_002() throws Exception {
+    @DisplayName("TC-FR-02-001: Doanh thu với filter thời gian")
+    void TC_FR_02_001() throws Exception {
         RevenueSummaryDto summary = RevenueSummaryDto.builder()
                 .grossRevenue(BigDecimal.valueOf(500000))
                 .ordersCount(20)
@@ -107,7 +107,7 @@ class AdminStatisticsControllerTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_AdminStatisticsController_revenueSummary_003
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Doanh thu khi không có đơn hàng
      * Input: Filter thời gian không có đơn hàng nào
      * Expected Output: HTTP 200, tất cả giá trị = 0
@@ -115,8 +115,8 @@ class AdminStatisticsControllerTest {
      */
     @Test
     @WithMockUser(roles = "ADMIN")
-    @DisplayName("TC_AUTH_AdminStatisticsController_revenueSummary_003: Doanh thu = 0 khi không có đơn")
-    void TC_AUTH_AdminStatisticsController_revenueSummary_003() throws Exception {
+    @DisplayName("TC-FR-02-001: Doanh thu = 0 khi không có đơn")
+    void TC_FR_02_001() throws Exception {
         RevenueSummaryDto summary = RevenueSummaryDto.builder()
                 .grossRevenue(BigDecimal.ZERO)
                 .netRevenue(BigDecimal.ZERO)
@@ -133,7 +133,7 @@ class AdminStatisticsControllerTest {
     // ======================== REVENUE TIME SERIES ========================
 
     /**
-     * Test Case ID: TC_AUTH_AdminStatisticsController_revenueTimeSeries_001
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Lấy biểu đồ doanh thu theo thời gian thành công
      * Input: Không filter
      * Expected Output: HTTP 200, RevenueTimeSeriesDto
@@ -141,8 +141,8 @@ class AdminStatisticsControllerTest {
      */
     @Test
     @WithMockUser(roles = "ADMIN")
-    @DisplayName("TC_AUTH_AdminStatisticsController_revenueTimeSeries_001: Lấy time series thành công")
-    void TC_AUTH_AdminStatisticsController_revenueTimeSeries_001() throws Exception {
+    @DisplayName("TC-FR-02-001: Lấy time series thành công")
+    void TC_FR_02_001() throws Exception {
         RevenueTimeSeriesDto timeSeries = RevenueTimeSeriesDto.builder()
                 .groupBy(StatsGroupBy.DAY)
                 .points(List.of())
@@ -156,7 +156,7 @@ class AdminStatisticsControllerTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_AdminStatisticsController_revenueTimeSeries_002
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Lấy time series nhóm theo MONTH
      * Input: groupBy=MONTH
      * Expected Output: HTTP 200, groupBy=MONTH
@@ -164,8 +164,8 @@ class AdminStatisticsControllerTest {
      */
     @Test
     @WithMockUser(roles = "ADMIN")
-    @DisplayName("TC_AUTH_AdminStatisticsController_revenueTimeSeries_002: Time series nhóm theo MONTH")
-    void TC_AUTH_AdminStatisticsController_revenueTimeSeries_002() throws Exception {
+    @DisplayName("TC-FR-02-001: Time series nhóm theo MONTH")
+    void TC_FR_02_001() throws Exception {
         RevenueTimeSeriesDto timeSeries = RevenueTimeSeriesDto.builder()
                 .groupBy(StatsGroupBy.MONTH)
                 .points(List.of())
@@ -179,7 +179,7 @@ class AdminStatisticsControllerTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_AdminStatisticsController_revenueTimeSeries_003
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Lấy time series khi service ném lỗi
      * Input: Filter không hợp lệ
      * Expected Output: HTTP 500
@@ -187,8 +187,8 @@ class AdminStatisticsControllerTest {
      */
     @Test
     @WithMockUser(roles = "ADMIN")
-    @DisplayName("TC_AUTH_AdminStatisticsController_revenueTimeSeries_003: Time series - service lỗi")
-    void TC_AUTH_AdminStatisticsController_revenueTimeSeries_003() throws Exception {
+    @DisplayName("TC-FR-02-001: Time series - service lỗi")
+    void TC_FR_02_001() throws Exception {
         when(adminStatisticsService.getRevenueTimeSeries(any()))
                 .thenThrow(new RuntimeException("Lỗi truy vấn"));
 
@@ -199,7 +199,7 @@ class AdminStatisticsControllerTest {
     // ======================== TOP PRODUCTS ========================
 
     /**
-     * Test Case ID: TC_AUTH_AdminStatisticsController_topProducts_001
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Lấy danh sách sản phẩm bán chạy thành công
      * Input: Không filter
      * Expected Output: HTTP 200, danh sách TopProductDto
@@ -207,8 +207,8 @@ class AdminStatisticsControllerTest {
      */
     @Test
     @WithMockUser(roles = "ADMIN")
-    @DisplayName("TC_AUTH_AdminStatisticsController_topProducts_001: Lấy top sản phẩm thành công")
-    void TC_AUTH_AdminStatisticsController_topProducts_001() throws Exception {
+    @DisplayName("TC-FR-02-001: Lấy top sản phẩm thành công")
+    void TC_FR_02_001() throws Exception {
         TopProductDto product = TopProductDto.builder()
                 .drugId(1L).drugName("Paracetamol").quantity(100)
                 .revenue(BigDecimal.valueOf(1500000))
@@ -227,7 +227,7 @@ class AdminStatisticsControllerTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_AdminStatisticsController_topProducts_002
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Lấy top sản phẩm khi không có dữ liệu
      * Input: Khoảng thời gian không có đơn hàng
      * Expected Output: HTTP 200, danh sách rỗng
@@ -235,8 +235,8 @@ class AdminStatisticsControllerTest {
      */
     @Test
     @WithMockUser(roles = "ADMIN")
-    @DisplayName("TC_AUTH_AdminStatisticsController_topProducts_002: Top sản phẩm - không có dữ liệu")
-    void TC_AUTH_AdminStatisticsController_topProducts_002() throws Exception {
+    @DisplayName("TC-FR-02-001: Top sản phẩm - không có dữ liệu")
+    void TC_FR_02_001() throws Exception {
         Page<TopProductDto> emptyPage = new PageImpl<>(List.of(), PageRequest.of(0, 20), 0);
         when(adminStatisticsService.getTopProducts(any())).thenReturn(emptyPage);
 
@@ -247,7 +247,7 @@ class AdminStatisticsControllerTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_AdminStatisticsController_topProducts_003
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Lấy top sản phẩm với topN tùy chỉnh
      * Input: topN=5
      * Expected Output: HTTP 200
@@ -255,8 +255,8 @@ class AdminStatisticsControllerTest {
      */
     @Test
     @WithMockUser(roles = "ADMIN")
-    @DisplayName("TC_AUTH_AdminStatisticsController_topProducts_003: Top sản phẩm với topN=5")
-    void TC_AUTH_AdminStatisticsController_topProducts_003() throws Exception {
+    @DisplayName("TC-FR-02-001: Top sản phẩm với topN=5")
+    void TC_FR_02_001() throws Exception {
         Page<TopProductDto> emptyPage = new PageImpl<>(List.of(), PageRequest.of(0, 5), 0);
         when(adminStatisticsService.getTopProducts(any())).thenReturn(emptyPage);
 

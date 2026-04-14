@@ -71,15 +71,15 @@ class PaymentServiceImplTest {
     // ==================== CREATE VNPAY PAYMENT ====================
 
     /**
-     * Test Case ID: TC_AUTH_PaymentServiceImpl_createVnPayPayment_001
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Tạo URL thanh toán VNPay thành công
      * Input: orderId hợp lệ, user là chủ đơn, order ở PENDING
      * Expected Output: URL chứa payUrl, vnp_SecureHash
      * Notes: Happy path – trả về URL redirect sang VNPay
      */
     @Test
-    @DisplayName("TC_AUTH_PaymentServiceImpl_createVnPayPayment_001: Tạo URL VNPay thành công")
-    void TC_AUTH_PaymentServiceImpl_createVnPayPayment_001() {
+    @DisplayName("TC-FR-13-001: Tạo URL VNPay thành công")
+    void TC_FR_13_001() {
         when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
         when(paymentRepository.save(any(Payment.class))).thenAnswer(inv -> inv.getArgument(0));
         when(httpRequest.getHeader("X-Forwarded-For")).thenReturn(null);
@@ -93,15 +93,15 @@ class PaymentServiceImplTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_PaymentServiceImpl_createVnPayPayment_002
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Tạo payment thất bại khi order không tồn tại
      * Input: orderId = 999 không có trong DB
      * Expected Output: RuntimeException "Không tìm thấy order"
      * Notes: Kiểm tra nhánh orderRepository.findById trả về empty
      */
     @Test
-    @DisplayName("TC_AUTH_PaymentServiceImpl_createVnPayPayment_002: Order không tồn tại → exception")
-    void TC_AUTH_PaymentServiceImpl_createVnPayPayment_002() {
+    @DisplayName("TC-FR-13-002: Order không tồn tại → exception")
+    void TC_FR_13_002() {
         when(orderRepository.findById(999L)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> paymentService.createVnPayPayment(999L, user, httpRequest))
@@ -110,15 +110,15 @@ class PaymentServiceImplTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_PaymentServiceImpl_createVnPayPayment_003
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Tạo payment thất bại khi không phải chủ đơn
      * Input: user khác cố tạo payment
      * Expected Output: RuntimeException "Không có quyền"
      * Notes: Kiểm tra nhánh user.id != order.user.id
      */
     @Test
-    @DisplayName("TC_AUTH_PaymentServiceImpl_createVnPayPayment_003: Không phải chủ đơn → exception")
-    void TC_AUTH_PaymentServiceImpl_createVnPayPayment_003() {
+    @DisplayName("TC-FR-13-003: Không phải chủ đơn → exception")
+    void TC_FR_13_003() {
         User otherUser = User.builder().id(99L).build();
         when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
 
@@ -128,15 +128,15 @@ class PaymentServiceImplTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_PaymentServiceImpl_createVnPayPayment_004
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Tạo payment thất bại khi order không ở PENDING
      * Input: Order status = PAID
      * Expected Output: RuntimeException "Order không ở trạng thái PENDING"
      * Notes: Kiểm tra nhánh status != PENDING
      */
     @Test
-    @DisplayName("TC_AUTH_PaymentServiceImpl_createVnPayPayment_004: Order không PENDING → exception")
-    void TC_AUTH_PaymentServiceImpl_createVnPayPayment_004() {
+    @DisplayName("TC-FR-13-004: Order không PENDING → exception")
+    void TC_FR_13_004() {
         order.setStatus(OrderStatus.PAID);
         when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
 
@@ -148,15 +148,15 @@ class PaymentServiceImplTest {
     // ==================== HANDLE VNPAY RETURN ====================
 
     /**
-     * Test Case ID: TC_AUTH_PaymentServiceImpl_handleVnpayReturn_001
+     * Test Case ID: TC-FR-02-001
      * Test Objective: handleVnpayReturn trả về false khi payment không tồn tại
      * Input: params với vnp_TxnRef không có trong DB
      * Expected Output: false
      * Notes: Kiểm tra nhánh payment == null (signature skipped do verifySignature internal)
      */
     @Test
-    @DisplayName("TC_AUTH_PaymentServiceImpl_handleVnpayReturn_001: Payment không tồn tại → false")
-    void TC_AUTH_PaymentServiceImpl_handleVnpayReturn_001() {
+    @DisplayName("TC-FR-13-005: Payment không tồn tại → false")
+    void TC_FR_13_005() {
         when(paymentRepository.findByVnpTxnRef(anyString())).thenReturn(Optional.empty());
 
         boolean result = paymentService.handleVnpayReturn(Map.of(
@@ -169,15 +169,15 @@ class PaymentServiceImplTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_PaymentServiceImpl_handleVnpayReturn_002
+     * Test Case ID: TC-FR-02-001
      * Test Objective: handleVnpayReturn trả về true khi payment đã SUCCESS (idempotent)
      * Input: Payment có status = SUCCESS
      * Expected Output: false (vì signature invalid trong unit test)
      * Notes: Kiểm tra nhánh payment.status == SUCCESS early return
      */
     @Test
-    @DisplayName("TC_AUTH_PaymentServiceImpl_handleVnpayReturn_002: Payment đã SUCCESS → xử lý theo signature")
-    void TC_AUTH_PaymentServiceImpl_handleVnpayReturn_002() {
+    @DisplayName("TC-FR-13-006: Payment đã SUCCESS → xử lý theo signature")
+    void TC_FR_13_006() {
         boolean result = paymentService.handleVnpayReturn(Map.of(
                 "vnp_TxnRef", "existingRef",
                 "vnp_ResponseCode", "00"
@@ -189,15 +189,15 @@ class PaymentServiceImplTest {
     // ==================== HANDLE VNPAY IPN ====================
 
     /**
-     * Test Case ID: TC_AUTH_PaymentServiceImpl_handleVnpayIPN_001
+     * Test Case ID: TC-FR-02-001
      * Test Objective: IPN trả về false khi signature không hợp lệ
      * Input: Params không có vnp_SecureHash hợp lệ
      * Expected Output: false
      * Notes: Kiểm tra nhánh verifySignature == false
      */
     @Test
-    @DisplayName("TC_AUTH_PaymentServiceImpl_handleVnpayIPN_001: Signature không hợp lệ → false")
-    void TC_AUTH_PaymentServiceImpl_handleVnpayIPN_001() {
+    @DisplayName("TC-FR-13-007: Signature không hợp lệ → false")
+    void TC_FR_13_007() {
         boolean result = paymentService.handleVnpayIPN(Map.of(
                 "vnp_TxnRef", "ref123",
                 "vnp_ResponseCode", "00",
@@ -208,15 +208,15 @@ class PaymentServiceImplTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_PaymentServiceImpl_handleVnpayIPN_002
+     * Test Case ID: TC-FR-02-001
      * Test Objective: IPN trả về false khi payment không tồn tại
      * Input: vnp_TxnRef không có trong DB
      * Expected Output: false
      * Notes: Kiểm tra nhánh payment == null
      */
     @Test
-    @DisplayName("TC_AUTH_PaymentServiceImpl_handleVnpayIPN_002: Payment không tồn tại → false")
-    void TC_AUTH_PaymentServiceImpl_handleVnpayIPN_002() {
+    @DisplayName("TC-FR-13-010: Payment không tồn tại → false")
+    void TC_FR_13_010() {
         boolean result = paymentService.handleVnpayIPN(Map.of(
                 "vnp_TxnRef", "ghost",
                 "vnp_ResponseCode", "00"
@@ -228,15 +228,15 @@ class PaymentServiceImplTest {
     // ==================== CALL VNPAY REFUND ====================
 
     /**
-     * Test Case ID: TC_AUTH_PaymentServiceImpl_callVnPayRefund_001
+     * Test Case ID: TC-FR-02-001
      * Test Objective: callVnPayRefund trả về false khi exception xảy ra (RestTemplate lỗi)
      * Input: Payment hợp lệ nhưng API call lỗi
      * Expected Output: false
      * Notes: Kiểm tra nhánh catch Exception
      */
     @Test
-    @DisplayName("TC_AUTH_PaymentServiceImpl_callVnPayRefund_001: RestTemplate lỗi → false")
-    void TC_AUTH_PaymentServiceImpl_callVnPayRefund_001() {
+    @DisplayName("TC-FR-13-015: RestTemplate lỗi → false")
+    void TC_FR_13_015() {
         Payment payment = Payment.builder()
                 .id(1L).order(order)
                 .amount(BigDecimal.valueOf(100000))
@@ -251,15 +251,15 @@ class PaymentServiceImplTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_PaymentServiceImpl_callVnPayRefund_002
+     * Test Case ID: TC-FR-02-001
      * Test Objective: callVnPayRefund xử lý khi payment.paidAt null → exception
      * Input: Payment có paidAt = null
      * Expected Output: false (catch exception)
      * Notes: Edge case – NullPointerException khi format paidAt
      */
     @Test
-    @DisplayName("TC_AUTH_PaymentServiceImpl_callVnPayRefund_002: paidAt null → false")
-    void TC_AUTH_PaymentServiceImpl_callVnPayRefund_002() {
+    @DisplayName("TC-FR-13-016: paidAt null → false")
+    void TC_FR_13_016() {
         Payment payment = Payment.builder()
                 .id(1L).order(order)
                 .amount(BigDecimal.valueOf(100000))

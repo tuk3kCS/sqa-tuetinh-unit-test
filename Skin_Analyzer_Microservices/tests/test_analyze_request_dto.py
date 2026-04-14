@@ -26,7 +26,7 @@ def _valid_data():
 # __init__ – validation
 # ============================================================
 
-# Test Case ID: TC_SKIN_AnalyzeRequestDTO___init___001
+# Test Case ID: TC-FR-07-001nalyzeRequestDTO___init___001
 # Test Objective: Tạo DTO thành công với dữ liệu hợp lệ đầy đủ
 # Input: Dict có tất cả 6 required fields đúng type
 # Expected Output: DTO object với các attribute khớp input
@@ -44,7 +44,7 @@ def test_dto_init_valid_data():
     assert dto.status == data["status"]
 
 
-# Test Case ID: TC_SKIN_AnalyzeRequestDTO___init___002
+# Test Case ID: TC-FR-07-001nalyzeRequestDTO___init___002
 # Test Objective: Raise ValueError khi thiếu 1 trường bắt buộc (annotated_image_url)
 # Input: Dict thiếu "annotated_image_url"
 # Expected Output: ValueError chứa "Missing fields"
@@ -58,7 +58,7 @@ def test_dto_init_missing_annotated_image_url():
         AnalyzeRequestDTO(data)
 
 
-# Test Case ID: TC_SKIN_AnalyzeRequestDTO___init___003
+# Test Case ID: TC-FR-07-001nalyzeRequestDTO___init___003
 # Test Objective: Raise ValueError khi thiếu nhiều trường bắt buộc
 # Input: Dict chỉ có status
 # Expected Output: ValueError liệt kê các trường thiếu
@@ -71,7 +71,7 @@ def test_dto_init_missing_multiple_fields():
         AnalyzeRequestDTO(data)
 
 
-# Test Case ID: TC_SKIN_AnalyzeRequestDTO___init___004
+# Test Case ID: TC-FR-07-001nalyzeRequestDTO___init___004
 # Test Objective: Raise ValueError khi detection không phải list
 # Input: detection = "not_a_list"
 # Expected Output: ValueError "must be a list"
@@ -85,7 +85,7 @@ def test_dto_init_detection_wrong_type():
         AnalyzeRequestDTO(data)
 
 
-# Test Case ID: TC_SKIN_AnalyzeRequestDTO___init___005
+# Test Case ID: TC-FR-07-001nalyzeRequestDTO___init___005
 # Test Objective: Raise ValueError khi lifestyle_suggestions không phải dict
 # Input: lifestyle_suggestions = ["wrong_type"]
 # Expected Output: ValueError "must be a dict"
@@ -99,7 +99,7 @@ def test_dto_init_lifestyle_suggestions_wrong_type():
         AnalyzeRequestDTO(data)
 
 
-# Test Case ID: TC_SKIN_AnalyzeRequestDTO___init___006
+# Test Case ID: TC-FR-07-001nalyzeRequestDTO___init___006
 # Test Objective: Raise ValueError khi metadata không phải dict
 # Input: metadata = 12345
 # Expected Output: ValueError "must be a dict"
@@ -113,7 +113,7 @@ def test_dto_init_metadata_wrong_type():
         AnalyzeRequestDTO(data)
 
 
-# Test Case ID: TC_SKIN_AnalyzeRequestDTO___init___007
+# Test Case ID: TC-FR-07-001nalyzeRequestDTO___init___007
 # Test Objective: health_issue_info là optional – None vẫn hợp lệ
 # Input: health_issue_info = None (có key nhưng value None)
 # Expected Output: DTO tạo thành công, health_issue_info = None
@@ -131,7 +131,7 @@ def test_dto_init_health_issue_info_none():
 # to_json
 # ============================================================
 
-# Test Case ID: TC_SKIN_AnalyzeRequestDTO_to_json_001
+# Test Case ID: TC-FR-07-001nalyzeRequestDTO_to_json_001
 # Test Objective: to_json trả dict khớp dữ liệu gốc
 # Input: DTO đã tạo từ valid data
 # Expected Output: Dict giống input data
@@ -150,7 +150,7 @@ def test_dto_to_json_correct():
     assert result["status"] == data["status"]
 
 
-# Test Case ID: TC_SKIN_AnalyzeRequestDTO_to_json_002
+# Test Case ID: TC-FR-07-001nalyzeRequestDTO_to_json_002
 # Test Objective: to_json chứa đúng 6 key
 # Input: DTO hợp lệ
 # Expected Output: Dict có đúng 6 key
@@ -167,7 +167,7 @@ def test_dto_to_json_key_count():
     assert set(result.keys()) == expected_keys
 
 
-# Test Case ID: TC_SKIN_AnalyzeRequestDTO_to_json_003
+# Test Case ID: TC-FR-07-001nalyzeRequestDTO_to_json_003
 # Test Objective: to_json xử lý detection rỗng
 # Input: detection = []
 # Expected Output: JSON có detection = []

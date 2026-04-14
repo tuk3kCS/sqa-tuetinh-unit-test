@@ -14,7 +14,7 @@ from app.agent.core import handle_chat, create_meal_plan, create_workout_plan, _
 # _safe_parse_json
 # ============================================================
 
-# Test Case ID: TC_FITNESS_Core_safe_parse_json_001
+# Test Case ID: TC-FR-00-001ore_safe_parse_json_001
 # Test Objective: Kiểm tra parse JSON hợp lệ trực tiếp
 # Input: Chuỗi JSON hợp lệ với đầy đủ required_keys
 # Expected Output: Dict chứa đúng giá trị
@@ -28,7 +28,7 @@ def test_safe_parse_json_valid_json():
     assert result["explanation"] == "ok"
 
 
-# Test Case ID: TC_FITNESS_Core_safe_parse_json_002
+# Test Case ID: TC-FR-00-001ore_safe_parse_json_002
 # Test Objective: Kiểm tra parse JSON bọc trong markdown fences
 # Input: Chuỗi ```json\n{...}\n```
 # Expected Output: Dict parse thành công qua regex extract
@@ -40,7 +40,7 @@ def test_safe_parse_json_json_with_markdown_fences():
     assert result["daily_meals"] == {}
 
 
-# Test Case ID: TC_FITNESS_Core_safe_parse_json_003
+# Test Case ID: TC-FR-00-001ore_safe_parse_json_003
 # Test Objective: Kiểm tra trả None khi text hoàn toàn không chứa JSON
 # Input: Chuỗi văn bản thuần "no json here"
 # Expected Output: None
@@ -50,7 +50,7 @@ def test_safe_parse_json_completely_invalid():
     assert result is None
 
 
-# Test Case ID: TC_FITNESS_Core_safe_parse_json_004
+# Test Case ID: TC-FR-00-001ore_safe_parse_json_004
 # Test Objective: Kiểm tra trả None khi JSON hợp lệ nhưng thiếu required keys
 # Input: JSON có key "a" nhưng yêu cầu key "missing_key"
 # Expected Output: None
@@ -60,7 +60,7 @@ def test_safe_parse_json_valid_json_missing_keys():
     assert result is None
 
 
-# Test Case ID: TC_FITNESS_Core_safe_parse_json_005
+# Test Case ID: TC-FR-00-001ore_safe_parse_json_005
 # Test Objective: Kiểm tra parse JSON khi có text trước JSON object
 # Input: "Here is the plan: {\"daily_meals\": ...}"
 # Expected Output: Dict parse thành công qua regex extract
@@ -75,7 +75,7 @@ def test_safe_parse_json_json_embedded_in_text():
 # handle_chat
 # ============================================================
 
-# Test Case ID: TC_FITNESS_Core_handle_chat_001
+# Test Case ID: TC-FR-00-001ore_handle_chat_001
 # Test Objective: Kiểm tra chat bình thường – tin nhắn an toàn
 # Input: user_id="1", message="Xin chào"
 # Expected Output: Dict type="message", intent="chat_qa"
@@ -94,7 +94,7 @@ def test_handle_chat_normal_message(mock_safety, mock_state, mock_session, mock_
     mock_update.assert_called_once()
 
 
-# Test Case ID: TC_FITNESS_Core_handle_chat_002
+# Test Case ID: TC-FR-00-001ore_handle_chat_002
 # Test Objective: Kiểm tra chat bị từ chối khi tin nhắn không an toàn
 # Input: Tin nhắn bị safety check đánh dấu unsafe
 # Expected Output: Dict type="message", intent="safety", decision="refuse"
@@ -110,7 +110,7 @@ def test_handle_chat_unsafe_message_blocked(mock_safety):
     llm.chat.assert_not_called()
 
 
-# Test Case ID: TC_FITNESS_Core_handle_chat_003
+# Test Case ID: TC-FR-00-001ore_handle_chat_003
 # Test Objective: Kiểm tra xử lý khi LLM gặp lỗi trong quá trình chat
 # Input: LLM.chat raise Exception
 # Expected Output: Exception được propagate lên caller
@@ -126,7 +126,7 @@ def test_handle_chat_llm_error(mock_safety, mock_state, mock_session, mock_updat
         handle_chat(llm, "1", "Test")
 
 
-# Test Case ID: TC_FITNESS_Core_handle_chat_004
+# Test Case ID: TC-FR-00-001ore_handle_chat_004
 # Test Objective: Kiểm tra chat history được cập nhật đúng cách
 # Input: Session đã có chat_history trước đó
 # Expected Output: update_session_memory được gọi với history mới (bao gồm user + assistant)
@@ -151,7 +151,7 @@ def test_handle_chat_updates_session_history(mock_safety, mock_state, mock_sessi
 # create_meal_plan
 # ============================================================
 
-# Test Case ID: TC_FITNESS_Core_create_meal_plan_001
+# Test Case ID: TC-FR-00-001ore_create_meal_plan_001
 # Test Objective: Kiểm tra tạo meal plan thành công
 # Input: Profile hợp lệ, LLM trả JSON meal plan đúng schema
 # Expected Output: Dict type="plan_created" với plan data
@@ -179,7 +179,7 @@ def test_create_meal_plan_valid_profile(mock_state, mock_retriever, mock_save):
     mock_save.assert_called_once()
 
 
-# Test Case ID: TC_FITNESS_Core_create_meal_plan_002
+# Test Case ID: TC-FR-00-001ore_create_meal_plan_002
 # Test Objective: Kiểm tra khi LLM trả JSON không hợp lệ
 # Input: LLM trả chuỗi văn bản không phải JSON
 # Expected Output: Dict type="error"
@@ -199,7 +199,7 @@ def test_create_meal_plan_invalid_llm_response(mock_state, mock_retriever):
     assert result["type"] == "error"
 
 
-# Test Case ID: TC_FITNESS_Core_create_meal_plan_003
+# Test Case ID: TC-FR-00-001ore_create_meal_plan_003
 # Test Objective: Kiểm tra RAG context được sử dụng khi retriever trả kết quả
 # Input: Retriever trả documents, LLM trả plan hợp lệ
 # Expected Output: LLM.chat được gọi với prompt chứa context từ RAG
@@ -227,7 +227,7 @@ def test_create_meal_plan_rag_context_used(mock_state, mock_retriever, mock_save
     assert "Ăn nhiều rau xanh" in prompt_arg
 
 
-# Test Case ID: TC_FITNESS_Core_create_meal_plan_004
+# Test Case ID: TC-FR-00-001ore_create_meal_plan_004
 # Test Objective: Kiểm tra khi retriever raise exception → context rỗng, vẫn tiếp tục
 # Input: Retriever raise Exception
 # Expected Output: Vẫn tạo plan bình thường (context="")
@@ -255,7 +255,7 @@ def test_create_meal_plan_retriever_error(mock_state, mock_retriever, mock_save)
 # create_workout_plan
 # ============================================================
 
-# Test Case ID: TC_FITNESS_Core_create_workout_plan_001
+# Test Case ID: TC-FR-00-001ore_create_workout_plan_001
 # Test Objective: Kiểm tra tạo workout plan thành công
 # Input: Profile hợp lệ, LLM trả JSON workout plan đúng schema
 # Expected Output: Dict type="plan_created" với plan data
@@ -285,7 +285,7 @@ def test_create_workout_plan_valid_profile(mock_state, mock_retriever, mock_save
     mock_save.assert_called_once()
 
 
-# Test Case ID: TC_FITNESS_Core_create_workout_plan_002
+# Test Case ID: TC-FR-00-001ore_create_workout_plan_002
 # Test Objective: Kiểm tra khi LLM gặp lỗi
 # Input: LLM trả response không parse được
 # Expected Output: Dict type="error"
@@ -307,7 +307,7 @@ def test_create_workout_plan_llm_error(mock_state, mock_retriever):
     assert result["type"] == "error"
 
 
-# Test Case ID: TC_FITNESS_Core_create_workout_plan_003
+# Test Case ID: TC-FR-00-001ore_create_workout_plan_003
 # Test Objective: Kiểm tra khi profile.goal là None → default "general_fitness"
 # Input: Profile với goal=None
 # Expected Output: Prompt gửi tới LLM chứa "general_fitness"
@@ -334,7 +334,7 @@ def test_create_workout_plan_default_goal(mock_state, mock_retriever, mock_save)
     assert "general_fitness" in prompt_arg
 
 
-# Test Case ID: TC_FITNESS_Core_create_workout_plan_004
+# Test Case ID: TC-FR-00-001ore_create_workout_plan_004
 # Test Objective: Kiểm tra retriever exception → context rỗng
 # Input: Retriever raise Exception
 # Expected Output: Vẫn tiếp tục tạo plan

@@ -5,7 +5,7 @@ import pytest
 from app.services.nutrition_service import NutritionService
 
 
-# Test Case ID: TC_FOOD_NutritionService_analyze_001
+# Test Case ID: TC-FR-00-001utritionService_analyze_001
 # Test Objective: Phân tích dinh dưỡng cho 1 món ăn đã biết
 # Input: detections chứa 1 món "Phở"
 # Expected Output: items_count=1, total_nutrition có Calories=450
@@ -22,7 +22,7 @@ def test_nutrition_service_analyze_single_known_food(app):
     assert result["individual_items"][0]["name"] == "Phở"
 
 
-# Test Case ID: TC_FOOD_NutritionService_analyze_002
+# Test Case ID: TC-FR-00-001utritionService_analyze_002
 # Test Objective: Phân tích dinh dưỡng cho nhiều món ăn
 # Input: detections chứa "Phở" và "Bánh mì"
 # Expected Output: items_count=2, tổng calo = 450 + 350 = 800
@@ -41,7 +41,7 @@ def test_nutrition_service_analyze_multiple_foods(app):
     assert result["total_nutrition"]["Protein"] == 20 + 12
 
 
-# Test Case ID: TC_FOOD_NutritionService_analyze_003
+# Test Case ID: TC-FR-00-001utritionService_analyze_003
 # Test Objective: Phân tích món ăn không có trong cơ sở dữ liệu
 # Input: detections chứa "UnknownFood" không có trong DB
 # Expected Output: items_count=0, tổng dinh dưỡng = 0
@@ -58,7 +58,7 @@ def test_nutrition_service_analyze_unknown_food(app):
     assert result["individual_items"] == []
 
 
-# Test Case ID: TC_FOOD_NutritionService_analyze_004
+# Test Case ID: TC-FR-00-001utritionService_analyze_004
 # Test Objective: Phân tích danh sách detections rỗng
 # Input: detections = []
 # Expected Output: items_count=0, tổng dinh dưỡng = 0
@@ -73,7 +73,7 @@ def test_nutrition_service_analyze_empty_list(app):
     assert result["individual_items"] == []
 
 
-# Test Case ID: TC_FOOD_NutritionService_analyze_005
+# Test Case ID: TC-FR-00-001utritionService_analyze_005
 # Test Objective: Phân tích hỗn hợp món biết và không biết
 # Input: detections chứa "Phở" (biết) và "Alien" (không biết)
 # Expected Output: items_count=1, chỉ tính dinh dưỡng của Phở

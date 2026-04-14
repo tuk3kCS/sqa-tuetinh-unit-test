@@ -23,7 +23,7 @@ def ollama_client():
 # chat
 # ============================================================
 
-# Test Case ID: TC_FITNESS_OllamaClient_chat_001
+# Test Case ID: TC-FR-00-001llamaClient_chat_001
 # Test Objective: Kiểm tra chat thành công
 # Input: system_prompt và user_prompt hợp lệ
 # Expected Output: Chuỗi response từ Ollama API
@@ -42,7 +42,7 @@ def test_ollama_chat_successful(mock_post, ollama_client):
     mock_post.assert_called_once()
 
 
-# Test Case ID: TC_FITNESS_OllamaClient_chat_002
+# Test Case ID: TC-FR-00-001llamaClient_chat_002
 # Test Objective: Kiểm tra chat khi kết nối thất bại
 # Input: requests.post raise ConnectionError
 # Expected Output: Exception được propagate lên
@@ -54,7 +54,7 @@ def test_ollama_chat_connection_error(mock_post, ollama_client):
         ollama_client.chat("System", "User")
 
 
-# Test Case ID: TC_FITNESS_OllamaClient_chat_003
+# Test Case ID: TC-FR-00-001llamaClient_chat_003
 # Test Objective: Kiểm tra chat gửi đúng payload format
 # Input: system_prompt="SP", user_prompt="UP", temperature=0.5
 # Expected Output: POST request chứa đúng model, messages, stream=False
@@ -75,7 +75,7 @@ def test_ollama_chat_correct_payload(mock_post, ollama_client):
     assert payload["options"]["temperature"] == 0.5
 
 
-# Test Case ID: TC_FITNESS_OllamaClient_chat_004
+# Test Case ID: TC-FR-00-001llamaClient_chat_004
 # Test Objective: Kiểm tra timeout được truyền đúng
 # Input: Bất kỳ prompt nào
 # Expected Output: requests.post được gọi với timeout=120
@@ -93,7 +93,7 @@ def test_ollama_chat_timeout_set(mock_post, ollama_client):
     assert timeout == 120
 
 
-# Test Case ID: TC_FITNESS_OllamaClient_chat_005
+# Test Case ID: TC-FR-00-001llamaClient_chat_005
 # Test Objective: Kiểm tra khi HTTP status lỗi (500)
 # Input: Server trả 500
 # Expected Output: Raise HTTPError qua raise_for_status()
@@ -113,7 +113,7 @@ def test_ollama_chat_http_error(mock_post, ollama_client):
 # moderate
 # ============================================================
 
-# Test Case ID: TC_FITNESS_OllamaClient_moderate_001
+# Test Case ID: TC-FR-00-001llamaClient_moderate_001
 # Test Objective: Kiểm tra moderate luôn trả None
 # Input: Bất kỳ text nào
 # Expected Output: None
@@ -123,7 +123,7 @@ def test_ollama_moderate_always_returns_none(ollama_client):
     assert result is None
 
 
-# Test Case ID: TC_FITNESS_OllamaClient_moderate_002
+# Test Case ID: TC-FR-00-001llamaClient_moderate_002
 # Test Objective: Kiểm tra moderate với chuỗi rỗng vẫn trả None
 # Input: Chuỗi rỗng
 # Expected Output: None
@@ -133,7 +133,7 @@ def test_ollama_moderate_empty_string(ollama_client):
     assert result is None
 
 
-# Test Case ID: TC_FITNESS_OllamaClient_moderate_003
+# Test Case ID: TC-FR-00-001llamaClient_moderate_003
 # Test Objective: Kiểm tra moderate với nội dung có hại vẫn trả None
 # Input: Nội dung nguy hiểm
 # Expected Output: None (Ollama không có moderation)

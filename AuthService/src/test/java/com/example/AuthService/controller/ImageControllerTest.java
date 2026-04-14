@@ -50,15 +50,15 @@ class ImageControllerTest {
     // ======================== UPLOAD IMAGE ========================
 
     /**
-     * Test Case ID: TC_AUTH_ImageController_uploadImage_001
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Upload hình ảnh thành công
      * Input: MultipartFile ảnh JPEG hợp lệ
      * Expected Output: HTTP 200, body chứa URL ảnh
      * Notes: Happy path - upload ảnh lên Cloudinary
      */
     @Test
-    @DisplayName("TC_AUTH_ImageController_uploadImage_001: Upload ảnh thành công")
-    void TC_AUTH_ImageController_uploadImage_001() throws Exception {
+    @DisplayName("TC-FR-02-001: Upload ảnh thành công")
+    void TC_FR_02_001() throws Exception {
         when(cloudinaryService.uploadImage(any()))
                 .thenReturn("https://res.cloudinary.com/test/image.jpg");
 
@@ -71,15 +71,15 @@ class ImageControllerTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_ImageController_uploadImage_002
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Upload ảnh khi Cloudinary lỗi
      * Input: MultipartFile ảnh hợp lệ nhưng Cloudinary không khả dụng
      * Expected Output: HTTP 500
      * Notes: Cloudinary service ném RuntimeException
      */
     @Test
-    @DisplayName("TC_AUTH_ImageController_uploadImage_002: Upload ảnh - Cloudinary lỗi")
-    void TC_AUTH_ImageController_uploadImage_002() throws Exception {
+    @DisplayName("TC-FR-02-001: Upload ảnh - Cloudinary lỗi")
+    void TC_FR_02_001() throws Exception {
         when(cloudinaryService.uploadImage(any()))
                 .thenThrow(new RuntimeException("Cloudinary upload failed"));
 
@@ -91,15 +91,15 @@ class ImageControllerTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_ImageController_uploadImage_003
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Upload file PNG
      * Input: MultipartFile ảnh PNG
      * Expected Output: HTTP 200, URL ảnh
      * Notes: Kiểm tra hỗ trợ nhiều định dạng
      */
     @Test
-    @DisplayName("TC_AUTH_ImageController_uploadImage_003: Upload ảnh PNG thành công")
-    void TC_AUTH_ImageController_uploadImage_003() throws Exception {
+    @DisplayName("TC-FR-02-001: Upload ảnh PNG thành công")
+    void TC_FR_02_001() throws Exception {
         when(cloudinaryService.uploadImage(any()))
                 .thenReturn("https://res.cloudinary.com/test/photo.png");
 
@@ -112,15 +112,15 @@ class ImageControllerTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_ImageController_uploadImage_004
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Upload file rỗng
      * Input: MultipartFile rỗng (0 bytes)
      * Expected Output: HTTP 500 hoặc xử lý từ service
      * Notes: Edge case - file không có nội dung
      */
     @Test
-    @DisplayName("TC_AUTH_ImageController_uploadImage_004: Upload file rỗng")
-    void TC_AUTH_ImageController_uploadImage_004() throws Exception {
+    @DisplayName("TC-FR-02-001: Upload file rỗng")
+    void TC_FR_02_001() throws Exception {
         when(cloudinaryService.uploadImage(any()))
                 .thenThrow(new RuntimeException("File rỗng"));
 

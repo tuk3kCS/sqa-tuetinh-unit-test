@@ -74,7 +74,7 @@ class ImportInvoiceControllerTest {
     // ======================== GET ALL ========================
 
     /**
-     * Test Case ID: TC_AUTH_ImportInvoiceController_getAll_001
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Lấy danh sách phiếu nhập thành công
      * Input: Không có filter
      * Expected Output: HTTP 200, page phiếu nhập
@@ -82,8 +82,8 @@ class ImportInvoiceControllerTest {
      */
     @Test
     @WithMockUser(roles = "ADMIN")
-    @DisplayName("TC_AUTH_ImportInvoiceController_getAll_001: Lấy danh sách phiếu nhập thành công")
-    void TC_AUTH_ImportInvoiceController_getAll_001() throws Exception {
+    @DisplayName("TC-FR-02-001: Lấy danh sách phiếu nhập thành công")
+    void TC_FR_02_001() throws Exception {
         Page<ImportInvoiceResponse> page = new PageImpl<>(List.of(createMockResponse()));
         when(importInvoiceService.getAll(isNull(), any())).thenReturn(page);
 
@@ -92,7 +92,7 @@ class ImportInvoiceControllerTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_ImportInvoiceController_getAll_002
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Lấy danh sách phiếu nhập với keyword search
      * Input: q="Invoice"
      * Expected Output: HTTP 200
@@ -100,8 +100,8 @@ class ImportInvoiceControllerTest {
      */
     @Test
     @WithMockUser(roles = "ADMIN")
-    @DisplayName("TC_AUTH_ImportInvoiceController_getAll_002: Lấy phiếu nhập với keyword")
-    void TC_AUTH_ImportInvoiceController_getAll_002() throws Exception {
+    @DisplayName("TC-FR-02-001: Lấy phiếu nhập với keyword")
+    void TC_FR_02_001() throws Exception {
         Page<ImportInvoiceResponse> page = new PageImpl<>(List.of());
         when(importInvoiceService.getAll(eq("Invoice"), any())).thenReturn(page);
 
@@ -111,7 +111,7 @@ class ImportInvoiceControllerTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_ImportInvoiceController_getAll_003
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Lấy danh sách phiếu nhập rỗng
      * Input: Không có phiếu nhập nào
      * Expected Output: HTTP 200, page rỗng
@@ -119,8 +119,8 @@ class ImportInvoiceControllerTest {
      */
     @Test
     @WithMockUser(roles = "ADMIN")
-    @DisplayName("TC_AUTH_ImportInvoiceController_getAll_003: Lấy danh sách phiếu nhập rỗng")
-    void TC_AUTH_ImportInvoiceController_getAll_003() throws Exception {
+    @DisplayName("TC-FR-02-001: Lấy danh sách phiếu nhập rỗng")
+    void TC_FR_02_001() throws Exception {
         Page<ImportInvoiceResponse> page = new PageImpl<>(List.of());
         when(importInvoiceService.getAll(any(), any())).thenReturn(page);
 
@@ -131,7 +131,7 @@ class ImportInvoiceControllerTest {
     // ======================== IMPORT FROM EXCEL ========================
 
     /**
-     * Test Case ID: TC_AUTH_ImportInvoiceController_importFromExcel_001
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Import phiếu nhập từ file Excel thành công
      * Input: MultipartFile Excel hợp lệ
      * Expected Output: HTTP 200, phiếu nhập đã tạo
@@ -139,8 +139,8 @@ class ImportInvoiceControllerTest {
      */
     @Test
     @WithMockUser(roles = "ADMIN")
-    @DisplayName("TC_AUTH_ImportInvoiceController_importFromExcel_001: Import Excel thành công")
-    void TC_AUTH_ImportInvoiceController_importFromExcel_001() throws Exception {
+    @DisplayName("TC-FR-02-001: Import Excel thành công")
+    void TC_FR_02_001() throws Exception {
         ImportInvoiceResponse response = createMockResponse();
         when(importInvoiceService.importFromExcel(any())).thenReturn(response);
 
@@ -156,7 +156,7 @@ class ImportInvoiceControllerTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_ImportInvoiceController_importFromExcel_002
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Import file Excel không hợp lệ
      * Input: File không phải Excel
      * Expected Output: HTTP 500
@@ -164,8 +164,8 @@ class ImportInvoiceControllerTest {
      */
     @Test
     @WithMockUser(roles = "ADMIN")
-    @DisplayName("TC_AUTH_ImportInvoiceController_importFromExcel_002: Import file không phải Excel")
-    void TC_AUTH_ImportInvoiceController_importFromExcel_002() throws Exception {
+    @DisplayName("TC-FR-02-001: Import file không phải Excel")
+    void TC_FR_02_001() throws Exception {
         when(importInvoiceService.importFromExcel(any()))
                 .thenThrow(new RuntimeException("File không đúng định dạng"));
 
@@ -178,7 +178,7 @@ class ImportInvoiceControllerTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_ImportInvoiceController_importFromExcel_003
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Import Excel với dữ liệu rỗng
      * Input: File Excel rỗng
      * Expected Output: HTTP 500
@@ -186,8 +186,8 @@ class ImportInvoiceControllerTest {
      */
     @Test
     @WithMockUser(roles = "ADMIN")
-    @DisplayName("TC_AUTH_ImportInvoiceController_importFromExcel_003: Import Excel rỗng")
-    void TC_AUTH_ImportInvoiceController_importFromExcel_003() throws Exception {
+    @DisplayName("TC-FR-02-001: Import Excel rỗng")
+    void TC_FR_02_001() throws Exception {
         when(importInvoiceService.importFromExcel(any()))
                 .thenThrow(new RuntimeException("File không có dữ liệu"));
 
@@ -204,7 +204,7 @@ class ImportInvoiceControllerTest {
     // ======================== GET BY ID ========================
 
     /**
-     * Test Case ID: TC_AUTH_ImportInvoiceController_getById_001
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Lấy chi tiết phiếu nhập thành công
      * Input: id=1
      * Expected Output: HTTP 200, thông tin phiếu nhập
@@ -212,8 +212,8 @@ class ImportInvoiceControllerTest {
      */
     @Test
     @WithMockUser(roles = "ADMIN")
-    @DisplayName("TC_AUTH_ImportInvoiceController_getById_001: Lấy phiếu nhập theo ID thành công")
-    void TC_AUTH_ImportInvoiceController_getById_001() throws Exception {
+    @DisplayName("TC-FR-02-001: Lấy phiếu nhập theo ID thành công")
+    void TC_FR_02_001() throws Exception {
         ImportInvoiceResponse response = createMockResponse();
         when(importInvoiceService.getById(1L)).thenReturn(response);
 
@@ -223,7 +223,7 @@ class ImportInvoiceControllerTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_ImportInvoiceController_getById_002
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Lấy phiếu nhập không tồn tại
      * Input: id=999
      * Expected Output: HTTP 500
@@ -231,8 +231,8 @@ class ImportInvoiceControllerTest {
      */
     @Test
     @WithMockUser(roles = "ADMIN")
-    @DisplayName("TC_AUTH_ImportInvoiceController_getById_002: Lấy phiếu nhập - không tồn tại")
-    void TC_AUTH_ImportInvoiceController_getById_002() throws Exception {
+    @DisplayName("TC-FR-02-001: Lấy phiếu nhập - không tồn tại")
+    void TC_FR_02_001() throws Exception {
         when(importInvoiceService.getById(999L))
                 .thenThrow(new RuntimeException("Không tìm thấy phiếu nhập"));
 
@@ -243,7 +243,7 @@ class ImportInvoiceControllerTest {
     // ======================== CREATE ========================
 
     /**
-     * Test Case ID: TC_AUTH_ImportInvoiceController_create_001
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Tạo phiếu nhập thành công
      * Input: ImportInvoiceRequest(name="Invoice #2", details=[...])
      * Expected Output: HTTP 200, phiếu nhập đã tạo
@@ -251,8 +251,8 @@ class ImportInvoiceControllerTest {
      */
     @Test
     @WithMockUser(roles = "ADMIN")
-    @DisplayName("TC_AUTH_ImportInvoiceController_create_001: Tạo phiếu nhập thành công")
-    void TC_AUTH_ImportInvoiceController_create_001() throws Exception {
+    @DisplayName("TC-FR-02-001: Tạo phiếu nhập thành công")
+    void TC_FR_02_001() throws Exception {
         ImportInvoiceRequest request = new ImportInvoiceRequest();
         request.setName("Invoice #2");
         request.setDetails(List.of());
@@ -270,7 +270,7 @@ class ImportInvoiceControllerTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_ImportInvoiceController_create_002
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Tạo phiếu nhập với tên rỗng
      * Input: ImportInvoiceRequest(name=null)
      * Expected Output: HTTP 500
@@ -278,8 +278,8 @@ class ImportInvoiceControllerTest {
      */
     @Test
     @WithMockUser(roles = "ADMIN")
-    @DisplayName("TC_AUTH_ImportInvoiceController_create_002: Tạo phiếu nhập - tên rỗng")
-    void TC_AUTH_ImportInvoiceController_create_002() throws Exception {
+    @DisplayName("TC-FR-02-001: Tạo phiếu nhập - tên rỗng")
+    void TC_FR_02_001() throws Exception {
         ImportInvoiceRequest request = new ImportInvoiceRequest();
 
         when(importInvoiceService.create(any()))
@@ -294,7 +294,7 @@ class ImportInvoiceControllerTest {
     // ======================== DELETE ========================
 
     /**
-     * Test Case ID: TC_AUTH_ImportInvoiceController_delete_001
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Xóa phiếu nhập thành công
      * Input: id=1
      * Expected Output: HTTP 200, message "Deleted"
@@ -302,8 +302,8 @@ class ImportInvoiceControllerTest {
      */
     @Test
     @WithMockUser(roles = "ADMIN")
-    @DisplayName("TC_AUTH_ImportInvoiceController_delete_001: Xóa phiếu nhập thành công")
-    void TC_AUTH_ImportInvoiceController_delete_001() throws Exception {
+    @DisplayName("TC-FR-02-001: Xóa phiếu nhập thành công")
+    void TC_FR_02_001() throws Exception {
         doNothing().when(importInvoiceService).delete(1L);
 
         mockMvc.perform(delete("/api/admin/import-invoices/1"))
@@ -312,7 +312,7 @@ class ImportInvoiceControllerTest {
     }
 
     /**
-     * Test Case ID: TC_AUTH_ImportInvoiceController_delete_002
+     * Test Case ID: TC-FR-02-001
      * Test Objective: Xóa phiếu nhập không tồn tại
      * Input: id=999
      * Expected Output: HTTP 500
@@ -320,8 +320,8 @@ class ImportInvoiceControllerTest {
      */
     @Test
     @WithMockUser(roles = "ADMIN")
-    @DisplayName("TC_AUTH_ImportInvoiceController_delete_002: Xóa phiếu nhập - không tồn tại")
-    void TC_AUTH_ImportInvoiceController_delete_002() throws Exception {
+    @DisplayName("TC-FR-02-001: Xóa phiếu nhập - không tồn tại")
+    void TC_FR_02_001() throws Exception {
         doThrow(new RuntimeException("Không tìm thấy phiếu nhập"))
                 .when(importInvoiceService).delete(999L);
 
