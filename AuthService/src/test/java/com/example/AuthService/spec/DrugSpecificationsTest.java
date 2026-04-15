@@ -33,15 +33,15 @@ class DrugSpecificationsTest {
     // ======================== WITH FILTER ========================
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_DrugSpecifications_withFilter_001
      * Test Objective: Filter với tất cả tham số null (trả tất cả)
      * Input: DrugFilter rỗng (tất cả fields null)
      * Expected Output: Specification không null, toPredicate trả về conjunction rỗng
      * Notes: Không có điều kiện lọc → lấy tất cả
      */
     @Test
-    @DisplayName("TC-FR-02-001: Filter rỗng - lấy tất cả")
-    void TC_FR_02_001() {
+    @DisplayName("TC_AUTH_DrugSpecifications_withFilter_001: Filter rỗng - lấy tất cả")
+    void TC_AUTH_DrugSpecifications_withFilter_001() {
         DrugFilter filter = new DrugFilter();
 
         when(cb.and(any(Predicate[].class))).thenReturn(predicate);
@@ -53,15 +53,15 @@ class DrugSpecificationsTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_DrugSpecifications_withFilter_002
      * Test Objective: Filter với keyword tìm kiếm (q)
      * Input: DrugFilter(q="para")
      * Expected Output: Predicate LIKE trên trường name
      * Notes: Tìm kiếm theo tên thuốc
      */
     @Test
-    @DisplayName("TC-FR-02-001: Filter với keyword")
-    void TC_FR_02_001() {
+    @DisplayName("TC_AUTH_DrugSpecifications_withFilter_002: Filter với keyword")
+    void TC_AUTH_DrugSpecifications_withFilter_002() {
         DrugFilter filter = new DrugFilter();
         filter.setQ("para");
 
@@ -77,15 +77,15 @@ class DrugSpecificationsTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_DrugSpecifications_withFilter_003
      * Test Objective: Filter với minPrice
      * Input: DrugFilter(minPrice=10000)
      * Expected Output: Predicate >= trên trường price
      * Notes: Giá tối thiểu
      */
     @Test
-    @DisplayName("TC-FR-02-001: Filter với minPrice")
-    void TC_FR_02_001() {
+    @DisplayName("TC_AUTH_DrugSpecifications_withFilter_003: Filter với minPrice")
+    void TC_AUTH_DrugSpecifications_withFilter_003() {
         DrugFilter filter = new DrugFilter();
         filter.setMinPrice(BigDecimal.valueOf(10000));
 
@@ -100,15 +100,15 @@ class DrugSpecificationsTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_DrugSpecifications_withFilter_004
      * Test Objective: Filter với maxPrice
      * Input: DrugFilter(maxPrice=50000)
      * Expected Output: Predicate <= trên trường price
      * Notes: Giá tối đa
      */
     @Test
-    @DisplayName("TC-FR-02-001: Filter với maxPrice")
-    void TC_FR_02_001() {
+    @DisplayName("TC_AUTH_DrugSpecifications_withFilter_004: Filter với maxPrice")
+    void TC_AUTH_DrugSpecifications_withFilter_004() {
         DrugFilter filter = new DrugFilter();
         filter.setMaxPrice(BigDecimal.valueOf(50000));
 
@@ -123,15 +123,15 @@ class DrugSpecificationsTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_DrugSpecifications_withFilter_005
      * Test Objective: Filter với inStock=true (stockQuantity > 0)
      * Input: DrugFilter(inStock=true)
      * Expected Output: Predicate > 0 trên stockQuantity
      * Notes: Chỉ lấy thuốc còn hàng
      */
     @Test
-    @DisplayName("TC-FR-02-001: Filter inStock=true")
-    void TC_FR_02_001() {
+    @DisplayName("TC_AUTH_DrugSpecifications_withFilter_005: Filter inStock=true")
+    void TC_AUTH_DrugSpecifications_withFilter_005() {
         DrugFilter filter = new DrugFilter();
         filter.setInStock(true);
 
@@ -146,15 +146,15 @@ class DrugSpecificationsTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_DrugSpecifications_withFilter_006
      * Test Objective: Filter với null DrugFilter
      * Input: DrugFilter = null (truyền null)
      * Expected Output: Predicate trả kết quả mặc định (không lọc)
      * Notes: Edge case - filter null
      */
     @Test
-    @DisplayName("TC-FR-02-001: Filter null")
-    void TC_FR_02_001() {
+    @DisplayName("TC_AUTH_DrugSpecifications_withFilter_006: Filter null")
+    void TC_AUTH_DrugSpecifications_withFilter_006() {
         when(cb.and(any(Predicate[].class))).thenReturn(predicate);
 
         Specification<Drug> spec = DrugSpecifications.withFilter(null);
@@ -164,15 +164,15 @@ class DrugSpecificationsTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_DrugSpecifications_withFilter_007
      * Test Objective: Filter với isActive
      * Input: DrugFilter(isActive=true)
      * Expected Output: Predicate equal trên isActive
      * Notes: Lọc thuốc đang hoạt động
      */
     @Test
-    @DisplayName("TC-FR-02-001: Filter isActive=true")
-    void TC_FR_02_001() {
+    @DisplayName("TC_AUTH_DrugSpecifications_withFilter_007: Filter isActive=true")
+    void TC_AUTH_DrugSpecifications_withFilter_007() {
         DrugFilter filter = new DrugFilter();
         filter.setIsActive(true);
 

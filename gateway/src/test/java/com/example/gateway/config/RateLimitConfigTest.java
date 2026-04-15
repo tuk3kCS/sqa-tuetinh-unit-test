@@ -37,7 +37,7 @@ class RateLimitConfigTest {
     }
 
     /**
-     * Test Case ID: TC-FR-00-001ateLimitConfig_ipKeyResolver_001
+     * Test Case ID: TC_GW_RateLimitConfig_ipKeyResolver_001
      * Test Objective: Trả về đúng IP address khi request có remote address
      * Input: ServerWebExchange với remote address 192.168.1.100
      * Expected Output: Mono chứa "192.168.1.100"
@@ -66,7 +66,7 @@ class RateLimitConfigTest {
     }
 
     /**
-     * Test Case ID: TC-FR-00-001ateLimitConfig_ipKeyResolver_002
+     * Test Case ID: TC_GW_RateLimitConfig_ipKeyResolver_002
      * Test Objective: Trả về "unknown" khi request không có remote address (null)
      * Input: ServerWebExchange với getRemoteAddress() = null
      * Expected Output: Mono chứa "unknown"
@@ -92,7 +92,7 @@ class RateLimitConfigTest {
     }
 
     /**
-     * Test Case ID: TC-FR-00-001ateLimitConfig_ipKeyResolver_003
+     * Test Case ID: TC_GW_RateLimitConfig_ipKeyResolver_003
      * Test Objective: Trả về "unknown" khi InetSocketAddress có getAddress() = null
      * Input: InetSocketAddress với unresolved host (address = null)
      * Expected Output: Mono chứa "unknown"
@@ -119,7 +119,7 @@ class RateLimitConfigTest {
     }
 
     /**
-     * Test Case ID: TC-FR-00-001ateLimitConfig_ipKeyResolver_004
+     * Test Case ID: TC_GW_RateLimitConfig_ipKeyResolver_004
      * Test Objective: Trả đúng IPv6 loopback address
      * Input: ServerWebExchange với remote address ::1 (IPv6 loopback)
      * Expected Output: Mono chứa "0:0:0:0:0:0:0:1"
@@ -148,7 +148,7 @@ class RateLimitConfigTest {
     }
 
     /**
-     * Test Case ID: TC-FR-00-001ateLimitConfig_ipKeyResolver_005
+     * Test Case ID: TC_GW_RateLimitConfig_ipKeyResolver_005
      * Test Objective: Kiểm tra ipKeyResolver bean không null
      * Input: Gọi ipKeyResolver()
      * Expected Output: KeyResolver instance không null

@@ -47,15 +47,15 @@ class InventoryServiceImplTest {
     // ==================== CALCULATE STOCK ====================
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_InventoryServiceImpl_calculateStock_001
      * Test Objective: Tính tồn kho đúng = imported - sold
      * Input: drugId hợp lệ, imported = 100, sold = 20
      * Expected Output: 80
      * Notes: Happy path – stock = totalImported - soldQuantity
      */
     @Test
-    @DisplayName("TC-FR-02-001: Tính tồn kho đúng")
-    void TC_FR_02_001() {
+    @DisplayName("TC_AUTH_InventoryServiceImpl_calculateStock_001: Tính tồn kho đúng")
+    void TC_AUTH_InventoryServiceImpl_calculateStock_001() {
         when(importRepo.totalImported(1L)).thenReturn(100);
         when(drugRepository.findById(1L)).thenReturn(Optional.of(drug));
 
@@ -65,15 +65,15 @@ class InventoryServiceImplTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_InventoryServiceImpl_calculateStock_002
      * Test Objective: Tính tồn kho khi imported = 0
      * Input: imported = 0, sold = 0
      * Expected Output: 0
      * Notes: Edge case – kho trống
      */
     @Test
-    @DisplayName("TC-FR-02-001: Kho trống → 0")
-    void TC_FR_02_001() {
+    @DisplayName("TC_AUTH_InventoryServiceImpl_calculateStock_002: Kho trống → 0")
+    void TC_AUTH_InventoryServiceImpl_calculateStock_002() {
         drug.setSoldQuantity(0);
         when(importRepo.totalImported(1L)).thenReturn(0);
         when(drugRepository.findById(1L)).thenReturn(Optional.of(drug));
@@ -84,15 +84,15 @@ class InventoryServiceImplTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_InventoryServiceImpl_calculateStock_003
      * Test Objective: Tính tồn kho thất bại khi drug không tồn tại
      * Input: drugId = 999
      * Expected Output: RuntimeException "Drug not found"
      * Notes: Kiểm tra nhánh drugRepository.findById trả về empty
      */
     @Test
-    @DisplayName("TC-FR-02-001: Drug không tồn tại → exception")
-    void TC_FR_02_001() {
+    @DisplayName("TC_AUTH_InventoryServiceImpl_calculateStock_003: Drug không tồn tại → exception")
+    void TC_AUTH_InventoryServiceImpl_calculateStock_003() {
         when(importRepo.totalImported(999L)).thenReturn(0);
         when(drugRepository.findById(999L)).thenReturn(Optional.empty());
 
@@ -104,15 +104,15 @@ class InventoryServiceImplTest {
     // ==================== CALCULATE STOCK FOR DRUGS ====================
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_InventoryServiceImpl_calculateStockForDrugs_001
      * Test Objective: calculateStockForDrugs trả về map rỗng (chưa implement)
      * Input: list drugIds
      * Expected Output: Map rỗng
      * Notes: Phương thức hiện tại return Map.of()
      */
     @Test
-    @DisplayName("TC-FR-02-001: Trả về map rỗng")
-    void TC_FR_02_001() {
+    @DisplayName("TC_AUTH_InventoryServiceImpl_calculateStockForDrugs_001: Trả về map rỗng")
+    void TC_AUTH_InventoryServiceImpl_calculateStockForDrugs_001() {
         Map<Long, Integer> result = inventoryService.calculateStockForDrugs(List.of(1L, 2L));
 
         assertThat(result).isEmpty();
@@ -121,15 +121,15 @@ class InventoryServiceImplTest {
     // ==================== GET TOTAL IMPORTED FOR DRUGS ====================
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_InventoryServiceImpl_getTotalImportedForDrugs_001
      * Test Objective: Lấy tổng số lượng nhập cho nhiều drugs
      * Input: drugIds = [1, 2], DB trả về dữ liệu
      * Expected Output: Map chứa drugId → totalImported
      * Notes: Happy path – có dữ liệu nhập kho
      */
     @Test
-    @DisplayName("TC-FR-02-001: Lấy tổng nhập thành công")
-    void TC_FR_02_001() {
+    @DisplayName("TC_AUTH_InventoryServiceImpl_getTotalImportedForDrugs_001: Lấy tổng nhập thành công")
+    void TC_AUTH_InventoryServiceImpl_getTotalImportedForDrugs_001() {
         List<Object[]> mockResults = List.of(
                 new Object[]{1L, 100L},
                 new Object[]{2L, 200L}
@@ -144,15 +144,15 @@ class InventoryServiceImplTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_InventoryServiceImpl_getTotalImportedForDrugs_002
      * Test Objective: Lấy tổng nhập khi không có dữ liệu
      * Input: drugIds = [999], DB trả về danh sách rỗng
      * Expected Output: Map rỗng
      * Notes: Edge case – không có phiếu nhập nào
      */
     @Test
-    @DisplayName("TC-FR-02-001: Không có dữ liệu → map rỗng")
-    void TC_FR_02_001() {
+    @DisplayName("TC_AUTH_InventoryServiceImpl_getTotalImportedForDrugs_002: Không có dữ liệu → map rỗng")
+    void TC_AUTH_InventoryServiceImpl_getTotalImportedForDrugs_002() {
         when(importRepo.findTotalImportedForDrugs(List.of(999L))).thenReturn(List.of());
 
         Map<Long, Integer> result = inventoryService.getTotalImportedForDrugs(List.of(999L));

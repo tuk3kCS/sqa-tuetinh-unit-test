@@ -66,15 +66,15 @@ class JwtServiceTest {
     // ======================== GENERATE ACCESS TOKEN ========================
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_JwtService_generateAccessToken_001
      * Test Objective: Tạo access token thành công với thông tin user hợp lệ
      * Input: User(email="test@example.com", role=USER, id=1)
      * Expected Output: Token không null, không rỗng
      * Notes: Happy path - tạo JWT access token
      */
     @Test
-    @DisplayName("TC-FR-02-001: Tạo access token thành công")
-    void TC_FR_02_001() {
+    @DisplayName("TC_AUTH_JwtService_generateAccessToken_001: Tạo access token thành công")
+    void TC_AUTH_JwtService_generateAccessToken_001() {
         User user = createTestUser();
         String token = jwtService.generateAccessToken(user);
 
@@ -83,15 +83,15 @@ class JwtServiceTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_JwtService_generateAccessToken_002
      * Test Objective: Access token chứa đúng username (email) trong subject
      * Input: User(email="test@example.com")
      * Expected Output: extractUsername trả về "test@example.com"
      * Notes: Kiểm tra subject trong JWT payload
      */
     @Test
-    @DisplayName("TC-FR-02-001: Access token chứa đúng username")
-    void TC_FR_02_001() {
+    @DisplayName("TC_AUTH_JwtService_generateAccessToken_002: Access token chứa đúng username")
+    void TC_AUTH_JwtService_generateAccessToken_002() {
         User user = createTestUser();
         String token = jwtService.generateAccessToken(user);
         String extractedUsername = jwtService.extractUsername(token);
@@ -100,15 +100,15 @@ class JwtServiceTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_JwtService_generateAccessToken_003
      * Test Objective: Access token hợp lệ (chưa hết hạn)
      * Input: User hợp lệ
      * Expected Output: isValid() trả về true
      * Notes: Token vừa tạo phải hợp lệ
      */
     @Test
-    @DisplayName("TC-FR-02-001: Access token hợp lệ sau khi tạo")
-    void TC_FR_02_001() {
+    @DisplayName("TC_AUTH_JwtService_generateAccessToken_003: Access token hợp lệ sau khi tạo")
+    void TC_AUTH_JwtService_generateAccessToken_003() {
         User user = createTestUser();
         String token = jwtService.generateAccessToken(user);
 
@@ -116,15 +116,15 @@ class JwtServiceTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_JwtService_generateAccessToken_004
      * Test Objective: Access token chứa email được lowercase
      * Input: User(email="Test@Example.COM")
      * Expected Output: extractUsername trả về "test@example.com"
      * Notes: Email luôn được chuẩn hóa về lowercase
      */
     @Test
-    @DisplayName("TC-FR-02-001: Email trong token được lowercase")
-    void TC_FR_02_001() {
+    @DisplayName("TC_AUTH_JwtService_generateAccessToken_004: Email trong token được lowercase")
+    void TC_AUTH_JwtService_generateAccessToken_004() {
         User user = createTestUser();
         user.setEmail("Test@Example.COM");
         String token = jwtService.generateAccessToken(user);
@@ -135,15 +135,15 @@ class JwtServiceTest {
     // ======================== GENERATE REFRESH TOKEN ========================
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_JwtService_generateRefreshToken_001
      * Test Objective: Tạo refresh token thành công
      * Input: username="test@example.com"
      * Expected Output: Token không null, không rỗng
      * Notes: Happy path
      */
     @Test
-    @DisplayName("TC-FR-02-001: Tạo refresh token thành công")
-    void TC_FR_02_001() {
+    @DisplayName("TC_AUTH_JwtService_generateRefreshToken_001: Tạo refresh token thành công")
+    void TC_AUTH_JwtService_generateRefreshToken_001() {
         String token = jwtService.generateRefreshToken("test@example.com");
 
         assertNotNull(token);
@@ -151,15 +151,15 @@ class JwtServiceTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_JwtService_generateRefreshToken_002
      * Test Objective: Refresh token chứa đúng username
      * Input: username="test@example.com"
      * Expected Output: extractUsername trả về "test@example.com"
      * Notes: Kiểm tra subject
      */
     @Test
-    @DisplayName("TC-FR-02-001: Refresh token chứa đúng username")
-    void TC_FR_02_001() {
+    @DisplayName("TC_AUTH_JwtService_generateRefreshToken_002: Refresh token chứa đúng username")
+    void TC_AUTH_JwtService_generateRefreshToken_002() {
         String token = jwtService.generateRefreshToken("test@example.com");
         String extractedUsername = jwtService.extractUsername(token);
 
@@ -167,15 +167,15 @@ class JwtServiceTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_JwtService_generateRefreshToken_003
      * Test Objective: Refresh token hợp lệ sau khi tạo
      * Input: username="test@example.com"
      * Expected Output: isValid() trả về true
      * Notes: Token mới phải hợp lệ
      */
     @Test
-    @DisplayName("TC-FR-02-001: Refresh token hợp lệ")
-    void TC_FR_02_001() {
+    @DisplayName("TC_AUTH_JwtService_generateRefreshToken_003: Refresh token hợp lệ")
+    void TC_AUTH_JwtService_generateRefreshToken_003() {
         String token = jwtService.generateRefreshToken("test@example.com");
 
         assertTrue(jwtService.isValid(token));
@@ -184,15 +184,15 @@ class JwtServiceTest {
     // ======================== EXTRACT USERNAME ========================
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_JwtService_extractUsername_001
      * Test Objective: Trích xuất username từ access token
      * Input: Access token hợp lệ
      * Expected Output: Email đúng
      * Notes: Happy path
      */
     @Test
-    @DisplayName("TC-FR-02-001: Trích xuất username từ access token")
-    void TC_FR_02_001() {
+    @DisplayName("TC_AUTH_JwtService_extractUsername_001: Trích xuất username từ access token")
+    void TC_AUTH_JwtService_extractUsername_001() {
         User user = createTestUser();
         String token = jwtService.generateAccessToken(user);
 
@@ -200,45 +200,45 @@ class JwtServiceTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_JwtService_extractUsername_002
      * Test Objective: Trích xuất username từ refresh token
      * Input: Refresh token hợp lệ
      * Expected Output: Username đúng
      * Notes: Cả access và refresh đều lưu subject
      */
     @Test
-    @DisplayName("TC-FR-02-001: Trích xuất username từ refresh token")
-    void TC_FR_02_001() {
+    @DisplayName("TC_AUTH_JwtService_extractUsername_002: Trích xuất username từ refresh token")
+    void TC_AUTH_JwtService_extractUsername_002() {
         String token = jwtService.generateRefreshToken("user@test.com");
 
         assertEquals("user@test.com", jwtService.extractUsername(token));
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_JwtService_extractUsername_003
      * Test Objective: Trích xuất username từ token bị sửa đổi gây exception
      * Input: Token bị cắt bớt
      * Expected Output: Exception được ném
      * Notes: Token bị tamper → lỗi parse
      */
     @Test
-    @DisplayName("TC-FR-02-001: Token bị sửa đổi ném exception")
-    void TC_FR_02_001() {
+    @DisplayName("TC_AUTH_JwtService_extractUsername_003: Token bị sửa đổi ném exception")
+    void TC_AUTH_JwtService_extractUsername_003() {
         assertThrows(Exception.class, () -> jwtService.extractUsername("tampered.invalid.token"));
     }
 
     // ======================== IS VALID ========================
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_JwtService_isValid_001
      * Test Objective: Kiểm tra token hợp lệ (chưa hết hạn)
      * Input: Token vừa tạo
      * Expected Output: true
      * Notes: Happy path
      */
     @Test
-    @DisplayName("TC-FR-02-001: Token hợp lệ trả về true")
-    void TC_FR_02_001() {
+    @DisplayName("TC_AUTH_JwtService_isValid_001: Token hợp lệ trả về true")
+    void TC_AUTH_JwtService_isValid_001() {
         User user = createTestUser();
         String token = jwtService.generateAccessToken(user);
 
@@ -246,15 +246,15 @@ class JwtServiceTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_JwtService_isValid_002
      * Test Objective: Kiểm tra token đã hết hạn
      * Input: Token tạo với expiration trong quá khứ
      * Expected Output: Exception khi parse (token hết hạn)
      * Notes: Sử dụng key cùng secret để tạo token hết hạn
      */
     @Test
-    @DisplayName("TC-FR-02-001: Token hết hạn ném exception")
-    void TC_FR_02_001() {
+    @DisplayName("TC_AUTH_JwtService_isValid_002: Token hết hạn ném exception")
+    void TC_AUTH_JwtService_isValid_002() {
         SecretKey key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(TEST_SECRET));
 
         String expiredToken = Jwts.builder()
@@ -268,15 +268,15 @@ class JwtServiceTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_JwtService_isValid_003
      * Test Objective: Kiểm tra token bị sửa đổi (tampered)
      * Input: Token hợp lệ nhưng bị thay đổi ký tự
      * Expected Output: Exception khi parse
      * Notes: Chữ ký không khớp
      */
     @Test
-    @DisplayName("TC-FR-02-001: Token bị tamper ném exception")
-    void TC_FR_02_001() {
+    @DisplayName("TC_AUTH_JwtService_isValid_003: Token bị tamper ném exception")
+    void TC_AUTH_JwtService_isValid_003() {
         User user = createTestUser();
         String validToken = jwtService.generateAccessToken(user);
         String tamperedToken = validToken.substring(0, validToken.length() - 5) + "XXXXX";
@@ -285,15 +285,15 @@ class JwtServiceTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_JwtService_isValid_004
      * Test Objective: Kiểm tra token rỗng
      * Input: Token = ""
      * Expected Output: Exception
      * Notes: Token rỗng không hợp lệ
      */
     @Test
-    @DisplayName("TC-FR-02-001: Token rỗng ném exception")
-    void TC_FR_02_001() {
+    @DisplayName("TC_AUTH_JwtService_isValid_004: Token rỗng ném exception")
+    void TC_AUTH_JwtService_isValid_004() {
         assertThrows(Exception.class, () -> jwtService.isValid(""));
     }
 }

@@ -59,15 +59,15 @@ class OAuth2LoginSuccessHandlerTest {
     // ======================== ON AUTHENTICATION SUCCESS ========================
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_OAuth2LoginSuccessHandler_onAuthenticationSuccess_001
      * Test Objective: Xử lý thành công khi principal là OAuth2UserPrincipal
      * Input: Authentication với OAuth2UserPrincipal chứa User + attributes
      * Expected Output: HTTP 200, response body chứa token JSON
      * Notes: Happy path - OAuth2 login qua Google
      */
     @Test
-    @DisplayName("TC-FR-02-001: OAuth2UserPrincipal thành công")
-    void TC_FR_02_001() throws Exception {
+    @DisplayName("TC_AUTH_OAuth2LoginSuccessHandler_onAuthenticationSuccess_001: OAuth2UserPrincipal thành công")
+    void TC_AUTH_OAuth2LoginSuccessHandler_onAuthenticationSuccess_001() throws Exception {
         User user = createTestUser();
         Map<String, Object> attributes = Map.of("sub", "google-id-123", "email", "google@test.com");
         OAuth2UserPrincipal principal = new OAuth2UserPrincipal(user, attributes);
@@ -93,15 +93,15 @@ class OAuth2LoginSuccessHandlerTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_OAuth2LoginSuccessHandler_onAuthenticationSuccess_002
      * Test Objective: Xử lý khi principal là OAuth2User (fallback)
      * Input: Authentication với DefaultOAuth2User
      * Expected Output: HTTP 200, token response
      * Notes: Fallback path - upsert user từ OAuth2User
      */
     @Test
-    @DisplayName("TC-FR-02-001: OAuth2User fallback")
-    void TC_FR_02_001() throws Exception {
+    @DisplayName("TC_AUTH_OAuth2LoginSuccessHandler_onAuthenticationSuccess_002: OAuth2User fallback")
+    void TC_AUTH_OAuth2LoginSuccessHandler_onAuthenticationSuccess_002() throws Exception {
         Map<String, Object> attributes = Map.of(
                 "sub", "google-id-456",
                 "email", "new@test.com",
@@ -130,15 +130,15 @@ class OAuth2LoginSuccessHandlerTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_OAuth2LoginSuccessHandler_onAuthenticationSuccess_003
      * Test Objective: Xử lý khi principal là UserDetails thông thường
      * Input: Authentication với User entity (UserDetails)
      * Expected Output: HTTP 200, token response
      * Notes: Trường hợp UserDetails bình thường (không phải OAuth2)
      */
     @Test
-    @DisplayName("TC-FR-02-001: UserDetails principal")
-    void TC_FR_02_001() throws Exception {
+    @DisplayName("TC_AUTH_OAuth2LoginSuccessHandler_onAuthenticationSuccess_003: UserDetails principal")
+    void TC_AUTH_OAuth2LoginSuccessHandler_onAuthenticationSuccess_003() throws Exception {
         User user = createTestUser();
 
         Authentication auth = mock(Authentication.class);
@@ -157,15 +157,15 @@ class OAuth2LoginSuccessHandlerTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_OAuth2LoginSuccessHandler_onAuthenticationSuccess_004
      * Test Objective: Xử lý khi principal không phải loại nào hỗ trợ
      * Input: Authentication với principal = String
      * Expected Output: HTTP 401, error message
      * Notes: Unsupported principal type
      */
     @Test
-    @DisplayName("TC-FR-02-001: Unsupported principal type")
-    void TC_FR_02_001() throws Exception {
+    @DisplayName("TC_AUTH_OAuth2LoginSuccessHandler_onAuthenticationSuccess_004: Unsupported principal type")
+    void TC_AUTH_OAuth2LoginSuccessHandler_onAuthenticationSuccess_004() throws Exception {
         Authentication auth = mock(Authentication.class);
         when(auth.getPrincipal()).thenReturn("unknown-principal");
 
@@ -179,15 +179,15 @@ class OAuth2LoginSuccessHandlerTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_OAuth2LoginSuccessHandler_onAuthenticationSuccess_005
      * Test Objective: Xử lý OAuth2UserPrincipal với attributes null
      * Input: OAuth2UserPrincipal có attributes = null
      * Expected Output: HTTP 200, token response (attributes thay bằng empty map)
      * Notes: Edge case - attributes có thể null
      */
     @Test
-    @DisplayName("TC-FR-02-001: Attributes null")
-    void TC_FR_02_001() throws Exception {
+    @DisplayName("TC_AUTH_OAuth2LoginSuccessHandler_onAuthenticationSuccess_005: Attributes null")
+    void TC_AUTH_OAuth2LoginSuccessHandler_onAuthenticationSuccess_005() throws Exception {
         User user = createTestUser();
         OAuth2UserPrincipal principal = new OAuth2UserPrincipal(user, null);
 

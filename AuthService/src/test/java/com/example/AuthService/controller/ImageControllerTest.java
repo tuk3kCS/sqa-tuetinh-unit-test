@@ -1,18 +1,15 @@
 package com.example.AuthService.controller;
 
-import com.example.AuthService.security.jwt.JwtService;
-import com.example.AuthService.security.OAuth2LoginSuccessHandler;
 import com.example.AuthService.service.CloudinaryService;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import com.example.AuthService.service.SocialLoginService;
+import com.example.AuthService.security.jwt.JwtService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -26,39 +23,32 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @WebMvcTest(ImageController.class)
 @AutoConfigureMockMvc(addFilters = false)
-@ActiveProfiles("test")
 class ImageControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
-    @MockitoBean
+    @MockBean
     private CloudinaryService cloudinaryService;
 
-    @MockitoBean
+    @MockBean
     private JwtService jwtService;
 
-    @MockitoBean
-    private SocialLoginService socialLoginService;
-
-    @MockitoBean
-    private OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
-
-    @MockitoBean
+    @MockBean
     private UserDetailsService userDetailsService;
 
     // ======================== UPLOAD IMAGE ========================
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_ImageController_uploadImage_001
      * Test Objective: Upload hình ảnh thành công
      * Input: MultipartFile ảnh JPEG hợp lệ
      * Expected Output: HTTP 200, body chứa URL ảnh
      * Notes: Happy path - upload ảnh lên Cloudinary
      */
     @Test
-    @DisplayName("TC-FR-02-001: Upload ảnh thành công")
-    void TC_FR_02_001() throws Exception {
+    @DisplayName("TC_AUTH_ImageController_uploadImage_001: Upload ảnh thành công")
+    void TC_AUTH_ImageController_uploadImage_001() throws Exception {
         when(cloudinaryService.uploadImage(any()))
                 .thenReturn("https://res.cloudinary.com/test/image.jpg");
 
@@ -71,15 +61,15 @@ class ImageControllerTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_ImageController_uploadImage_002
      * Test Objective: Upload ảnh khi Cloudinary lỗi
      * Input: MultipartFile ảnh hợp lệ nhưng Cloudinary không khả dụng
      * Expected Output: HTTP 500
      * Notes: Cloudinary service ném RuntimeException
      */
     @Test
-    @DisplayName("TC-FR-02-001: Upload ảnh - Cloudinary lỗi")
-    void TC_FR_02_001() throws Exception {
+    @DisplayName("TC_AUTH_ImageController_uploadImage_002: Upload ảnh - Cloudinary lỗi")
+    void TC_AUTH_ImageController_uploadImage_002() throws Exception {
         when(cloudinaryService.uploadImage(any()))
                 .thenThrow(new RuntimeException("Cloudinary upload failed"));
 
@@ -91,15 +81,15 @@ class ImageControllerTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_ImageController_uploadImage_003
      * Test Objective: Upload file PNG
      * Input: MultipartFile ảnh PNG
      * Expected Output: HTTP 200, URL ảnh
      * Notes: Kiểm tra hỗ trợ nhiều định dạng
      */
     @Test
-    @DisplayName("TC-FR-02-001: Upload ảnh PNG thành công")
-    void TC_FR_02_001() throws Exception {
+    @DisplayName("TC_AUTH_ImageController_uploadImage_003: Upload ảnh PNG thành công")
+    void TC_AUTH_ImageController_uploadImage_003() throws Exception {
         when(cloudinaryService.uploadImage(any()))
                 .thenReturn("https://res.cloudinary.com/test/photo.png");
 
@@ -112,15 +102,15 @@ class ImageControllerTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_ImageController_uploadImage_004
      * Test Objective: Upload file rỗng
      * Input: MultipartFile rỗng (0 bytes)
      * Expected Output: HTTP 500 hoặc xử lý từ service
      * Notes: Edge case - file không có nội dung
      */
     @Test
-    @DisplayName("TC-FR-02-001: Upload file rỗng")
-    void TC_FR_02_001() throws Exception {
+    @DisplayName("TC_AUTH_ImageController_uploadImage_004: Upload file rỗng")
+    void TC_AUTH_ImageController_uploadImage_004() throws Exception {
         when(cloudinaryService.uploadImage(any()))
                 .thenThrow(new RuntimeException("File rỗng"));
 

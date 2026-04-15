@@ -3,9 +3,6 @@ package com.example.AuthService.controller;
 import com.example.AuthService.dto.request.UserUpdateRequestDTO;
 import com.example.AuthService.dto.response.UserProfileResponse;
 import com.example.AuthService.security.jwt.JwtService;
-import com.example.AuthService.security.OAuth2LoginSuccessHandler;
-import com.example.AuthService.service.SocialLoginService;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import com.example.AuthService.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
@@ -13,9 +10,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.server.ResponseStatusException;
@@ -33,7 +30,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @WebMvcTest(UserController.class)
 @AutoConfigureMockMvc(addFilters = false)
-@ActiveProfiles("test")
 class UserControllerTest {
 
     @Autowired
@@ -42,25 +38,19 @@ class UserControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @MockitoBean
+    @MockBean
     private UserService userService;
 
-    @MockitoBean
+    @MockBean
     private JwtService jwtService;
 
-    @MockitoBean
-    private SocialLoginService socialLoginService;
-
-    @MockitoBean
-    private OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
-
-    @MockitoBean
+    @MockBean
     private UserDetailsService userDetailsService;
 
     // ======================== GET USER PROFILE ========================
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_UserController_getUserProfile_001
      * Test Objective: Lấy profile người dùng hiện tại thành công
      * Input: User đã đăng nhập với email user@test.com
      * Expected Output: HTTP 200, body chứa thông tin profile
@@ -68,8 +58,8 @@ class UserControllerTest {
      */
     @Test
     @WithMockUser(username = "user@test.com")
-    @DisplayName("TC-FR-02-001: Lấy profile thành công")
-    void TC_FR_02_001() throws Exception {
+    @DisplayName("TC_AUTH_UserController_getUserProfile_001: Lấy profile thành công")
+    void TC_AUTH_UserController_getUserProfile_001() throws Exception {
         UserProfileResponse profile = UserProfileResponse.builder()
                 .email("user@test.com")
                 .name("Test User")
@@ -85,7 +75,7 @@ class UserControllerTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_UserController_getUserProfile_002
      * Test Objective: Lấy profile khi user không tồn tại trong DB
      * Input: User đăng nhập nhưng email không tìm thấy trong DB
      * Expected Output: HTTP 404
@@ -93,8 +83,8 @@ class UserControllerTest {
      */
     @Test
     @WithMockUser(username = "ghost@test.com")
-    @DisplayName("TC-FR-02-001: Lấy profile - user không tồn tại")
-    void TC_FR_02_001() throws Exception {
+    @DisplayName("TC_AUTH_UserController_getUserProfile_002: Lấy profile - user không tồn tại")
+    void TC_AUTH_UserController_getUserProfile_002() throws Exception {
         when(userService.getUserProfileByEmail("ghost@test.com"))
                 .thenThrow(new ResponseStatusException(NOT_FOUND, "Không tìm thấy user"));
 
@@ -103,7 +93,7 @@ class UserControllerTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_UserController_getUserProfile_003
      * Test Objective: Lấy profile với đầy đủ thông tin
      * Input: User có đầy đủ thông tin cá nhân
      * Expected Output: HTTP 200, body chứa tất cả trường
@@ -111,8 +101,8 @@ class UserControllerTest {
      */
     @Test
     @WithMockUser(username = "full@test.com")
-    @DisplayName("TC-FR-02-001: Lấy profile đầy đủ thông tin")
-    void TC_FR_02_001() throws Exception {
+    @DisplayName("TC_AUTH_UserController_getUserProfile_003: Lấy profile đầy đủ thông tin")
+    void TC_AUTH_UserController_getUserProfile_003() throws Exception {
         UserProfileResponse profile = UserProfileResponse.builder()
                 .email("full@test.com")
                 .name("Full User")
@@ -134,7 +124,7 @@ class UserControllerTest {
     // ======================== UPDATE MY PROFILE ========================
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_UserController_updateMyProfile_001
      * Test Objective: Cập nhật profile thành công
      * Input: UserUpdateRequestDTO(name="New Name", phoneNumber="0909999999")
      * Expected Output: HTTP 200, body chứa thông tin đã cập nhật
@@ -142,8 +132,8 @@ class UserControllerTest {
      */
     @Test
     @WithMockUser(username = "user@test.com")
-    @DisplayName("TC-FR-02-001: Cập nhật profile thành công")
-    void TC_FR_02_001() throws Exception {
+    @DisplayName("TC_AUTH_UserController_updateMyProfile_001: Cập nhật profile thành công")
+    void TC_AUTH_UserController_updateMyProfile_001() throws Exception {
         UserUpdateRequestDTO request = new UserUpdateRequestDTO();
         request.setName("New Name");
         request.setPhoneNumber("0909999999");
@@ -166,7 +156,7 @@ class UserControllerTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_UserController_updateMyProfile_002
      * Test Objective: Cập nhật profile với email trùng
      * Input: UserUpdateRequestDTO(email="existing@test.com")
      * Expected Output: HTTP 409 Conflict
@@ -174,8 +164,8 @@ class UserControllerTest {
      */
     @Test
     @WithMockUser(username = "user@test.com")
-    @DisplayName("TC-FR-02-001: Cập nhật profile - email trùng")
-    void TC_FR_02_001() throws Exception {
+    @DisplayName("TC_AUTH_UserController_updateMyProfile_002: Cập nhật profile - email trùng")
+    void TC_AUTH_UserController_updateMyProfile_002() throws Exception {
         UserUpdateRequestDTO request = new UserUpdateRequestDTO();
         request.setEmail("existing@test.com");
 
@@ -189,7 +179,7 @@ class UserControllerTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_UserController_updateMyProfile_003
      * Test Objective: Cập nhật profile với body rỗng (không thay đổi gì)
      * Input: UserUpdateRequestDTO rỗng
      * Expected Output: HTTP 200, profile không thay đổi
@@ -197,8 +187,8 @@ class UserControllerTest {
      */
     @Test
     @WithMockUser(username = "user@test.com")
-    @DisplayName("TC-FR-02-001: Cập nhật profile - body rỗng")
-    void TC_FR_02_001() throws Exception {
+    @DisplayName("TC_AUTH_UserController_updateMyProfile_003: Cập nhật profile - body rỗng")
+    void TC_AUTH_UserController_updateMyProfile_003() throws Exception {
         UserUpdateRequestDTO request = new UserUpdateRequestDTO();
 
         UserProfileResponse profile = UserProfileResponse.builder()

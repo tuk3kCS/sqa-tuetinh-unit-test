@@ -50,15 +50,15 @@ class SectionServiceImplTest {
     // ==================== LIST BY DRUG ====================
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_SectionServiceImpl_listByDrug_001
      * Test Objective: Lấy danh sách sections theo drugId thành công
      * Input: drugId tồn tại
      * Expected Output: List<Section> không rỗng
      * Notes: Happy path
      */
     @Test
-    @DisplayName("TC-FR-15-019: Lấy sections thành công")
-    void TC_FR_15_019() {
+    @DisplayName("TC_AUTH_SectionServiceImpl_listByDrug_001: Lấy sections thành công")
+    void TC_AUTH_SectionServiceImpl_listByDrug_001() {
         when(drugRepository.existsById(1L)).thenReturn(true);
         when(sectionRepository.findByDrugIdOrderByIdAsc(1L)).thenReturn(List.of(section));
 
@@ -69,15 +69,15 @@ class SectionServiceImplTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_SectionServiceImpl_listByDrug_002
      * Test Objective: Lấy sections thất bại khi drug không tồn tại
      * Input: drugId không có
      * Expected Output: RuntimeException "Drug not found"
      * Notes: Kiểm tra nhánh existsById == false
      */
     @Test
-    @DisplayName("TC-FR-15-020: Drug không tồn tại → exception")
-    void TC_FR_15_020() {
+    @DisplayName("TC_AUTH_SectionServiceImpl_listByDrug_002: Drug không tồn tại → exception")
+    void TC_AUTH_SectionServiceImpl_listByDrug_002() {
         when(drugRepository.existsById(999L)).thenReturn(false);
 
         assertThatThrownBy(() -> sectionService.listByDrug(999L))
@@ -86,15 +86,15 @@ class SectionServiceImplTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_SectionServiceImpl_listByDrug_003
      * Test Objective: Drug tồn tại nhưng không có sections
      * Input: drugId tồn tại, không có sections
      * Expected Output: List rỗng
      * Notes: Edge case – danh sách rỗng
      */
     @Test
-    @DisplayName("TC-FR-15-073: Không có sections → list rỗng")
-    void TC_FR_15_073() {
+    @DisplayName("TC_AUTH_SectionServiceImpl_listByDrug_003: Không có sections → list rỗng")
+    void TC_AUTH_SectionServiceImpl_listByDrug_003() {
         when(drugRepository.existsById(1L)).thenReturn(true);
         when(sectionRepository.findByDrugIdOrderByIdAsc(1L)).thenReturn(List.of());
 
@@ -106,15 +106,15 @@ class SectionServiceImplTest {
     // ==================== CREATE ====================
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_SectionServiceImpl_create_001
      * Test Objective: Tạo section mới thành công
      * Input: drugId hợp lệ, payload có title/content
      * Expected Output: Section mới với drug được gán
      * Notes: CheckDB – section mới được lưu, drug lấy từ path
      */
     @Test
-    @DisplayName("TC-FR-15-074: Tạo section thành công")
-    void TC_FR_15_074() {
+    @DisplayName("TC_AUTH_SectionServiceImpl_create_001: Tạo section thành công")
+    void TC_AUTH_SectionServiceImpl_create_001() {
         Section payload = new Section();
         payload.setTitle("Dosage");
         payload.setContent("Take 1 tablet");
@@ -133,15 +133,15 @@ class SectionServiceImplTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_SectionServiceImpl_create_002
      * Test Objective: Tạo section thất bại khi drug không tồn tại
      * Input: drugId = 999
      * Expected Output: RuntimeException "Drug not found"
      * Notes: Kiểm tra nhánh drugRepository.findById trả về empty
      */
     @Test
-    @DisplayName("TC-FR-15-075: Drug không tồn tại → exception")
-    void TC_FR_15_075() {
+    @DisplayName("TC_AUTH_SectionServiceImpl_create_002: Drug không tồn tại → exception")
+    void TC_AUTH_SectionServiceImpl_create_002() {
         when(drugRepository.findById(999L)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> sectionService.create(999L, new Section()))
@@ -150,15 +150,15 @@ class SectionServiceImplTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_SectionServiceImpl_create_003
      * Test Objective: Tạo section với payload null
      * Input: payload = null
      * Expected Output: Section mới với title/content = null
      * Notes: Kiểm tra nhánh payload == null → title/content null
      */
     @Test
-    @DisplayName("TC-FR-15-076: Payload null → section với null fields")
-    void TC_FR_15_076() {
+    @DisplayName("TC_AUTH_SectionServiceImpl_create_003: Payload null → section với null fields")
+    void TC_AUTH_SectionServiceImpl_create_003() {
         when(drugRepository.findById(1L)).thenReturn(Optional.of(drug));
         when(sectionRepository.save(any(Section.class))).thenAnswer(inv -> inv.getArgument(0));
 
@@ -171,15 +171,15 @@ class SectionServiceImplTest {
     // ==================== GET BY ID ====================
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_SectionServiceImpl_getById_001
      * Test Objective: Lấy section theo id thành công
      * Input: id = 1
      * Expected Output: Section entity
      * Notes: Happy path
      */
     @Test
-    @DisplayName("TC-FR-15-077: Tìm section thành công")
-    void TC_FR_15_077() {
+    @DisplayName("TC_AUTH_SectionServiceImpl_getById_001: Tìm section thành công")
+    void TC_AUTH_SectionServiceImpl_getById_001() {
         when(sectionRepository.findById(1L)).thenReturn(Optional.of(section));
 
         Section result = sectionService.getById(1L);
@@ -188,15 +188,15 @@ class SectionServiceImplTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_SectionServiceImpl_getById_002
      * Test Objective: Lấy section thất bại khi id không tồn tại
      * Input: id = 999
      * Expected Output: RuntimeException "Section not found"
      * Notes: Kiểm tra nhánh findById trả về empty
      */
     @Test
-    @DisplayName("TC-FR-15-078: Section không tồn tại → exception")
-    void TC_FR_15_078() {
+    @DisplayName("TC_AUTH_SectionServiceImpl_getById_002: Section không tồn tại → exception")
+    void TC_AUTH_SectionServiceImpl_getById_002() {
         when(sectionRepository.findById(999L)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> sectionService.getById(999L))
@@ -207,15 +207,15 @@ class SectionServiceImplTest {
     // ==================== UPDATE ====================
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_SectionServiceImpl_update_001
      * Test Objective: Cập nhật section thành công
      * Input: id hợp lệ, payload có title/content mới
      * Expected Output: Section được cập nhật
      * Notes: CheckDB – title/content thay đổi
      */
     @Test
-    @DisplayName("TC-FR-15-079: Cập nhật section thành công")
-    void TC_FR_15_079() {
+    @DisplayName("TC_AUTH_SectionServiceImpl_update_001: Cập nhật section thành công")
+    void TC_AUTH_SectionServiceImpl_update_001() {
         Section payload = new Section();
         payload.setTitle("New Title");
         payload.setContent("New Content");
@@ -230,15 +230,15 @@ class SectionServiceImplTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_SectionServiceImpl_update_002
      * Test Objective: Cập nhật với payload null → giữ nguyên
      * Input: payload = null
      * Expected Output: Section giữ nguyên
      * Notes: Kiểm tra nhánh payload == null
      */
     @Test
-    @DisplayName("TC-FR-15-080: Payload null → giữ nguyên")
-    void TC_FR_15_080() {
+    @DisplayName("TC_AUTH_SectionServiceImpl_update_002: Payload null → giữ nguyên")
+    void TC_AUTH_SectionServiceImpl_update_002() {
         when(sectionRepository.findById(1L)).thenReturn(Optional.of(section));
         when(sectionRepository.save(section)).thenReturn(section);
 
@@ -248,15 +248,15 @@ class SectionServiceImplTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_SectionServiceImpl_update_003
      * Test Objective: Cập nhật thất bại khi section không tồn tại
      * Input: id = 999
      * Expected Output: RuntimeException "Section not found"
      * Notes: Kiểm tra nhánh findById trả về empty
      */
     @Test
-    @DisplayName("TC-FR-15-082: Section không tồn tại → exception")
-    void TC_FR_15_082() {
+    @DisplayName("TC_AUTH_SectionServiceImpl_update_003: Section không tồn tại → exception")
+    void TC_AUTH_SectionServiceImpl_update_003() {
         when(sectionRepository.findById(999L)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> sectionService.update(999L, new Section()))
@@ -267,15 +267,15 @@ class SectionServiceImplTest {
     // ==================== DELETE ====================
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_SectionServiceImpl_delete_001
      * Test Objective: Xóa section thành công
      * Input: id tồn tại
      * Expected Output: deleteById được gọi
      * Notes: CheckDB – section bị xóa
      */
     @Test
-    @DisplayName("TC-FR-15-083: Xóa section thành công")
-    void TC_FR_15_083() {
+    @DisplayName("TC_AUTH_SectionServiceImpl_delete_001: Xóa section thành công")
+    void TC_AUTH_SectionServiceImpl_delete_001() {
         when(sectionRepository.existsById(1L)).thenReturn(true);
 
         sectionService.delete(1L);
@@ -284,15 +284,15 @@ class SectionServiceImplTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_SectionServiceImpl_delete_002
      * Test Objective: Xóa section thất bại khi không tồn tại
      * Input: id = 999
      * Expected Output: RuntimeException "Section not found"
      * Notes: Kiểm tra nhánh existsById == false
      */
     @Test
-    @DisplayName("TC-FR-15-084: Section không tồn tại → exception")
-    void TC_FR_15_084() {
+    @DisplayName("TC_AUTH_SectionServiceImpl_delete_002: Section không tồn tại → exception")
+    void TC_AUTH_SectionServiceImpl_delete_002() {
         when(sectionRepository.existsById(999L)).thenReturn(false);
 
         assertThatThrownBy(() -> sectionService.delete(999L))
@@ -303,15 +303,15 @@ class SectionServiceImplTest {
     // ==================== LIST ALL ====================
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_SectionServiceImpl_listAll_001
      * Test Objective: Lấy tất cả sections
      * Input: không có
      * Expected Output: List<Section>
      * Notes: Happy path
      */
     @Test
-    @DisplayName("TC-FR-15-086: Lấy tất cả sections")
-    void TC_FR_15_086() {
+    @DisplayName("TC_AUTH_SectionServiceImpl_listAll_001: Lấy tất cả sections")
+    void TC_AUTH_SectionServiceImpl_listAll_001() {
         when(sectionRepository.findAllByOrderByIdAsc()).thenReturn(List.of(section));
 
         List<Section> result = sectionService.listAll();

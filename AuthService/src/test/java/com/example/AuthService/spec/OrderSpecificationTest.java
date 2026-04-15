@@ -35,15 +35,15 @@ class OrderSpecificationTest {
     // ======================== FILTER ========================
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_OrderSpecification_filter_001
      * Test Objective: Filter theo status
      * Input: status=PENDING, tất cả field khác null
      * Expected Output: Predicate equal trên status
      * Notes: Lọc đơn hàng theo trạng thái
      */
     @Test
-    @DisplayName("TC-FR-02-001: Filter theo status")
-    void TC_FR_02_001() {
+    @DisplayName("TC_AUTH_OrderSpecification_filter_001: Filter theo status")
+    void TC_AUTH_OrderSpecification_filter_001() {
         when(root.get("status")).thenReturn(path);
         when(cb.equal(any(), eq(OrderStatus.PENDING))).thenReturn(predicate);
         when(cb.and(any(Predicate[].class))).thenReturn(predicate);
@@ -56,15 +56,15 @@ class OrderSpecificationTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_OrderSpecification_filter_002
      * Test Objective: Filter theo paymentMethod
      * Input: paymentMethod=COD
      * Expected Output: Predicate equal trên paymentMethod
      * Notes: Lọc theo phương thức thanh toán
      */
     @Test
-    @DisplayName("TC-FR-02-001: Filter theo paymentMethod")
-    void TC_FR_02_001() {
+    @DisplayName("TC_AUTH_OrderSpecification_filter_002: Filter theo paymentMethod")
+    void TC_AUTH_OrderSpecification_filter_002() {
         when(root.get("paymentMethod")).thenReturn(path);
         when(cb.equal(any(), eq(PaymentMethod.COD))).thenReturn(predicate);
         when(cb.and(any(Predicate[].class))).thenReturn(predicate);
@@ -77,15 +77,15 @@ class OrderSpecificationTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_OrderSpecification_filter_003
      * Test Objective: Filter theo userId
      * Input: userId=1
      * Expected Output: Predicate equal trên user.id
      * Notes: Lọc đơn hàng của user cụ thể
      */
     @Test
-    @DisplayName("TC-FR-02-001: Filter theo userId")
-    void TC_FR_02_001() {
+    @DisplayName("TC_AUTH_OrderSpecification_filter_003: Filter theo userId")
+    void TC_AUTH_OrderSpecification_filter_003() {
         when(root.get("user")).thenReturn(path);
         when(path.get("id")).thenReturn(nestedPath);
         when(cb.equal(any(), eq(1L))).thenReturn(predicate);
@@ -99,15 +99,15 @@ class OrderSpecificationTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_OrderSpecification_filter_004
      * Test Objective: Filter theo keyword (tìm trong receiverName, userEmail, receiverPhone)
      * Input: keyword="Nguyen"
      * Expected Output: Predicate OR LIKE trên 3 trường
      * Notes: Tìm kiếm đa trường
      */
     @Test
-    @DisplayName("TC-FR-02-001: Filter theo keyword")
-    void TC_FR_02_001() {
+    @DisplayName("TC_AUTH_OrderSpecification_filter_004: Filter theo keyword")
+    void TC_AUTH_OrderSpecification_filter_004() {
         when(root.get(anyString())).thenReturn(path);
         when(cb.lower(any())).thenReturn(stringExpression);
         when(cb.like(any(Expression.class), anyString())).thenReturn(predicate);
@@ -122,15 +122,15 @@ class OrderSpecificationTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_OrderSpecification_filter_005
      * Test Objective: Filter theo khoảng ngày (fromDate, toDate)
      * Input: fromDate=2025-01-01, toDate=2025-01-31
      * Expected Output: 2 Predicate greaterThanOrEqualTo và lessThanOrEqualTo trên createdAt
      * Notes: Lọc theo khoảng thời gian tạo đơn
      */
     @Test
-    @DisplayName("TC-FR-02-001: Filter theo khoảng ngày")
-    void TC_FR_02_001() {
+    @DisplayName("TC_AUTH_OrderSpecification_filter_005: Filter theo khoảng ngày")
+    void TC_AUTH_OrderSpecification_filter_005() {
         LocalDateTime fromDate = LocalDateTime.of(2025, 1, 1, 0, 0);
         LocalDateTime toDate = LocalDateTime.of(2025, 1, 31, 23, 59);
 
@@ -148,15 +148,15 @@ class OrderSpecificationTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_OrderSpecification_filter_006
      * Test Objective: Filter với tất cả tham số null
      * Input: Tất cả null
      * Expected Output: Không có predicate nào, trả conjunction rỗng
      * Notes: Không lọc → lấy tất cả
      */
     @Test
-    @DisplayName("TC-FR-02-001: Không filter - lấy tất cả")
-    void TC_FR_02_001() {
+    @DisplayName("TC_AUTH_OrderSpecification_filter_006: Không filter - lấy tất cả")
+    void TC_AUTH_OrderSpecification_filter_006() {
         when(cb.and(any(Predicate[].class))).thenReturn(predicate);
 
         Specification<Order> spec = OrderSpecification.filter(
@@ -167,15 +167,15 @@ class OrderSpecificationTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_OrderSpecification_filter_007
      * Test Objective: Filter với keyword rỗng (blank)
      * Input: keyword="   "
      * Expected Output: Bỏ qua keyword filter (isBlank = true)
      * Notes: Keyword toàn khoảng trắng được bỏ qua
      */
     @Test
-    @DisplayName("TC-FR-02-001: Keyword rỗng (blank) bị bỏ qua")
-    void TC_FR_02_001() {
+    @DisplayName("TC_AUTH_OrderSpecification_filter_007: Keyword rỗng (blank) bị bỏ qua")
+    void TC_AUTH_OrderSpecification_filter_007() {
         when(cb.and(any(Predicate[].class))).thenReturn(predicate);
 
         Specification<Order> spec = OrderSpecification.filter(

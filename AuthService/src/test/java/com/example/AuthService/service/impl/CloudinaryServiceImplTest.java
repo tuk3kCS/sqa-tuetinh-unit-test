@@ -32,15 +32,15 @@ class CloudinaryServiceImplTest {
     // ==================== UPLOAD IMAGE ====================
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_CloudinaryServiceImpl_uploadImage_001
      * Test Objective: Upload ảnh thành công, trả về secure_url
      * Input: MultipartFile hợp lệ
      * Expected Output: URL ảnh từ Cloudinary
      * Notes: Happy path – upload và lấy secure_url
      */
     @Test
-    @DisplayName("TC-FR-02-001: Upload thành công")
-    void TC_FR_02_001() throws IOException {
+    @DisplayName("TC_AUTH_CloudinaryServiceImpl_uploadImage_001: Upload thành công")
+    void TC_AUTH_CloudinaryServiceImpl_uploadImage_001() throws IOException {
         MultipartFile file = mock(MultipartFile.class);
         when(file.getBytes()).thenReturn(new byte[]{1, 2, 3});
 
@@ -54,15 +54,15 @@ class CloudinaryServiceImplTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_CloudinaryServiceImpl_uploadImage_002
      * Test Objective: Upload thất bại khi IOException xảy ra
      * Input: file.getBytes() throw IOException
      * Expected Output: RuntimeException "Upload image failed"
      * Notes: Kiểm tra nhánh catch IOException
      */
     @Test
-    @DisplayName("TC-FR-02-001: IOException → RuntimeException")
-    void TC_FR_02_001() throws IOException {
+    @DisplayName("TC_AUTH_CloudinaryServiceImpl_uploadImage_002: IOException → RuntimeException")
+    void TC_AUTH_CloudinaryServiceImpl_uploadImage_002() throws IOException {
         MultipartFile file = mock(MultipartFile.class);
         when(file.getBytes()).thenThrow(new IOException("Disk error"));
 
@@ -72,15 +72,15 @@ class CloudinaryServiceImplTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_CloudinaryServiceImpl_uploadImage_003
      * Test Objective: Upload thất bại khi Cloudinary API trả lỗi
      * Input: uploader.upload() throw IOException
      * Expected Output: RuntimeException "Upload image failed"
      * Notes: Kiểm tra Cloudinary API lỗi
      */
     @Test
-    @DisplayName("TC-FR-02-001: Cloudinary API lỗi → RuntimeException")
-    void TC_FR_02_001() throws IOException {
+    @DisplayName("TC_AUTH_CloudinaryServiceImpl_uploadImage_003: Cloudinary API lỗi → RuntimeException")
+    void TC_AUTH_CloudinaryServiceImpl_uploadImage_003() throws IOException {
         MultipartFile file = mock(MultipartFile.class);
         when(file.getBytes()).thenReturn(new byte[]{1});
 

@@ -64,15 +64,15 @@ class OrderCleanupJobTest {
     // ======================== CANCEL EXPIRED ORDERS ========================
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_OrderCleanupJob_cancelExpiredOrders_001
      * Test Objective: Hủy đơn hàng hết hạn thành công (paymentMethod=null → cần cleanup)
      * Input: 1 đơn hàng PENDING, paymentMethod=null, đã quá 15 phút
      * Expected Output: Order status chuyển thành CANCELLED, reservedQuantity giảm
      * Notes: Happy path - đơn hàng chưa xác nhận phương thức thanh toán
      */
     @Test
-    @DisplayName("TC-FR-02-001: Hủy đơn hết hạn thành công")
-    void TC_FR_02_001() {
+    @DisplayName("TC_AUTH_OrderCleanupJob_cancelExpiredOrders_001: Hủy đơn hết hạn thành công")
+    void TC_AUTH_OrderCleanupJob_cancelExpiredOrders_001() {
         Order expiredOrder = createExpiredOrder(1L, null);
         int originalReserved = expiredOrder.getItems().get(0).getDrug().getReservedQuantity();
 
@@ -87,15 +87,15 @@ class OrderCleanupJobTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_OrderCleanupJob_cancelExpiredOrders_002
      * Test Objective: Không làm gì khi không có đơn hàng hết hạn
      * Input: Danh sách đơn hàng hết hạn rỗng
      * Expected Output: Không có order nào bị thay đổi
      * Notes: Không có đơn nào quá 15 phút
      */
     @Test
-    @DisplayName("TC-FR-02-001: Không có đơn hết hạn")
-    void TC_FR_02_001() {
+    @DisplayName("TC_AUTH_OrderCleanupJob_cancelExpiredOrders_002: Không có đơn hết hạn")
+    void TC_AUTH_OrderCleanupJob_cancelExpiredOrders_002() {
         when(orderRepository.findExpiredUnconfirmedOrders(any(LocalDateTime.class)))
                 .thenReturn(List.of());
 
@@ -106,15 +106,15 @@ class OrderCleanupJobTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_OrderCleanupJob_cancelExpiredOrders_003
      * Test Objective: Bỏ qua đơn hàng đã có paymentMethod (không null)
      * Input: 1 đơn hàng PENDING, paymentMethod=COD
      * Expected Output: Order status KHÔNG thay đổi (vẫn PENDING)
      * Notes: Đơn hàng đã chọn phương thức thanh toán → bỏ qua
      */
     @Test
-    @DisplayName("TC-FR-02-001: Bỏ qua đơn có paymentMethod")
-    void TC_FR_02_001() {
+    @DisplayName("TC_AUTH_OrderCleanupJob_cancelExpiredOrders_003: Bỏ qua đơn có paymentMethod")
+    void TC_AUTH_OrderCleanupJob_cancelExpiredOrders_003() {
         Order orderWithPayment = createExpiredOrder(1L, PaymentMethod.COD);
 
         when(orderRepository.findExpiredUnconfirmedOrders(any(LocalDateTime.class)))
@@ -126,15 +126,15 @@ class OrderCleanupJobTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_OrderCleanupJob_cancelExpiredOrders_004
      * Test Objective: Hủy nhiều đơn hàng cùng lúc
      * Input: 3 đơn hàng hết hạn (2 cần cleanup, 1 có paymentMethod)
      * Expected Output: 2 đơn CANCELLED, 1 đơn PENDING
      * Notes: Xử lý batch
      */
     @Test
-    @DisplayName("TC-FR-02-001: Hủy nhiều đơn hàng hết hạn")
-    void TC_FR_02_001() {
+    @DisplayName("TC_AUTH_OrderCleanupJob_cancelExpiredOrders_004: Hủy nhiều đơn hàng hết hạn")
+    void TC_AUTH_OrderCleanupJob_cancelExpiredOrders_004() {
         Order order1 = createExpiredOrder(1L, null);
         Order order2 = createExpiredOrder(2L, null);
         Order order3 = createExpiredOrder(3L, PaymentMethod.VNPAY);
@@ -150,15 +150,15 @@ class OrderCleanupJobTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_OrderCleanupJob_cancelExpiredOrders_005
      * Test Objective: Kiểm tra trả kho đúng số lượng khi hủy
      * Input: Đơn hàng có 2 items, item1.qty=3, item2.qty=5
      * Expected Output: Drug1.reservedQuantity giảm 3, Drug2.reservedQuantity giảm 5
      * Notes: Kiểm tra hoàn trả reserve cho từng item
      */
     @Test
-    @DisplayName("TC-FR-02-001: Trả kho đúng số lượng")
-    void TC_FR_02_001() {
+    @DisplayName("TC_AUTH_OrderCleanupJob_cancelExpiredOrders_005: Trả kho đúng số lượng")
+    void TC_AUTH_OrderCleanupJob_cancelExpiredOrders_005() {
         Drug drug1 = Drug.builder().id(1L).name("Drug1").price(BigDecimal.TEN)
                 .importPrice(BigDecimal.ONE).reservedQuantity(10).build();
         Drug drug2 = Drug.builder().id(2L).name("Drug2").price(BigDecimal.TEN)

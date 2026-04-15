@@ -43,15 +43,15 @@ class OAuth2TokenServiceImplTest {
     // ==================== BUILD TOKEN RESPONSE ====================
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_OAuth2TokenServiceImpl_buildTokenResponse_001
      * Test Objective: Tạo AuthTokenResponse thành công với attributes đầy đủ
      * Input: UserDetails + attributes chứa email, name, picture, sub
      * Expected Output: AuthTokenResponse chứa đầy đủ thông tin
      * Notes: Happy path – tất cả fields được map đúng
      */
     @Test
-    @DisplayName("TC-FR-02-001: Tạo token response thành công")
-    void TC_FR_02_001() {
+    @DisplayName("TC_AUTH_OAuth2TokenServiceImpl_buildTokenResponse_001: Tạo token response thành công")
+    void TC_AUTH_OAuth2TokenServiceImpl_buildTokenResponse_001() {
         Map<String, Object> attrs = Map.of(
                 "email", "user@gmail.com",
                 "name", "Google User",
@@ -78,15 +78,15 @@ class OAuth2TokenServiceImplTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_OAuth2TokenServiceImpl_buildTokenResponse_002
      * Test Objective: Tạo token response khi attributes = null
      * Input: attributes = null
      * Expected Output: AuthTokenResponse với email fallback từ username
      * Notes: Kiểm tra nhánh attributes == null → emptyMap
      */
     @Test
-    @DisplayName("TC-FR-02-001: Attributes null → fallback")
-    void TC_FR_02_001() {
+    @DisplayName("TC_AUTH_OAuth2TokenServiceImpl_buildTokenResponse_002: Attributes null → fallback")
+    void TC_AUTH_OAuth2TokenServiceImpl_buildTokenResponse_002() {
         when(jwtService.generateAccessToken(user)).thenReturn("access");
         when(jwtService.generateRefreshToken("user@gmail.com")).thenReturn("refresh");
         when(jwtProps.getAccessExpirationMs()).thenReturn(1800000L);
@@ -99,15 +99,15 @@ class OAuth2TokenServiceImplTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_OAuth2TokenServiceImpl_buildTokenResponse_003
      * Test Objective: Tạo token response khi user không có authorities
      * Input: User với authorities null
      * Expected Output: authorities = empty list
      * Notes: Kiểm tra nhánh getAuthorities == null
      */
     @Test
-    @DisplayName("TC-FR-02-001: Authorities null → empty list")
-    void TC_FR_02_001() {
+    @DisplayName("TC_AUTH_OAuth2TokenServiceImpl_buildTokenResponse_003: Authorities null → empty list")
+    void TC_AUTH_OAuth2TokenServiceImpl_buildTokenResponse_003() {
         User noRoleUser = User.builder().id(2L).email("norole@gmail.com")
                 .name("No Role").role(null).enabled(true).build();
 

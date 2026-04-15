@@ -41,15 +41,15 @@ class OtpServiceTest {
     // ==================== SEND OTP ====================
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_OtpService_sendOtp_001
      * Test Objective: Gửi OTP mới thành công cho đăng ký
      * Input: email, type = REGISTER, payload hợp lệ
      * Expected Output: OTP mới được lưu vào DB, email được gửi
      * Notes: CheckDB – EmailOtp mới xuất hiện, emailService.send được gọi
      */
     @Test
-    @DisplayName("TC-FR-02-001: Gửi OTP REGISTER thành công")
-    void TC_FR_02_001() {
+    @DisplayName("TC_AUTH_OtpService_sendOtp_001: Gửi OTP REGISTER thành công")
+    void TC_AUTH_OtpService_sendOtp_001() {
         when(repo.findFirstByEmailAndTypeAndUsedFalseAndExpiresAtAfterOrderByIdDesc(
                 eq("test@example.com"), eq(OtpType.REGISTER), any(LocalDateTime.class)))
                 .thenReturn(Optional.empty());
@@ -63,15 +63,15 @@ class OtpServiceTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_OtpService_sendOtp_002
      * Test Objective: Gửi OTP cho reset password
      * Input: email, type = RESET_PASSWORD, payload empty
      * Expected Output: OTP mới, subject = "Mã đặt lại mật khẩu"
      * Notes: Kiểm tra nhánh type == RESET_PASSWORD → subject đúng
      */
     @Test
-    @DisplayName("TC-FR-02-001: Gửi OTP RESET_PASSWORD thành công")
-    void TC_FR_02_001() {
+    @DisplayName("TC_AUTH_OtpService_sendOtp_002: Gửi OTP RESET_PASSWORD thành công")
+    void TC_AUTH_OtpService_sendOtp_002() {
         when(repo.findFirstByEmailAndTypeAndUsedFalseAndExpiresAtAfterOrderByIdDesc(
                 anyString(), eq(OtpType.RESET_PASSWORD), any()))
                 .thenReturn(Optional.empty());
@@ -83,15 +83,15 @@ class OtpServiceTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_OtpService_sendOtp_003
      * Test Objective: Gửi OTP khi đã có OTP cũ chưa dùng → vẫn tạo OTP mới
      * Input: Có OTP cũ trong DB
      * Expected Output: OTP mới vẫn được tạo
      * Notes: Logic hiện tại không block dù có OTP cũ
      */
     @Test
-    @DisplayName("TC-FR-02-001: Có OTP cũ → vẫn tạo mới")
-    void TC_FR_02_001() {
+    @DisplayName("TC_AUTH_OtpService_sendOtp_003: Có OTP cũ → vẫn tạo mới")
+    void TC_AUTH_OtpService_sendOtp_003() {
         EmailOtp existingOtp = EmailOtp.builder()
                 .email("test@example.com").type(OtpType.REGISTER).code("111111")
                 .createdAt(LocalDateTime.now(ZoneOffset.UTC).minusMinutes(2))
@@ -110,15 +110,15 @@ class OtpServiceTest {
     // ==================== VERIFY OTP ====================
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_OtpService_verify_001
      * Test Objective: Xác minh OTP thành công
      * Input: email, type, code đúng
      * Expected Output: EmailOtp entity với used = true
      * Notes: CheckDB – otp.used = true sau verify
      */
     @Test
-    @DisplayName("TC-FR-02-001: Xác minh OTP đúng → thành công")
-    void TC_FR_02_001() {
+    @DisplayName("TC_AUTH_OtpService_verify_001: Xác minh OTP đúng → thành công")
+    void TC_AUTH_OtpService_verify_001() {
         EmailOtp otp = EmailOtp.builder()
                 .email("test@example.com").type(OtpType.REGISTER).code("123456")
                 .expiresAt(LocalDateTime.now(ZoneOffset.UTC).plusMinutes(5))
@@ -136,15 +136,15 @@ class OtpServiceTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_OtpService_verify_002
      * Test Objective: Xác minh OTP thất bại khi đã hết hạn hoặc không tồn tại
      * Input: email + type không tìm được OTP hợp lệ
      * Expected Output: IllegalStateException "OTP không tồn tại hoặc đã hết hạn"
      * Notes: Kiểm tra nhánh repo trả về empty
      */
     @Test
-    @DisplayName("TC-FR-02-001: OTP hết hạn → exception")
-    void TC_FR_02_001() {
+    @DisplayName("TC_AUTH_OtpService_verify_002: OTP hết hạn → exception")
+    void TC_AUTH_OtpService_verify_002() {
         when(repo.findFirstByEmailAndTypeAndUsedFalseAndExpiresAtAfterOrderByIdDesc(
                 anyString(), any(), any())).thenReturn(Optional.empty());
 
@@ -154,15 +154,15 @@ class OtpServiceTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_OtpService_verify_003
      * Test Objective: Xác minh OTP thất bại khi mã sai
      * Input: code không khớp
      * Expected Output: IllegalArgumentException "OTP không đúng", attempts tăng
      * Notes: CheckDB – attempts tăng 1
      */
     @Test
-    @DisplayName("TC-FR-02-001: Mã OTP sai → exception, attempts tăng")
-    void TC_FR_02_001() {
+    @DisplayName("TC_AUTH_OtpService_verify_003: Mã OTP sai → exception, attempts tăng")
+    void TC_AUTH_OtpService_verify_003() {
         EmailOtp otp = EmailOtp.builder()
                 .email("test@example.com").type(OtpType.REGISTER).code("123456")
                 .expiresAt(LocalDateTime.now(ZoneOffset.UTC).plusMinutes(5))
@@ -180,15 +180,15 @@ class OtpServiceTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_OtpService_verify_004
      * Test Objective: OTP bị khóa khi vượt quá max attempts
      * Input: attempts = maxAttempts - 1, sai mã lần cuối
      * Expected Output: IllegalArgumentException, otp.used = true (bị khóa)
      * Notes: CheckDB – otp.used = true sau khi quá lần thử
      */
     @Test
-    @DisplayName("TC-FR-02-001: Quá max attempts → khóa OTP")
-    void TC_FR_02_001() {
+    @DisplayName("TC_AUTH_OtpService_verify_004: Quá max attempts → khóa OTP")
+    void TC_AUTH_OtpService_verify_004() {
         EmailOtp otp = EmailOtp.builder()
                 .email("test@example.com").type(OtpType.REGISTER).code("123456")
                 .expiresAt(LocalDateTime.now(ZoneOffset.UTC).plusMinutes(5))

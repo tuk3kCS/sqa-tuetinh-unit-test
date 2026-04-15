@@ -5,19 +5,16 @@ import com.example.AuthService.entity.Prescription;
 import com.example.AuthService.entity.User;
 import com.example.AuthService.repository.UserRepository;
 import com.example.AuthService.security.jwt.JwtService;
-import com.example.AuthService.security.OAuth2LoginSuccessHandler;
 import com.example.AuthService.service.PrescriptionService;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import com.example.AuthService.service.SocialLoginService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -37,7 +34,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @WebMvcTest(PrescriptionController.class)
 @AutoConfigureMockMvc(addFilters = false)
-@ActiveProfiles("test")
 class PrescriptionControllerTest {
 
     @Autowired
@@ -46,22 +42,16 @@ class PrescriptionControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @MockitoBean
+    @MockBean
     private PrescriptionService prescriptionService;
 
-    @MockitoBean
+    @MockBean
     private UserRepository userRepository;
 
-    @MockitoBean
+    @MockBean
     private JwtService jwtService;
 
-    @MockitoBean
-    private SocialLoginService socialLoginService;
-
-    @MockitoBean
-    private OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
-
-    @MockitoBean
+    @MockBean
     private UserDetailsService userDetailsService;
 
     private User createMockUser() {
@@ -75,7 +65,7 @@ class PrescriptionControllerTest {
     // ======================== CREATE PRESCRIPTION ========================
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_PrescriptionController_createPrescription_001
      * Test Objective: Tạo đơn thuốc thành công
      * Input: PrescriptionRequest hợp lệ, user đã đăng nhập
      * Expected Output: HTTP 200, thông báo tạo thành công kèm ID
@@ -83,8 +73,8 @@ class PrescriptionControllerTest {
      */
     @Test
     @WithMockUser(username = "user@test.com")
-    @DisplayName("TC-FR-02-001: Tạo đơn thuốc thành công")
-    void TC_FR_02_001() throws Exception {
+    @DisplayName("TC_AUTH_PrescriptionController_createPrescription_001: Tạo đơn thuốc thành công")
+    void TC_AUTH_PrescriptionController_createPrescription_001() throws Exception {
         User user = createMockUser();
         when(userRepository.findByEmail("user@test.com")).thenReturn(Optional.of(user));
 
@@ -108,7 +98,7 @@ class PrescriptionControllerTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_PrescriptionController_createPrescription_002
      * Test Objective: Tạo đơn thuốc khi user không tìm thấy
      * Input: PrescriptionRequest hợp lệ, user không tồn tại trong DB
      * Expected Output: HTTP 500
@@ -116,8 +106,8 @@ class PrescriptionControllerTest {
      */
     @Test
     @WithMockUser(username = "ghost@test.com")
-    @DisplayName("TC-FR-02-001: Tạo đơn thuốc - user không tồn tại")
-    void TC_FR_02_001() throws Exception {
+    @DisplayName("TC_AUTH_PrescriptionController_createPrescription_002: Tạo đơn thuốc - user không tồn tại")
+    void TC_AUTH_PrescriptionController_createPrescription_002() throws Exception {
         when(userRepository.findByEmail("ghost@test.com")).thenReturn(Optional.empty());
 
         PrescriptionRequest request = PrescriptionRequest.builder()
@@ -130,7 +120,7 @@ class PrescriptionControllerTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_PrescriptionController_createPrescription_003
      * Test Objective: Tạo đơn thuốc khi service ném lỗi
      * Input: PrescriptionRequest (thuốc không tồn tại)
      * Expected Output: HTTP 500
@@ -138,8 +128,8 @@ class PrescriptionControllerTest {
      */
     @Test
     @WithMockUser(username = "user@test.com")
-    @DisplayName("TC-FR-02-001: Tạo đơn thuốc - thuốc không tồn tại")
-    void TC_FR_02_001() throws Exception {
+    @DisplayName("TC_AUTH_PrescriptionController_createPrescription_003: Tạo đơn thuốc - thuốc không tồn tại")
+    void TC_AUTH_PrescriptionController_createPrescription_003() throws Exception {
         User user = createMockUser();
         when(userRepository.findByEmail("user@test.com")).thenReturn(Optional.of(user));
         when(prescriptionService.createPrescription(any(), eq(user)))
@@ -157,7 +147,7 @@ class PrescriptionControllerTest {
     // ======================== DELETE PRESCRIPTION ========================
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_PrescriptionController_deletePrescription_001
      * Test Objective: Xóa đơn thuốc thành công
      * Input: id=1, user đã đăng nhập
      * Expected Output: HTTP 200, thông báo xóa thành công
@@ -165,8 +155,8 @@ class PrescriptionControllerTest {
      */
     @Test
     @WithMockUser(username = "user@test.com")
-    @DisplayName("TC-FR-02-001: Xóa đơn thuốc thành công")
-    void TC_FR_02_001() throws Exception {
+    @DisplayName("TC_AUTH_PrescriptionController_deletePrescription_001: Xóa đơn thuốc thành công")
+    void TC_AUTH_PrescriptionController_deletePrescription_001() throws Exception {
         User user = createMockUser();
         when(userRepository.findByEmail("user@test.com")).thenReturn(Optional.of(user));
         doNothing().when(prescriptionService).deletePrescription(1L, user);
@@ -176,7 +166,7 @@ class PrescriptionControllerTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_PrescriptionController_deletePrescription_002
      * Test Objective: Xóa đơn thuốc không tồn tại
      * Input: id=999
      * Expected Output: HTTP 500
@@ -184,8 +174,8 @@ class PrescriptionControllerTest {
      */
     @Test
     @WithMockUser(username = "user@test.com")
-    @DisplayName("TC-FR-02-001: Xóa đơn thuốc - không tồn tại")
-    void TC_FR_02_001() throws Exception {
+    @DisplayName("TC_AUTH_PrescriptionController_deletePrescription_002: Xóa đơn thuốc - không tồn tại")
+    void TC_AUTH_PrescriptionController_deletePrescription_002() throws Exception {
         User user = createMockUser();
         when(userRepository.findByEmail("user@test.com")).thenReturn(Optional.of(user));
         doThrow(new RuntimeException("Không tìm thấy đơn thuốc"))
@@ -196,7 +186,7 @@ class PrescriptionControllerTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_PrescriptionController_deletePrescription_003
      * Test Objective: Xóa đơn thuốc của người khác
      * Input: id=1 (của user khác)
      * Expected Output: HTTP 500
@@ -204,8 +194,8 @@ class PrescriptionControllerTest {
      */
     @Test
     @WithMockUser(username = "user@test.com")
-    @DisplayName("TC-FR-02-001: Xóa đơn thuốc của người khác")
-    void TC_FR_02_001() throws Exception {
+    @DisplayName("TC_AUTH_PrescriptionController_deletePrescription_003: Xóa đơn thuốc của người khác")
+    void TC_AUTH_PrescriptionController_deletePrescription_003() throws Exception {
         User user = createMockUser();
         when(userRepository.findByEmail("user@test.com")).thenReturn(Optional.of(user));
         doThrow(new RuntimeException("Không có quyền xóa đơn thuốc này"))
@@ -218,7 +208,7 @@ class PrescriptionControllerTest {
     // ======================== GET PRESCRIPTIONS BY STATUS ========================
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_PrescriptionController_getPrescriptionsByStatus_001
      * Test Objective: Lấy danh sách đơn thuốc theo trạng thái thành công
      * Input: status=1 (active), user đã đăng nhập
      * Expected Output: HTTP 200, danh sách đơn thuốc
@@ -226,8 +216,8 @@ class PrescriptionControllerTest {
      */
     @Test
     @WithMockUser(username = "user@test.com")
-    @DisplayName("TC-FR-02-001: Lấy đơn thuốc active")
-    void TC_FR_02_001() throws Exception {
+    @DisplayName("TC_AUTH_PrescriptionController_getPrescriptionsByStatus_001: Lấy đơn thuốc active")
+    void TC_AUTH_PrescriptionController_getPrescriptionsByStatus_001() throws Exception {
         User user = createMockUser();
         when(userRepository.findByEmail("user@test.com")).thenReturn(Optional.of(user));
         when(prescriptionService.getPrescriptionsByStatus(user, 1)).thenReturn(List.of());
@@ -237,7 +227,7 @@ class PrescriptionControllerTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_PrescriptionController_getPrescriptionsByStatus_002
      * Test Objective: Lấy đơn thuốc với status=0 (inactive)
      * Input: status=0
      * Expected Output: HTTP 200, danh sách đơn thuốc đã dừng
@@ -245,8 +235,8 @@ class PrescriptionControllerTest {
      */
     @Test
     @WithMockUser(username = "user@test.com")
-    @DisplayName("TC-FR-02-001: Lấy đơn thuốc inactive")
-    void TC_FR_02_001() throws Exception {
+    @DisplayName("TC_AUTH_PrescriptionController_getPrescriptionsByStatus_002: Lấy đơn thuốc inactive")
+    void TC_AUTH_PrescriptionController_getPrescriptionsByStatus_002() throws Exception {
         User user = createMockUser();
         when(userRepository.findByEmail("user@test.com")).thenReturn(Optional.of(user));
         when(prescriptionService.getPrescriptionsByStatus(user, 0)).thenReturn(List.of());
@@ -256,7 +246,7 @@ class PrescriptionControllerTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_PrescriptionController_getPrescriptionsByStatus_003
      * Test Objective: Lấy đơn thuốc khi không có đơn nào
      * Input: status=1, user chưa có đơn thuốc nào
      * Expected Output: HTTP 200, danh sách rỗng
@@ -264,8 +254,8 @@ class PrescriptionControllerTest {
      */
     @Test
     @WithMockUser(username = "user@test.com")
-    @DisplayName("TC-FR-02-001: Không có đơn thuốc nào")
-    void TC_FR_02_001() throws Exception {
+    @DisplayName("TC_AUTH_PrescriptionController_getPrescriptionsByStatus_003: Không có đơn thuốc nào")
+    void TC_AUTH_PrescriptionController_getPrescriptionsByStatus_003() throws Exception {
         User user = createMockUser();
         when(userRepository.findByEmail("user@test.com")).thenReturn(Optional.of(user));
         when(prescriptionService.getPrescriptionsByStatus(user, 1)).thenReturn(List.of());
@@ -278,7 +268,7 @@ class PrescriptionControllerTest {
     // ======================== GET SCHEDULES BY DATE ========================
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_PrescriptionController_getSchedulesByDate_001
      * Test Objective: Lấy danh sách liều uống theo ngày thành công
      * Input: date=2025-01-15, user đã đăng nhập
      * Expected Output: HTTP 200, danh sách schedule
@@ -286,8 +276,8 @@ class PrescriptionControllerTest {
      */
     @Test
     @WithMockUser(username = "user@test.com")
-    @DisplayName("TC-FR-02-001: Lấy lịch uống thuốc theo ngày")
-    void TC_FR_02_001() throws Exception {
+    @DisplayName("TC_AUTH_PrescriptionController_getSchedulesByDate_001: Lấy lịch uống thuốc theo ngày")
+    void TC_AUTH_PrescriptionController_getSchedulesByDate_001() throws Exception {
         User user = createMockUser();
         when(userRepository.findByEmail("user@test.com")).thenReturn(Optional.of(user));
         when(prescriptionService.getSchedulesByDate(any(), eq(user))).thenReturn(List.of());
@@ -298,7 +288,7 @@ class PrescriptionControllerTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_PrescriptionController_getSchedulesByDate_002
      * Test Objective: Lấy lịch uống thuốc ngày không có lịch
      * Input: date=2030-01-01 (ngày trong tương lai xa)
      * Expected Output: HTTP 200, danh sách rỗng
@@ -306,8 +296,8 @@ class PrescriptionControllerTest {
      */
     @Test
     @WithMockUser(username = "user@test.com")
-    @DisplayName("TC-FR-02-001: Ngày không có lịch uống")
-    void TC_FR_02_001() throws Exception {
+    @DisplayName("TC_AUTH_PrescriptionController_getSchedulesByDate_002: Ngày không có lịch uống")
+    void TC_AUTH_PrescriptionController_getSchedulesByDate_002() throws Exception {
         User user = createMockUser();
         when(userRepository.findByEmail("user@test.com")).thenReturn(Optional.of(user));
         when(prescriptionService.getSchedulesByDate(any(), eq(user))).thenReturn(List.of());
@@ -318,7 +308,7 @@ class PrescriptionControllerTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_PrescriptionController_getSchedulesByDate_003
      * Test Objective: Lấy lịch uống thuốc khi user không tồn tại
      * Input: date=2025-01-15, user không tìm thấy
      * Expected Output: HTTP 500
@@ -326,8 +316,8 @@ class PrescriptionControllerTest {
      */
     @Test
     @WithMockUser(username = "ghost@test.com")
-    @DisplayName("TC-FR-02-001: Lấy lịch - user không tồn tại")
-    void TC_FR_02_001() throws Exception {
+    @DisplayName("TC_AUTH_PrescriptionController_getSchedulesByDate_003: Lấy lịch - user không tồn tại")
+    void TC_AUTH_PrescriptionController_getSchedulesByDate_003() throws Exception {
         when(userRepository.findByEmail("ghost@test.com")).thenReturn(Optional.empty());
 
         mockMvc.perform(get("/api/prescriptions/schedules")

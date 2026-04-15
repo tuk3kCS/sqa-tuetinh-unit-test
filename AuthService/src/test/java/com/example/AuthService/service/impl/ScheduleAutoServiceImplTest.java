@@ -34,15 +34,15 @@ class ScheduleAutoServiceImplTest {
     // ==================== AUTO MARK SKIPPED SCHEDULES ====================
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_ScheduleAutoServiceImpl_autoMarkSkippedSchedules_001
      * Test Objective: Auto mark skipped schedules và extend đúng
      * Input: Có schedules cũ cần skip, có thuốc dài hạn cần extend
      * Expected Output: autoMarkSkipped được gọi, findByEndDateIsNull được gọi
      * Notes: Happy path – chạy cron job tự động
      */
     @Test
-    @DisplayName("TC-FR-02-001: Auto skip + extend")
-    void TC_FR_02_001() {
+    @DisplayName("TC_AUTH_ScheduleAutoServiceImpl_autoMarkSkippedSchedules_001: Auto skip + extend")
+    void TC_AUTH_ScheduleAutoServiceImpl_autoMarkSkippedSchedules_001() {
         when(scheduleRepository.autoMarkSkipped(any(LocalDateTime.class))).thenReturn(5);
         when(drugInPrescriptionRepository.findByEndDateIsNull()).thenReturn(List.of());
 
@@ -53,15 +53,15 @@ class ScheduleAutoServiceImplTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_ScheduleAutoServiceImpl_autoMarkSkippedSchedules_002
      * Test Objective: Không có schedule nào cần skip
      * Input: autoMarkSkipped trả về 0
      * Expected Output: Method hoàn thành bình thường
      * Notes: Edge case – không có gì để skip
      */
     @Test
-    @DisplayName("TC-FR-02-001: Không có schedule cần skip")
-    void TC_FR_02_001() {
+    @DisplayName("TC_AUTH_ScheduleAutoServiceImpl_autoMarkSkippedSchedules_002: Không có schedule cần skip")
+    void TC_AUTH_ScheduleAutoServiceImpl_autoMarkSkippedSchedules_002() {
         when(scheduleRepository.autoMarkSkipped(any(LocalDateTime.class))).thenReturn(0);
         when(drugInPrescriptionRepository.findByEndDateIsNull()).thenReturn(List.of());
 
@@ -71,15 +71,15 @@ class ScheduleAutoServiceImplTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_ScheduleAutoServiceImpl_autoMarkSkippedSchedules_003
      * Test Objective: Auto extend cho thuốc dài hạn khi lịch sắp hết (daysLeft <= 3)
      * Input: DrugInPrescription dài hạn, last schedule cách hôm nay 2 ngày
      * Expected Output: scheduleRepository.saveAll được gọi với danh sách mới
      * Notes: Kiểm tra nhánh daysLeft <= 3 → sinh thêm schedule
      */
     @Test
-    @DisplayName("TC-FR-02-001: Extend thuốc dài hạn")
-    void TC_FR_02_001() {
+    @DisplayName("TC_AUTH_ScheduleAutoServiceImpl_autoMarkSkippedSchedules_003: Extend thuốc dài hạn")
+    void TC_AUTH_ScheduleAutoServiceImpl_autoMarkSkippedSchedules_003() {
         DrugInPrescription dip = new DrugInPrescription();
         dip.setId(1L);
         dip.setFrequencyType(FrequencyType.DAILY);
@@ -97,15 +97,15 @@ class ScheduleAutoServiceImplTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_ScheduleAutoServiceImpl_autoMarkSkippedSchedules_004
      * Test Objective: Không extend khi lịch còn nhiều (daysLeft > 3)
      * Input: Last schedule cách hôm nay 10 ngày
      * Expected Output: saveAll không được gọi
      * Notes: Kiểm tra nhánh daysLeft > 3 → không extend
      */
     @Test
-    @DisplayName("TC-FR-02-001: Lịch còn nhiều → không extend")
-    void TC_FR_02_001() {
+    @DisplayName("TC_AUTH_ScheduleAutoServiceImpl_autoMarkSkippedSchedules_004: Lịch còn nhiều → không extend")
+    void TC_AUTH_ScheduleAutoServiceImpl_autoMarkSkippedSchedules_004() {
         DrugInPrescription dip = new DrugInPrescription();
         dip.setId(1L);
         dip.setEndDate(null);
@@ -121,15 +121,15 @@ class ScheduleAutoServiceImplTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_ScheduleAutoServiceImpl_autoMarkSkippedSchedules_005
      * Test Objective: Bỏ qua khi lastScheduleDate null
      * Input: findLastScheduleDate trả về null
      * Expected Output: continue, không extend
      * Notes: Kiểm tra nhánh lastScheduleDate == null → continue
      */
     @Test
-    @DisplayName("TC-FR-02-001: LastScheduleDate null → skip")
-    void TC_FR_02_001() {
+    @DisplayName("TC_AUTH_ScheduleAutoServiceImpl_autoMarkSkippedSchedules_005: LastScheduleDate null → skip")
+    void TC_AUTH_ScheduleAutoServiceImpl_autoMarkSkippedSchedules_005() {
         DrugInPrescription dip = new DrugInPrescription();
         dip.setId(1L);
         dip.setEndDate(null);

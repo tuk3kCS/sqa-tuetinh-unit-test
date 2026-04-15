@@ -3,17 +3,14 @@ package com.example.AuthService.controller;
 import com.example.AuthService.entity.User;
 import com.example.AuthService.repository.UserRepository;
 import com.example.AuthService.security.jwt.JwtService;
-import com.example.AuthService.security.OAuth2LoginSuccessHandler;
 import com.example.AuthService.service.PaymentService;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import com.example.AuthService.service.SocialLoginService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -32,28 +29,21 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @WebMvcTest(PaymentController.class)
 @AutoConfigureMockMvc(addFilters = false)
-@ActiveProfiles("test")
 class PaymentControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
-    @MockitoBean
+    @MockBean
     private PaymentService paymentService;
 
-    @MockitoBean
+    @MockBean
     private UserRepository userRepository;
 
-    @MockitoBean
+    @MockBean
     private JwtService jwtService;
 
-    @MockitoBean
-    private SocialLoginService socialLoginService;
-
-    @MockitoBean
-    private OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
-
-    @MockitoBean
+    @MockBean
     private UserDetailsService userDetailsService;
 
     private User createMockUser() {
@@ -67,7 +57,7 @@ class PaymentControllerTest {
     // ======================== CREATE VNPAY PAYMENT ========================
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_PaymentController_createVnPayPayment_001
      * Test Objective: Tạo link thanh toán VNPay thành công
      * Input: orderId=1, user đã đăng nhập, HttpServletRequest
      * Expected Output: HTTP 200, body chứa paymentUrl
@@ -75,8 +65,8 @@ class PaymentControllerTest {
      */
     @Test
     @WithMockUser(username = "user@test.com")
-    @DisplayName("TC-FR-02-001: Tạo link VNPay thành công")
-    void TC_FR_02_001() throws Exception {
+    @DisplayName("TC_AUTH_PaymentController_createVnPayPayment_001: Tạo link VNPay thành công")
+    void TC_AUTH_PaymentController_createVnPayPayment_001() throws Exception {
         User user = createMockUser();
         when(userRepository.findByEmail("user@test.com")).thenReturn(Optional.of(user));
         when(paymentService.createVnPayPayment(eq(1L), eq(user), any()))
@@ -88,7 +78,7 @@ class PaymentControllerTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_PaymentController_createVnPayPayment_002
      * Test Objective: Tạo link VNPay cho đơn hàng không tồn tại
      * Input: orderId=999
      * Expected Output: HTTP 500
@@ -96,8 +86,8 @@ class PaymentControllerTest {
      */
     @Test
     @WithMockUser(username = "user@test.com")
-    @DisplayName("TC-FR-02-001: Tạo link VNPay - đơn hàng không tồn tại")
-    void TC_FR_02_001() throws Exception {
+    @DisplayName("TC_AUTH_PaymentController_createVnPayPayment_002: Tạo link VNPay - đơn hàng không tồn tại")
+    void TC_AUTH_PaymentController_createVnPayPayment_002() throws Exception {
         User user = createMockUser();
         when(userRepository.findByEmail("user@test.com")).thenReturn(Optional.of(user));
         when(paymentService.createVnPayPayment(eq(999L), eq(user), any()))
@@ -108,7 +98,7 @@ class PaymentControllerTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_PaymentController_createVnPayPayment_003
      * Test Objective: Tạo link VNPay cho đơn đã thanh toán
      * Input: orderId=1 (đã PAID)
      * Expected Output: HTTP 500
@@ -116,8 +106,8 @@ class PaymentControllerTest {
      */
     @Test
     @WithMockUser(username = "user@test.com")
-    @DisplayName("TC-FR-02-001: Tạo link VNPay - đơn đã thanh toán")
-    void TC_FR_02_001() throws Exception {
+    @DisplayName("TC_AUTH_PaymentController_createVnPayPayment_003: Tạo link VNPay - đơn đã thanh toán")
+    void TC_AUTH_PaymentController_createVnPayPayment_003() throws Exception {
         User user = createMockUser();
         when(userRepository.findByEmail("user@test.com")).thenReturn(Optional.of(user));
         when(paymentService.createVnPayPayment(eq(1L), eq(user), any()))
@@ -128,7 +118,7 @@ class PaymentControllerTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_PaymentController_createVnPayPayment_004
      * Test Objective: Tạo link VNPay khi user không tồn tại trong DB
      * Input: orderId=1, user không tìm thấy
      * Expected Output: HTTP 500
@@ -136,8 +126,8 @@ class PaymentControllerTest {
      */
     @Test
     @WithMockUser(username = "ghost@test.com")
-    @DisplayName("TC-FR-02-001: Tạo link VNPay - user không tồn tại")
-    void TC_FR_02_001() throws Exception {
+    @DisplayName("TC_AUTH_PaymentController_createVnPayPayment_004: Tạo link VNPay - user không tồn tại")
+    void TC_AUTH_PaymentController_createVnPayPayment_004() throws Exception {
         when(userRepository.findByEmail("ghost@test.com")).thenReturn(Optional.empty());
 
         mockMvc.perform(post("/api/payments/vnpay/1"))
@@ -147,15 +137,15 @@ class PaymentControllerTest {
     // ======================== VNPAY RETURN ========================
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_PaymentController_vnpayReturn_001
      * Test Objective: VNPay callback trả về thành công
      * Input: vnp_ResponseCode=00, vnp_TxnRef=1
      * Expected Output: HTTP 200, HTML chứa status "success"
      * Notes: Thanh toán thành công, trả về HTML cho WebView
      */
     @Test
-    @DisplayName("TC-FR-02-001: VNPay return - thanh toán thành công")
-    void TC_FR_02_001() throws Exception {
+    @DisplayName("TC_AUTH_PaymentController_vnpayReturn_001: VNPay return - thanh toán thành công")
+    void TC_AUTH_PaymentController_vnpayReturn_001() throws Exception {
         when(paymentService.handleVnpayReturn(any())).thenReturn(true);
 
         mockMvc.perform(get("/api/payments/vnpay/return")
@@ -166,15 +156,15 @@ class PaymentControllerTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_PaymentController_vnpayReturn_002
      * Test Objective: VNPay callback trả về thất bại
      * Input: vnp_ResponseCode=24 (user hủy), vnp_TxnRef=1
      * Expected Output: HTTP 200, HTML chứa status "failed"
      * Notes: User hủy thanh toán hoặc lỗi từ VNPay
      */
     @Test
-    @DisplayName("TC-FR-02-001: VNPay return - thanh toán thất bại")
-    void TC_FR_02_001() throws Exception {
+    @DisplayName("TC_AUTH_PaymentController_vnpayReturn_002: VNPay return - thanh toán thất bại")
+    void TC_AUTH_PaymentController_vnpayReturn_002() throws Exception {
         when(paymentService.handleVnpayReturn(any())).thenReturn(false);
 
         mockMvc.perform(get("/api/payments/vnpay/return")
@@ -185,15 +175,15 @@ class PaymentControllerTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_PaymentController_vnpayReturn_003
      * Test Objective: VNPay callback với orderId trong response
      * Input: vnp_TxnRef=42
      * Expected Output: HTTP 200, HTML chứa orderId "42"
      * Notes: Kiểm tra orderId được đưa vào HTML response
      */
     @Test
-    @DisplayName("TC-FR-02-001: VNPay return - orderId chính xác trong response")
-    void TC_FR_02_001() throws Exception {
+    @DisplayName("TC_AUTH_PaymentController_vnpayReturn_003: VNPay return - orderId chính xác trong response")
+    void TC_AUTH_PaymentController_vnpayReturn_003() throws Exception {
         when(paymentService.handleVnpayReturn(any())).thenReturn(true);
 
         mockMvc.perform(get("/api/payments/vnpay/return")

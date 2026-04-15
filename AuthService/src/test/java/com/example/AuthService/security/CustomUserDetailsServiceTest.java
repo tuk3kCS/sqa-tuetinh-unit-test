@@ -33,15 +33,15 @@ class CustomUserDetailsServiceTest {
     // ======================== LOAD USER BY USERNAME ========================
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_CustomUserDetailsService_loadUserByUsername_001
      * Test Objective: Load user thành công khi email tồn tại
      * Input: username="test@example.com" (tồn tại trong DB)
      * Expected Output: UserDetails với email đúng
      * Notes: Happy path - user tìm thấy
      */
     @Test
-    @DisplayName("TC-FR-02-001: Load user thành công")
-    void TC_FR_02_001() {
+    @DisplayName("TC_AUTH_CustomUserDetailsService_loadUserByUsername_001: Load user thành công")
+    void TC_AUTH_CustomUserDetailsService_loadUserByUsername_001() {
         Role role = Role.builder().id(1L).name("USER").build();
         User user = User.builder()
                 .id(1L).email("test@example.com").name("Test")
@@ -58,15 +58,15 @@ class CustomUserDetailsServiceTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_CustomUserDetailsService_loadUserByUsername_002
      * Test Objective: Ném UsernameNotFoundException khi email không tồn tại
      * Input: username="notfound@example.com"
      * Expected Output: UsernameNotFoundException
      * Notes: Email không tìm thấy trong DB
      */
     @Test
-    @DisplayName("TC-FR-02-001: User không tồn tại")
-    void TC_FR_02_001() {
+    @DisplayName("TC_AUTH_CustomUserDetailsService_loadUserByUsername_002: User không tồn tại")
+    void TC_AUTH_CustomUserDetailsService_loadUserByUsername_002() {
         when(userRepository.findByEmail("notfound@example.com")).thenReturn(Optional.empty());
 
         assertThrows(UsernameNotFoundException.class,
@@ -74,15 +74,15 @@ class CustomUserDetailsServiceTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_CustomUserDetailsService_loadUserByUsername_003
      * Test Objective: Email được chuẩn hóa lowercase khi tìm kiếm
      * Input: username="Test@Example.COM"
      * Expected Output: Gọi findByEmail với "test@example.com"
      * Notes: Chuẩn hóa email trước khi query
      */
     @Test
-    @DisplayName("TC-FR-02-001: Email lowercase khi tìm kiếm")
-    void TC_FR_02_001() {
+    @DisplayName("TC_AUTH_CustomUserDetailsService_loadUserByUsername_003: Email lowercase khi tìm kiếm")
+    void TC_AUTH_CustomUserDetailsService_loadUserByUsername_003() {
         when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.empty());
 
         assertThrows(UsernameNotFoundException.class,
@@ -92,15 +92,15 @@ class CustomUserDetailsServiceTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_CustomUserDetailsService_loadUserByUsername_004
      * Test Objective: User trả về có đúng authorities (role)
      * Input: User có role ADMIN
      * Expected Output: Authorities chứa "ROLE_ADMIN"
      * Notes: Kiểm tra mapping role → authority
      */
     @Test
-    @DisplayName("TC-FR-02-001: User có đúng authorities")
-    void TC_FR_02_001() {
+    @DisplayName("TC_AUTH_CustomUserDetailsService_loadUserByUsername_004: User có đúng authorities")
+    void TC_AUTH_CustomUserDetailsService_loadUserByUsername_004() {
         Role adminRole = Role.builder().id(3L).name("ADMIN").build();
         User admin = User.builder()
                 .id(1L).email("admin@test.com").name("Admin")
@@ -116,15 +116,15 @@ class CustomUserDetailsServiceTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_CustomUserDetailsService_loadUserByUsername_005
      * Test Objective: User bị vô hiệu hóa vẫn load được
      * Input: User có enabled=false
      * Expected Output: UserDetails với isEnabled()=false
      * Notes: Service chỉ load, không kiểm tra enabled
      */
     @Test
-    @DisplayName("TC-FR-02-001: User bị disable vẫn load được")
-    void TC_FR_02_001() {
+    @DisplayName("TC_AUTH_CustomUserDetailsService_loadUserByUsername_005: User bị disable vẫn load được")
+    void TC_AUTH_CustomUserDetailsService_loadUserByUsername_005() {
         Role role = Role.builder().id(1L).name("USER").build();
         User disabledUser = User.builder()
                 .id(1L).email("disabled@test.com").name("Disabled")

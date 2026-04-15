@@ -31,15 +31,15 @@ class UserSpecificationTest {
     // ======================== FILTER ========================
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_UserSpecification_filter_001
      * Test Objective: Filter theo keyword (tìm trong name và email)
      * Input: keyword="test"
      * Expected Output: Predicate OR LIKE trên name và email
      * Notes: Tìm kiếm đa trường
      */
     @Test
-    @DisplayName("TC-FR-16-027: Filter theo keyword")
-    void TC_FR_16_027() {
+    @DisplayName("TC_AUTH_UserSpecification_filter_001: Filter theo keyword")
+    void TC_AUTH_UserSpecification_filter_001() {
         when(root.get(anyString())).thenReturn(path);
         when(cb.lower(any())).thenReturn(stringExpression);
         when(cb.like(any(Expression.class), anyString())).thenReturn(predicate);
@@ -53,15 +53,15 @@ class UserSpecificationTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_UserSpecification_filter_002
      * Test Objective: Filter theo roleId
      * Input: roleId=1
      * Expected Output: Predicate equal trên role.id
      * Notes: Lọc user theo vai trò
      */
     @Test
-    @DisplayName("TC-FR-16-031: Filter theo roleId")
-    void TC_FR_16_031() {
+    @DisplayName("TC_AUTH_UserSpecification_filter_002: Filter theo roleId")
+    void TC_AUTH_UserSpecification_filter_002() {
         when(root.get("role")).thenReturn(path);
         when(path.get("id")).thenReturn(nestedPath);
         when(cb.equal(any(), eq(1L))).thenReturn(predicate);
@@ -74,15 +74,15 @@ class UserSpecificationTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_UserSpecification_filter_003
      * Test Objective: Filter theo enabled
      * Input: enabled=true
      * Expected Output: Predicate equal trên enabled
      * Notes: Lọc user đang hoạt động
      */
     @Test
-    @DisplayName("TC-FR-02-001: Filter theo enabled")
-    void TC_FR_02_001() {
+    @DisplayName("TC_AUTH_UserSpecification_filter_003: Filter theo enabled")
+    void TC_AUTH_UserSpecification_filter_003() {
         when(root.get("enabled")).thenReturn(path);
         when(cb.equal(any(), eq(true))).thenReturn(predicate);
         when(cb.and(any(Predicate[].class))).thenReturn(predicate);
@@ -94,15 +94,15 @@ class UserSpecificationTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_UserSpecification_filter_004
      * Test Objective: Filter với tất cả tham số null
      * Input: keyword=null, roleId=null, enabled=null
      * Expected Output: Không có predicate nào, conjunction rỗng
      * Notes: Lấy tất cả users
      */
     @Test
-    @DisplayName("TC-FR-02-001: Không filter - lấy tất cả")
-    void TC_FR_02_001() {
+    @DisplayName("TC_AUTH_UserSpecification_filter_004: Không filter - lấy tất cả")
+    void TC_AUTH_UserSpecification_filter_004() {
         when(cb.and(any(Predicate[].class))).thenReturn(predicate);
 
         Specification<User> spec = UserSpecification.filter(null, null, null);
@@ -112,15 +112,15 @@ class UserSpecificationTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_UserSpecification_filter_005
      * Test Objective: Filter kết hợp keyword + roleId + enabled
      * Input: keyword="admin", roleId=3, enabled=true
      * Expected Output: 3 predicates kết hợp
      * Notes: Lọc kết hợp nhiều điều kiện
      */
     @Test
-    @DisplayName("TC-FR-02-001: Filter kết hợp nhiều điều kiện")
-    void TC_FR_02_001() {
+    @DisplayName("TC_AUTH_UserSpecification_filter_005: Filter kết hợp nhiều điều kiện")
+    void TC_AUTH_UserSpecification_filter_005() {
         when(root.get(anyString())).thenReturn(path);
         when(path.get("id")).thenReturn(nestedPath);
         when(cb.lower(any())).thenReturn(stringExpression);
@@ -137,15 +137,15 @@ class UserSpecificationTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_UserSpecification_filter_006
      * Test Objective: Filter với keyword rỗng (blank)
      * Input: keyword="   "
      * Expected Output: Bỏ qua keyword filter
      * Notes: Keyword toàn khoảng trắng
      */
     @Test
-    @DisplayName("TC-FR-02-001: Keyword rỗng (blank) bị bỏ qua")
-    void TC_FR_02_001() {
+    @DisplayName("TC_AUTH_UserSpecification_filter_006: Keyword rỗng (blank) bị bỏ qua")
+    void TC_AUTH_UserSpecification_filter_006() {
         when(cb.and(any(Predicate[].class))).thenReturn(predicate);
 
         Specification<User> spec = UserSpecification.filter("   ", null, null);
@@ -155,15 +155,15 @@ class UserSpecificationTest {
     }
 
     /**
-     * Test Case ID: TC-FR-02-001
+     * Test Case ID: TC_AUTH_UserSpecification_filter_007
      * Test Objective: Filter enabled=false (user bị disable)
      * Input: enabled=false
      * Expected Output: Predicate equal(enabled, false)
      * Notes: Lọc user bị vô hiệu hóa
      */
     @Test
-    @DisplayName("TC-FR-02-001: Filter enabled=false")
-    void TC_FR_02_001() {
+    @DisplayName("TC_AUTH_UserSpecification_filter_007: Filter enabled=false")
+    void TC_AUTH_UserSpecification_filter_007() {
         when(root.get("enabled")).thenReturn(path);
         when(cb.equal(any(), eq(false))).thenReturn(predicate);
         when(cb.and(any(Predicate[].class))).thenReturn(predicate);
