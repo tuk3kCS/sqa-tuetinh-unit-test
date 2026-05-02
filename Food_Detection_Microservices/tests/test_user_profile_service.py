@@ -56,7 +56,7 @@ def _create_profile_with_weight(session, user_id=1, gender="male",
 # GET USER PROFILE
 # ============================================================
 
-# Test Case ID: TC-FR-00-001serProfileService_get_user_profile_001
+# Test Case ID: TC_AI_TestDtoserProfileService_get_user_profile_001
 # Test Objective: Lấy profile thành công khi user tồn tại
 # Input: user_id=1 có profile trong DB
 # Expected Output: status 200, dữ liệu profile đúng
@@ -75,7 +75,7 @@ def test_user_profile_service_get_user_profile_exists(app, db_session):
     assert data["weight_kg"] == 70.0
 
 
-# Test Case ID: TC-FR-00-001serProfileService_get_user_profile_002
+# Test Case ID: TC_AI_TestDtoserProfileService_get_user_profile_002
 # Test Objective: Trả lỗi khi user không có profile
 # Input: user_id=9999 không tồn tại
 # Expected Output: status 404, error "Profile not found"
@@ -93,7 +93,7 @@ def test_user_profile_service_get_user_profile_not_exists(app, db_session):
 # CREATE USER PROFILE
 # ============================================================
 
-# Test Case ID: TC-FR-00-001serProfileService_create_user_profile_001
+# Test Case ID: TC_AI_TestDtoserProfileService_create_user_profile_001
 # Test Objective: Tạo profile mới thành công
 # Input: user_id=1 chưa có profile, payload hợp lệ, auth service trả dữ liệu
 # Expected Output: status 201, profile mới được tạo
@@ -128,7 +128,7 @@ def test_user_profile_service_create_success(mock_upsert, mock_fetch, app, db_se
     assert profile is not None
 
 
-# Test Case ID: TC-FR-00-001serProfileService_create_user_profile_002
+# Test Case ID: TC_AI_TestDtoserProfileService_create_user_profile_002
 # Test Objective: Trả lỗi khi profile đã tồn tại
 # Input: user_id=1 đã có profile
 # Expected Output: status 400, error "Profile already exists"
@@ -146,7 +146,7 @@ def test_user_profile_service_create_already_exists(app, db_session):
     assert data["error"] == "Profile already exists"
 
 
-# Test Case ID: TC-FR-00-001serProfileService_create_user_profile_003
+# Test Case ID: TC_AI_TestDtoserProfileService_create_user_profile_003
 # Test Objective: Trả lỗi 502 khi Auth Service lỗi
 # Input: fetch_user_profile raise Exception
 # Expected Output: status 502
@@ -169,7 +169,7 @@ def test_user_profile_service_create_auth_error(mock_fetch, app, db_session):
 # UPDATE USER PROFILE
 # ============================================================
 
-# Test Case ID: TC-FR-00-001serProfileService_update_user_profile_001
+# Test Case ID: TC_AI_TestDtoserProfileService_update_user_profile_001
 # Test Objective: Cập nhật profile thành công khi đã tồn tại
 # Input: user_id=1 có profile, payload chứa activity_level mới
 # Expected Output: status 200, profile đã cập nhật
@@ -190,7 +190,7 @@ def test_user_profile_service_update_exists(mock_upsert, app, db_session):
     assert data["user_id"] == 1
 
 
-# Test Case ID: TC-FR-00-001serProfileService_update_user_profile_002
+# Test Case ID: TC_AI_TestDtoserProfileService_update_user_profile_002
 # Test Objective: Tự tạo profile mới khi chưa có (fallback to create)
 # Input: user_id=2 chưa có profile
 # Expected Output: status 201 (gọi create_user_profile)
@@ -215,7 +215,7 @@ def test_user_profile_service_update_creates_if_not_exists(mock_upsert, mock_fet
     assert status == 201
 
 
-# Test Case ID: TC-FR-00-001serProfileService_update_user_profile_003
+# Test Case ID: TC_AI_TestDtoserProfileService_update_user_profile_003
 # Test Objective: Thêm weight history mới khi weight thay đổi
 # Input: user_id=1, weight_kg mới khác weight cũ
 # Expected Output: WeightHistory mới được tạo
@@ -244,7 +244,7 @@ def test_user_profile_service_update_weight_changed(mock_upsert, app, db_session
 # WEIGHT HISTORY
 # ============================================================
 
-# Test Case ID: TC-FR-00-001serProfileService_get_weight_history_001
+# Test Case ID: TC_AI_TestDtoserProfileService_get_weight_history_001
 # Test Objective: Lấy lịch sử cân nặng thành công
 # Input: user_id=1 có profile + weight history
 # Expected Output: status 200, weight_history có dữ liệu
@@ -262,7 +262,7 @@ def test_user_profile_service_get_weight_history_exists(app, db_session):
     assert data["weight_history"][0]["comment"] == "Normal"
 
 
-# Test Case ID: TC-FR-00-001serProfileService_get_weight_history_002
+# Test Case ID: TC_AI_TestDtoserProfileService_get_weight_history_002
 # Test Objective: Trả lỗi khi user không có profile
 # Input: user_id=9999
 # Expected Output: status 404
@@ -276,7 +276,7 @@ def test_user_profile_service_get_weight_history_not_exists(app, db_session):
     assert data["error"] == "Profile not found"
 
 
-# Test Case ID: TC-FR-00-001serProfileService_get_weight_history_003
+# Test Case ID: TC_AI_TestDtoserProfileService_get_weight_history_003
 # Test Objective: Kiểm tra BMI comment cho các mức BMI khác nhau
 # Input: Nhiều weight history với BMI khác nhau
 # Expected Output: comment phù hợp (Underweight, Normal, Overweight, Obese)
@@ -319,7 +319,7 @@ def test_user_profile_service_weight_history_bmi_comments(app, db_session):
 # BUILD AI PROFILE INPUT
 # ============================================================
 
-# Test Case ID: TC-FR-00-001serProfileService_build_ai_profile_input_001
+# Test Case ID: TC_AI_TestDtoserProfileService_build_ai_profile_input_001
 # Test Objective: Tạo AI profile input thành công
 # Input: user_id=1 có đầy đủ profile + weight
 # Expected Output: dict chứa age, gender, height_cm, weight_kg, experience_level
@@ -343,7 +343,7 @@ def test_user_profile_service_build_ai_profile_input_success(app, db_session):
     assert data["age"] > 0
 
 
-# Test Case ID: TC-FR-00-001serProfileService_build_ai_profile_input_002
+# Test Case ID: TC_AI_TestDtoserProfileService_build_ai_profile_input_002
 # Test Objective: Trả lỗi khi user không có profile
 # Input: user_id=9999
 # Expected Output: None, error message
@@ -356,7 +356,7 @@ def test_user_profile_service_build_ai_profile_input_no_profile(app, db_session)
     assert error == "User profile not found"
 
 
-# Test Case ID: TC-FR-00-001serProfileService_build_ai_profile_input_003
+# Test Case ID: TC_AI_TestDtoserProfileService_build_ai_profile_input_003
 # Test Objective: Trả lỗi khi profile không có date_of_birth
 # Input: user_id=1 có profile nhưng không có date_of_birth
 # Expected Output: None, error "Date of birth not set"
@@ -379,7 +379,7 @@ def test_user_profile_service_build_ai_profile_input_no_dob(app, db_session):
 # BUILD AI GOAL INPUT
 # ============================================================
 
-# Test Case ID: TC-FR-00-001serProfileService_build_ai_goal_input_001
+# Test Case ID: TC_AI_TestDtoserProfileService_build_ai_goal_input_001
 # Test Objective: Tạo AI goal input - mục tiêu giảm cân
 # Input: aim_weight < weight_kg
 # Expected Output: goal = "lose weight"
@@ -404,7 +404,7 @@ def test_user_profile_service_build_ai_goal_input_lose_weight(app, db_session):
     assert data["calorie_target"] == 2000
 
 
-# Test Case ID: TC-FR-00-001serProfileService_build_ai_goal_input_002
+# Test Case ID: TC_AI_TestDtoserProfileService_build_ai_goal_input_002
 # Test Objective: Tạo AI goal input - mục tiêu tăng cân
 # Input: aim_weight > weight_kg
 # Expected Output: goal = "gain weight"
@@ -428,7 +428,7 @@ def test_user_profile_service_build_ai_goal_input_gain_weight(app, db_session):
     assert data["goal"] == "gain weight"
 
 
-# Test Case ID: TC-FR-00-001serProfileService_build_ai_goal_input_003
+# Test Case ID: TC_AI_TestDtoserProfileService_build_ai_goal_input_003
 # Test Objective: Tạo AI goal input - duy trì cân nặng
 # Input: aim_weight == weight_kg
 # Expected Output: goal = "maintenance"
@@ -452,7 +452,7 @@ def test_user_profile_service_build_ai_goal_input_maintenance(app, db_session):
     assert data["goal"] == "maintenance"
 
 
-# Test Case ID: TC-FR-00-001serProfileService_build_ai_goal_input_004
+# Test Case ID: TC_AI_TestDtoserProfileService_build_ai_goal_input_004
 # Test Objective: Trả lỗi khi không có profile
 # Input: user_id=9999
 # Expected Output: None, error message
@@ -469,7 +469,7 @@ def test_user_profile_service_build_ai_goal_input_no_profile(app, db_session):
 # UPSERT TODAY DAILY LOG
 # ============================================================
 
-# Test Case ID: TC-FR-00-001serProfileService_upsert_today_daily_log_001
+# Test Case ID: TC_AI_TestDtoserProfileService_upsert_today_daily_log_001
 # Test Objective: Tạo daily log mới cho hôm nay
 # Input: user_id=1, chưa có daily log hôm nay
 # Expected Output: True, DailyEnergyLog mới được tạo
@@ -489,7 +489,7 @@ def test_upsert_today_daily_log_create(app, db_session):
     assert log.tdee > 0
 
 
-# Test Case ID: TC-FR-00-001serProfileService_upsert_today_daily_log_002
+# Test Case ID: TC_AI_TestDtoserProfileService_upsert_today_daily_log_002
 # Test Objective: Trả False khi không tính được TDEE
 # Input: user_id=9999 không có profile
 # Expected Output: False
@@ -500,7 +500,7 @@ def test_upsert_today_daily_log_no_tdee(app, db_session):
     assert result is False
 
 
-# Test Case ID: TC-FR-00-001serProfileService_upsert_today_daily_log_003
+# Test Case ID: TC_AI_TestDtoserProfileService_upsert_today_daily_log_003
 # Test Objective: Cập nhật daily log đã tồn tại
 # Input: user_id=1, đã có daily log hôm nay
 # Expected Output: True, tdee được cập nhật
@@ -532,7 +532,7 @@ def test_upsert_today_daily_log_update(app, db_session):
 # BUILD USER PROFILE RESPONSE
 # ============================================================
 
-# Test Case ID: TC-FR-00-001serProfileService_build_user_profile_response_001
+# Test Case ID: TC_AI_TestDtoserProfileService_build_user_profile_response_001
 # Test Objective: Build response với weight history
 # Input: profile có weight history
 # Expected Output: dict chứa height_cm, weight_kg, bmi
@@ -552,7 +552,7 @@ def test_build_user_profile_response_with_weight(app, db_session):
     assert result["bmi"] is not None
 
 
-# Test Case ID: TC-FR-00-001serProfileService_build_user_profile_response_002
+# Test Case ID: TC_AI_TestDtoserProfileService_build_user_profile_response_002
 # Test Objective: Build response khi không có weight history
 # Input: profile không có weight history
 # Expected Output: height_cm=None, weight_kg=None, bmi=None

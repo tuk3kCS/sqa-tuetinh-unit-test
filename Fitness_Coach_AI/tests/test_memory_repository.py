@@ -19,7 +19,7 @@ def repo():
 # get_state
 # ============================================================
 
-# Test Case ID: TC-FR-00-001serStateRepository_get_state_001
+# Test Case ID: TC_AI_TestUserStateRepository_get_state_001
 # Test Objective: Kiểm tra lấy state khi user không tồn tại
 # Input: user_id="99999"
 # Expected Output: Dict rỗng {}
@@ -29,7 +29,7 @@ def test_get_state_not_exists(db_session, repo):
     assert result == {}
 
 
-# Test Case ID: TC-FR-00-001serStateRepository_get_state_002
+# Test Case ID: TC_AI_TestUserStateRepository_get_state_002
 # Test Objective: Kiểm tra lấy state khi user tồn tại
 # Input: UserPlan với meal_plan và workout_plan
 # Expected Output: Dict chứa meal_plan và workout_plan
@@ -46,7 +46,7 @@ def test_get_state_exists(db_session, repo):
     assert result["workout_plan"] == workout
 
 
-# Test Case ID: TC-FR-00-001serStateRepository_get_state_003
+# Test Case ID: TC_AI_TestUserStateRepository_get_state_003
 # Test Objective: Kiểm tra lấy state khi user tồn tại nhưng plans là None
 # Input: UserPlan tồn tại nhưng cả meal_plan và workout_plan đều None
 # Expected Output: Dict {"meal_plan": None, "workout_plan": None}
@@ -65,7 +65,7 @@ def test_get_state_exists_with_null_plans(db_session, repo):
 # save_state – INSERT
 # ============================================================
 
-# Test Case ID: TC-FR-00-001serStateRepository_save_state_001
+# Test Case ID: TC_AI_TestUserStateRepository_save_state_001
 # Test Objective: Kiểm tra INSERT mới khi user chưa có record
 # Input: user_id="600", state với meal_plan
 # Expected Output: DB có record mới với meal_plan
@@ -87,7 +87,7 @@ def test_save_state_insert_new(db_session, repo):
 # save_state – UPDATE
 # ============================================================
 
-# Test Case ID: TC-FR-00-001serStateRepository_save_state_002
+# Test Case ID: TC_AI_TestUserStateRepository_save_state_002
 # Test Objective: Kiểm tra UPDATE khi user đã có record
 # Input: UserPlan tồn tại → cập nhật workout_plan
 # Expected Output: workout_plan được cập nhật
@@ -108,7 +108,7 @@ def test_save_state_update_existing(db_session, repo):
     assert saved.workout_plan == {"Monday": {"exercises": []}}
 
 
-# Test Case ID: TC-FR-00-001serStateRepository_save_state_003
+# Test Case ID: TC_AI_TestUserStateRepository_save_state_003
 # Test Objective: Kiểm tra partial update (chỉ cập nhật meal_plan)
 # Input: State chỉ chứa meal_plan (không có workout_plan key)
 # Expected Output: meal_plan cập nhật, workout_plan giữ nguyên
@@ -125,7 +125,7 @@ def test_save_state_partial_update(db_session, repo):
     assert saved.workout_plan == {"original": True}
 
 
-# Test Case ID: TC-FR-00-001serStateRepository_save_state_004
+# Test Case ID: TC_AI_TestUserStateRepository_save_state_004
 # Test Objective: Kiểm tra INSERT cả meal_plan và workout_plan cùng lúc
 # Input: user mới, state chứa cả hai plan
 # Expected Output: DB có record mới với cả hai plan

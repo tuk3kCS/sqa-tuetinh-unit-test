@@ -60,7 +60,7 @@ def _create_full_profile(session, user_id=1, gender="male",
 # CALCULATE BMR FROM METRICS
 # ============================================================
 
-# Test Case ID: TC-FR-00-001ailyLogService_calculate_bmr_from_metrics_001
+# Test Case ID: TC_FOOD_TestDailyLogService_calculate_bmr_from_metrics_001
 # Test Objective: Tính BMR cho nam giới theo Mifflin-St Jeor
 # Input: height=170, weight=70, gender="male", dob=1995-06-15
 # Expected Output: BMR > 0, công thức đúng cho nam
@@ -77,7 +77,7 @@ def test_calculate_bmr_from_metrics_male(app):
     assert result > 0
 
 
-# Test Case ID: TC-FR-00-001ailyLogService_calculate_bmr_from_metrics_002
+# Test Case ID: TC_FOOD_TestDailyLogService_calculate_bmr_from_metrics_002
 # Test Objective: Tính BMR cho nữ giới
 # Input: height=160, weight=55, gender="female", dob=1998-03-20
 # Expected Output: BMR > 0, công thức đúng cho nữ
@@ -94,7 +94,7 @@ def test_calculate_bmr_from_metrics_female(app):
     assert result > 0
 
 
-# Test Case ID: TC-FR-00-001ailyLogService_calculate_bmr_from_metrics_003
+# Test Case ID: TC_FOOD_TestDailyLogService_calculate_bmr_from_metrics_003
 # Test Objective: Trả 0 khi thiếu thông số
 # Input: height=None, weight=None, gender=None, dob=None
 # Expected Output: BMR = 0
@@ -107,7 +107,7 @@ def test_calculate_bmr_from_metrics_missing_params(app):
     assert calculate_bmr_from_metrics(170, 70, "male", None) == 0
 
 
-# Test Case ID: TC-FR-00-001ailyLogService_calculate_bmr_from_metrics_004
+# Test Case ID: TC_FOOD_TestDailyLogService_calculate_bmr_from_metrics_004
 # Test Objective: Tính BMR cho người trẻ tuổi (18 tuổi)
 # Input: height=175, weight=65, gender="male", dob gần 18 năm trước
 # Expected Output: BMR > BMR của người lớn tuổi hơn
@@ -128,7 +128,7 @@ def test_calculate_bmr_from_metrics_young_person(app):
 # CALCULATE BMR (wrapper)
 # ============================================================
 
-# Test Case ID: TC-FR-00-001ailyLogService_calculate_bmr_001
+# Test Case ID: TC_FOOD_TestDailyLogService_calculate_bmr_001
 # Test Objective: Tính BMR cho user có profile và weight history
 # Input: user_id=1 có đầy đủ profile và weight history
 # Expected Output: BMR > 0
@@ -140,7 +140,7 @@ def test_calculate_bmr_user_exists(app, db_session):
     assert bmr > 0
 
 
-# Test Case ID: TC-FR-00-001ailyLogService_calculate_bmr_002
+# Test Case ID: TC_FOOD_TestDailyLogService_calculate_bmr_002
 # Test Objective: Trả 0 khi user không tồn tại
 # Input: user_id=9999 không có profile
 # Expected Output: BMR = 0
@@ -155,7 +155,7 @@ def test_calculate_bmr_user_not_exists(app, db_session):
 # CALCULATE TDEE
 # ============================================================
 
-# Test Case ID: TC-FR-00-001ailyLogService_calculate_tdee_001
+# Test Case ID: TC_FOOD_TestDailyLogService_calculate_tdee_001
 # Test Objective: Tính TDEE cho user moderately_active không có mục tiêu cân nặng
 # Input: user_id=1, activity_level=moderately_active
 # Expected Output: tuple (bmr, tdee, target_calorie), tdee = bmr * 1.55
@@ -176,7 +176,7 @@ def test_calculate_tdee_moderate_activity(app, db_session):
     assert target == tdee  # không có goal weight
 
 
-# Test Case ID: TC-FR-00-001ailyLogService_calculate_tdee_002
+# Test Case ID: TC_FOOD_TestDailyLogService_calculate_tdee_002
 # Test Objective: Tính TDEE cho user sedentary
 # Input: user_id=1, activity_level=sedentary
 # Expected Output: tdee = bmr * 1.2
@@ -193,7 +193,7 @@ def test_calculate_tdee_sedentary(app, db_session):
     assert tdee == int(bmr * 1.2)
 
 
-# Test Case ID: TC-FR-00-001ailyLogService_calculate_tdee_003
+# Test Case ID: TC_FOOD_TestDailyLogService_calculate_tdee_003
 # Test Objective: Trả None khi user không có profile
 # Input: user_id=9999
 # Expected Output: None
@@ -204,7 +204,7 @@ def test_calculate_tdee_no_profile(app, db_session):
     assert result is None
 
 
-# Test Case ID: TC-FR-00-001ailyLogService_calculate_tdee_004
+# Test Case ID: TC_FOOD_TestDailyLogService_calculate_tdee_004
 # Test Objective: Trả None khi thiếu chiều cao/cân nặng
 # Input: user_id=1 có profile nhưng không có weight history
 # Expected Output: None
@@ -222,7 +222,7 @@ def test_calculate_tdee_no_metrics(app, db_session):
     assert result is None
 
 
-# Test Case ID: TC-FR-00-001ailyLogService_calculate_tdee_005
+# Test Case ID: TC_FOOD_TestDailyLogService_calculate_tdee_005
 # Test Objective: Tính target_calorie khi có mục tiêu giảm cân
 # Input: aim_weight < weight_kg, aim_day/aim_day_end hợp lệ
 # Expected Output: target_calorie < tdee (do cần thâm hụt calo)
@@ -243,7 +243,7 @@ def test_calculate_tdee_with_goal_lose_weight(app, db_session):
     assert target < tdee  # giảm cân → target thấp hơn tdee
 
 
-# Test Case ID: TC-FR-00-001ailyLogService_calculate_tdee_006
+# Test Case ID: TC_FOOD_TestDailyLogService_calculate_tdee_006
 # Test Objective: Target calorie không thấp hơn giới hạn tối thiểu (nữ: 1200)
 # Input: nữ, aim_weight thấp hơn nhiều → MAX_DEFICIT
 # Expected Output: target_calorie >= 1200
@@ -269,7 +269,7 @@ def test_calculate_tdee_female_min_calorie(app, db_session):
 # CREATE DAILY LOGS FOR ALL USERS
 # ============================================================
 
-# Test Case ID: TC-FR-00-001ailyLogService_create_daily_logs_for_all_users_001
+# Test Case ID: TC_FOOD_TestDailyLogService_create_daily_logs_for_all_users_001
 # Test Objective: Tạo daily log cho tất cả users có profile hợp lệ
 # Input: 1 user có đầy đủ profile + weight
 # Expected Output: created_logs=1, skipped_users=0
@@ -291,7 +291,7 @@ def test_create_daily_logs_success(app, db_session):
     assert log.tdee > 0
 
 
-# Test Case ID: TC-FR-00-001ailyLogService_create_daily_logs_for_all_users_002
+# Test Case ID: TC_FOOD_TestDailyLogService_create_daily_logs_for_all_users_002
 # Test Objective: Không tạo log khi không có users
 # Input: không có UserProfile nào
 # Expected Output: created_logs=0, total_users=0
@@ -305,7 +305,7 @@ def test_create_daily_logs_no_users(app, db_session):
     assert result["total_users"] == 0
 
 
-# Test Case ID: TC-FR-00-001ailyLogService_create_daily_logs_for_all_users_003
+# Test Case ID: TC_FOOD_TestDailyLogService_create_daily_logs_for_all_users_003
 # Test Objective: Bỏ qua user đã có log cho ngày đó
 # Input: user_id=1 đã có DailyEnergyLog cho target_date
 # Expected Output: created_logs=0 (bỏ qua vì đã tồn tại)
@@ -325,7 +325,7 @@ def test_create_daily_logs_existing_log(app, db_session):
     assert result["created_logs"] == 0
 
 
-# Test Case ID: TC-FR-00-001ailyLogService_create_daily_logs_for_all_users_004
+# Test Case ID: TC_FOOD_TestDailyLogService_create_daily_logs_for_all_users_004
 # Test Objective: Skip user không có weight history (không tính được TDEE)
 # Input: user có profile nhưng không có weight history
 # Expected Output: skipped_users=1
@@ -350,7 +350,7 @@ def test_create_daily_logs_skip_user_no_weight(app, db_session):
 # GET DAILY LOGS
 # ============================================================
 
-# Test Case ID: TC-FR-00-001ailyLogService_get_daily_logs_001
+# Test Case ID: TC_FOOD_TestDailyLogService_get_daily_logs_001
 # Test Objective: Lấy daily logs trong khoảng ngày có dữ liệu
 # Input: user_id=1, start_date và end_date bao quanh log_date
 # Expected Output: danh sách 1 log, không có error
@@ -383,7 +383,7 @@ def test_daily_log_service_get_daily_logs_with_data(app, db_session):
     assert logs[0]["total_steps"] == 8000
 
 
-# Test Case ID: TC-FR-00-001ailyLogService_get_daily_logs_002
+# Test Case ID: TC_FOOD_TestDailyLogService_get_daily_logs_002
 # Test Objective: Trả danh sách rỗng khi không có logs
 # Input: user_id=1, khoảng ngày không có dữ liệu
 # Expected Output: danh sách rỗng, không có error
@@ -398,7 +398,7 @@ def test_daily_log_service_get_daily_logs_empty(app, db_session):
     assert logs == []
 
 
-# Test Case ID: TC-FR-00-001ailyLogService_get_daily_logs_003
+# Test Case ID: TC_FOOD_TestDailyLogService_get_daily_logs_003
 # Test Objective: Trả lỗi khi định dạng ngày không hợp lệ
 # Input: start_date="invalid-date"
 # Expected Output: None, error chứa thông báo lỗi
@@ -413,7 +413,7 @@ def test_daily_log_service_get_daily_logs_invalid_date(app, db_session):
     assert "Invalid date format" in error
 
 
-# Test Case ID: TC-FR-00-001ailyLogService_get_daily_logs_004
+# Test Case ID: TC_FOOD_TestDailyLogService_get_daily_logs_004
 # Test Objective: Lấy logs khi không chỉ định start_date/end_date
 # Input: user_id=1, start_date=None, end_date=None
 # Expected Output: Tất cả logs của user
@@ -444,7 +444,7 @@ def test_daily_log_service_get_daily_logs_no_date_filter(app, db_session):
 # UPDATE DAILY STEPS
 # ============================================================
 
-# Test Case ID: TC-FR-00-001ailyLogService_update_daily_steps_001
+# Test Case ID: TC_FOOD_TestDailyLogService_update_daily_steps_001
 # Test Objective: Cập nhật số bước chân thành công
 # Input: user_id=1, steps=10000, có profile + weight + daily log
 # Expected Output: result chứa total_steps=10000, step_calorie > 0
@@ -470,7 +470,7 @@ def test_daily_log_service_update_daily_steps_success(app, db_session):
     assert result["step_calorie"] == 350
 
 
-# Test Case ID: TC-FR-00-001ailyLogService_update_daily_steps_002
+# Test Case ID: TC_FOOD_TestDailyLogService_update_daily_steps_002
 # Test Objective: Trả lỗi khi daily log không tồn tại
 # Input: user_id=1 có profile nhưng không có daily log
 # Expected Output: error "Daily log not found"
@@ -487,7 +487,7 @@ def test_daily_log_service_update_daily_steps_log_not_found(app, db_session):
     assert error == "Daily log not found"
 
 
-# Test Case ID: TC-FR-00-001ailyLogService_update_daily_steps_003
+# Test Case ID: TC_FOOD_TestDailyLogService_update_daily_steps_003
 # Test Objective: Trả lỗi khi user profile không tồn tại
 # Input: user_id=9999 không có profile
 # Expected Output: error "User profile not found"
@@ -499,7 +499,7 @@ def test_daily_log_service_update_daily_steps_no_profile(app, db_session):
     assert error == "User profile not found"
 
 
-# Test Case ID: TC-FR-00-001ailyLogService_update_daily_steps_004
+# Test Case ID: TC_FOOD_TestDailyLogService_update_daily_steps_004
 # Test Objective: Trả lỗi khi user không có weight history
 # Input: user_id=1 có profile nhưng không có weight history
 # Expected Output: error "User weight not found"

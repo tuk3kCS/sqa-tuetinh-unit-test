@@ -18,7 +18,7 @@ from app.mappers.ai_profile_mapper import (
 # ACTIVITY_TO_EXPERIENCE
 # ============================================================
 
-# Test Case ID: TC-FR-00-001iProfileMapper_ACTIVITY_TO_EXPERIENCE_001
+# Test Case ID: TC_FOOD_TestAiProfileMapper_ACTIVITY_TO_EXPERIENCE_001
 # Test Objective: Kiểm tra đầy đủ mapping activity level → experience level
 # Input: Tất cả ActivityLevelEnum members đang được map
 # Expected Output: sedentary→beginner, lightly_active→beginner, moderately_active→intermediate, very_active→advanced
@@ -34,7 +34,7 @@ def test_activity_to_experience_complete():
     assert len(ACTIVITY_TO_EXPERIENCE) == 4
 
 
-# Test Case ID: TC-FR-00-001iProfileMapper_ACTIVITY_TO_EXPERIENCE_002
+# Test Case ID: TC_FOOD_TestAiProfileMapper_ACTIVITY_TO_EXPERIENCE_002
 # Test Objective: Kiểm tra fallback cho activity level không có trong mapping
 # Input: ActivityLevelEnum.extremely_active (không có trong dict)
 # Expected Output: KeyError hoặc default value
@@ -51,7 +51,7 @@ def test_activity_to_experience_missing_key():
 # ACTIVITY_TO_DAYS
 # ============================================================
 
-# Test Case ID: TC-FR-00-001iProfileMapper_ACTIVITY_TO_DAYS_001
+# Test Case ID: TC_FOOD_TestAiProfileMapper_ACTIVITY_TO_DAYS_001
 # Test Objective: Kiểm tra mapping activity level → số ngày tập
 # Input: Tất cả keys trong ACTIVITY_TO_DAYS
 # Expected Output: sedentary→3, lightly_active→4, moderately_active→5, very_active→6
@@ -73,7 +73,7 @@ def test_activity_to_days_complete():
 # ACTIVITY_TO_SESSION_DURATION
 # ============================================================
 
-# Test Case ID: TC-FR-00-001iProfileMapper_ACTIVITY_TO_SESSION_DURATION_001
+# Test Case ID: TC_FOOD_TestAiProfileMapper_ACTIVITY_TO_SESSION_DURATION_001
 # Test Objective: Kiểm tra mapping activity level → thời lượng tập (phút)
 # Input: Tất cả keys trong ACTIVITY_TO_SESSION_DURATION
 # Expected Output: sedentary→45, lightly_active→60, moderately_active→75, very_active→90
@@ -95,7 +95,7 @@ def test_activity_to_session_duration_complete():
 # GOAL MAPPING
 # ============================================================
 
-# Test Case ID: TC-FR-00-001iProfileMapper_GOAL_MAPPING_001
+# Test Case ID: TC_FOOD_TestAiProfileMapper_GOAL_MAPPING_001
 # Test Objective: Kiểm tra mapping goal type → fitness goal string
 # Input: Tất cả GoalTypeEnum members
 # Expected Output: lose_weight→fat_loss, maintain→maintenance, gain_weight→hypertrophy

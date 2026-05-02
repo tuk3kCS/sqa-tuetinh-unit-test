@@ -24,7 +24,7 @@ from app.utils.utils import (
 # CALCULATE IOU
 # ============================================================
 
-# Test Case ID: TC-FR-00-001tils_calculate_iou_001
+# Test Case ID: TC_FOOD_TestUtils_calculate_iou_001
 # Test Objective: Tính IoU cho 2 bounding boxes chồng lấp một phần
 # Input: box1=[0,0,100,100], box2=[50,50,150,150]
 # Expected Output: IoU > 0 và < 1
@@ -42,7 +42,7 @@ def test_calculate_iou_overlapping():
     assert 0 < iou < 1
 
 
-# Test Case ID: TC-FR-00-001tils_calculate_iou_002
+# Test Case ID: TC_FOOD_TestUtils_calculate_iou_002
 # Test Objective: IoU = 0 cho 2 boxes không chồng lấp
 # Input: box1=[0,0,50,50], box2=[100,100,200,200]
 # Expected Output: IoU = 0.0
@@ -55,7 +55,7 @@ def test_calculate_iou_non_overlapping():
     assert iou == 0.0
 
 
-# Test Case ID: TC-FR-00-001tils_calculate_iou_003
+# Test Case ID: TC_FOOD_TestUtils_calculate_iou_003
 # Test Objective: IoU = 1 cho 2 boxes giống hệt nhau
 # Input: box1 = box2 = [10, 10, 100, 100]
 # Expected Output: IoU = 1.0
@@ -67,7 +67,7 @@ def test_calculate_iou_identical():
     assert iou == 1.0
 
 
-# Test Case ID: TC-FR-00-001tils_calculate_iou_004
+# Test Case ID: TC_FOOD_TestUtils_calculate_iou_004
 # Test Objective: IoU = 0 khi diện tích = 0 (box suy biến)
 # Input: box1 = box2 = [0, 0, 0, 0] (điểm)
 # Expected Output: IoU = 0.0
@@ -83,7 +83,7 @@ def test_calculate_iou_zero_area():
 # APPLY NMS
 # ============================================================
 
-# Test Case ID: TC-FR-00-001tils_apply_nms_001
+# Test Case ID: TC_FOOD_TestUtils_apply_nms_001
 # Test Objective: NMS gộp detections cùng class chồng lấp cao
 # Input: 2 detections cùng class "Phở" chồng lấp > 0.5
 # Expected Output: 1 detection sau NMS
@@ -99,7 +99,7 @@ def test_apply_nms_overlapping():
     assert result[0]["confidence"] == 0.9  # giữ detection có confidence cao nhất
 
 
-# Test Case ID: TC-FR-00-001tils_apply_nms_002
+# Test Case ID: TC_FOOD_TestUtils_apply_nms_002
 # Test Objective: NMS giữ nguyên detections không chồng lấp
 # Input: 2 detections cùng class nhưng ở vị trí khác xa
 # Expected Output: 2 detections (không gộp)
@@ -114,7 +114,7 @@ def test_apply_nms_no_overlap():
     assert len(result) == 2
 
 
-# Test Case ID: TC-FR-00-001tils_apply_nms_003
+# Test Case ID: TC_FOOD_TestUtils_apply_nms_003
 # Test Objective: NMS trả rỗng cho input rỗng
 # Input: detections = []
 # Expected Output: []
@@ -125,7 +125,7 @@ def test_apply_nms_empty():
     assert result == []
 
 
-# Test Case ID: TC-FR-00-001tils_apply_nms_004
+# Test Case ID: TC_FOOD_TestUtils_apply_nms_004
 # Test Objective: NMS xử lý nhiều class khác nhau
 # Input: detections có 2 class khác nhau, mỗi class 2 detections chồng lấp
 # Expected Output: 2 detections (1 per class)
@@ -148,7 +148,7 @@ def test_apply_nms_multiple_classes():
 # DEDUPLICATE BY LABEL
 # ============================================================
 
-# Test Case ID: TC-FR-00-001tils_deduplicate_by_label_001
+# Test Case ID: TC_FOOD_TestUtils_deduplicate_by_label_001
 # Test Objective: Dedup giữ detection confidence cao nhất mỗi label
 # Input: 3 detections cùng "Phở" với confidence khác nhau
 # Expected Output: 1 detection, confidence cao nhất
@@ -165,7 +165,7 @@ def test_deduplicate_by_label_duplicates():
     assert result[0]["confidence"] == 0.9
 
 
-# Test Case ID: TC-FR-00-001tils_deduplicate_by_label_002
+# Test Case ID: TC_FOOD_TestUtils_deduplicate_by_label_002
 # Test Objective: Dedup giữ nguyên khi mỗi detection có label khác nhau
 # Input: 3 detections với 3 labels khác nhau
 # Expected Output: 3 detections
@@ -181,7 +181,7 @@ def test_deduplicate_by_label_unique():
     assert len(result) == 3
 
 
-# Test Case ID: TC-FR-00-001tils_deduplicate_by_label_003
+# Test Case ID: TC_FOOD_TestUtils_deduplicate_by_label_003
 # Test Objective: Dedup trả rỗng cho input rỗng
 # Input: detections = []
 # Expected Output: []
@@ -196,7 +196,7 @@ def test_deduplicate_by_label_empty():
 # GET NUTRITION BY NAME
 # ============================================================
 
-# Test Case ID: TC-FR-00-001tils_get_nutrition_by_name_001
+# Test Case ID: TC_FOOD_TestUtils_get_nutrition_by_name_001
 # Test Objective: Tìm thông tin dinh dưỡng cho món ăn đã biết
 # Input: food_name="Phở"
 # Expected Output: dict chứa name, serving_type, nutrition
@@ -209,7 +209,7 @@ def test_get_nutrition_by_name_known(app):
     assert result["nutrition"]["Calories"] == 450
 
 
-# Test Case ID: TC-FR-00-001tils_get_nutrition_by_name_002
+# Test Case ID: TC_FOOD_TestUtils_get_nutrition_by_name_002
 # Test Objective: Trả None cho món ăn không có trong DB
 # Input: food_name="AlienFood"
 # Expected Output: None
@@ -220,7 +220,7 @@ def test_get_nutrition_by_name_unknown(app):
     assert result is None
 
 
-# Test Case ID: TC-FR-00-001tils_get_nutrition_by_name_003
+# Test Case ID: TC_FOOD_TestUtils_get_nutrition_by_name_003
 # Test Objective: Tìm kiếm không phân biệt hoa thường
 # Input: food_name="phở" (lowercase)
 # Expected Output: dict chứa name="Phở"
@@ -232,7 +232,7 @@ def test_get_nutrition_by_name_case_insensitive(app):
     assert result["name"] == "Phở"
 
 
-# Test Case ID: TC-FR-00-001tils_get_nutrition_by_name_004
+# Test Case ID: TC_FOOD_TestUtils_get_nutrition_by_name_004
 # Test Objective: Tìm kiếm với khoảng trắng thừa
 # Input: food_name="  Phở  " (có space)
 # Expected Output: dict chứa name="Phở"
@@ -248,7 +248,7 @@ def test_get_nutrition_by_name_whitespace(app):
 # CALCULATE TOTAL NUTRITION
 # ============================================================
 
-# Test Case ID: TC-FR-00-001tils_calculate_total_nutrition_001
+# Test Case ID: TC_FOOD_TestUtils_calculate_total_nutrition_001
 # Test Objective: Tính tổng dinh dưỡng cho nhiều detections
 # Input: 2 detections: "Phở" + "Bánh mì"
 # Expected Output: tổng Calories = 450 + 350 = 800
@@ -265,7 +265,7 @@ def test_calculate_total_nutrition_multiple(app):
     assert result["total_nutrition"]["Calories"] == 450 + 350
 
 
-# Test Case ID: TC-FR-00-001tils_calculate_total_nutrition_002
+# Test Case ID: TC_FOOD_TestUtils_calculate_total_nutrition_002
 # Test Objective: Tính tổng dinh dưỡng cho danh sách rỗng
 # Input: detections = []
 # Expected Output: items_count=0, Calories=0
@@ -278,7 +278,7 @@ def test_calculate_total_nutrition_empty(app):
     assert result["total_nutrition"]["Calories"] == 0
 
 
-# Test Case ID: TC-FR-00-001tils_calculate_total_nutrition_003
+# Test Case ID: TC_FOOD_TestUtils_calculate_total_nutrition_003
 # Test Objective: Bỏ qua món không có trong DB
 # Input: 1 detection cho "UnknownFood"
 # Expected Output: items_count=0
@@ -296,7 +296,7 @@ def test_calculate_total_nutrition_unknown(app):
 # CROP REGIONS
 # ============================================================
 
-# Test Case ID: TC-FR-00-001tils_crop_regions_001
+# Test Case ID: TC_FOOD_TestUtils_crop_regions_001
 # Test Objective: Cắt vùng phát hiện từ ảnh
 # Input: PIL Image 500x500, 2 detections
 # Expected Output: 2 cropped images
@@ -319,7 +319,7 @@ def test_crop_regions():
 # DRAW BOXES
 # ============================================================
 
-# Test Case ID: TC-FR-00-001tils_draw_boxes_001
+# Test Case ID: TC_FOOD_TestUtils_draw_boxes_001
 # Test Objective: Vẽ bounding boxes lên ảnh
 # Input: PIL Image + detections với class và confidence
 # Expected Output: PIL Image (cùng kích thước)
@@ -340,7 +340,7 @@ def test_draw_boxes():
 # IMAGE TO BASE64
 # ============================================================
 
-# Test Case ID: TC-FR-00-001tils_image_to_base64_001
+# Test Case ID: TC_FOOD_TestUtils_image_to_base64_001
 # Test Objective: Convert PIL Image sang base64 string
 # Input: PIL Image 100x100
 # Expected Output: base64 string hợp lệ, decode được
@@ -357,7 +357,7 @@ def test_image_to_base64():
     assert len(decoded) > 0
 
 
-# Test Case ID: TC-FR-00-001tils_image_to_base64_002
+# Test Case ID: TC_FOOD_TestUtils_image_to_base64_002
 # Test Objective: Convert ảnh với format PNG
 # Input: PIL Image, format="PNG"
 # Expected Output: base64 string hợp lệ

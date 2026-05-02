@@ -20,7 +20,7 @@ def reset_singleton():
     factory_module._LLM_INSTANCE = None
 
 
-# Test Case ID: TC-FR-11-001actory_get_llm_001
+# Test Case ID: TC_AI_TestLlmFactory_get_llm_001
 # Test Objective: Kiểm tra tạo OpenAIClient khi provider là "openai"
 # Input: Config.LLM_PROVIDER = "openai"
 # Expected Output: Instance của OpenAIClient
@@ -37,7 +37,7 @@ def test_get_llm_openai_provider(mock_config, mock_openai_cls):
     mock_openai_cls.assert_called_once()
 
 
-# Test Case ID: TC-FR-11-001actory_get_llm_002
+# Test Case ID: TC_AI_TestLlmFactory_get_llm_002
 # Test Objective: Kiểm tra tạo OllamaClient khi provider là "ollama"
 # Input: Config.LLM_PROVIDER = "ollama"
 # Expected Output: Instance của OllamaClient
@@ -54,7 +54,7 @@ def test_get_llm_ollama_provider(mock_config, mock_ollama_cls):
     mock_ollama_cls.assert_called_once()
 
 
-# Test Case ID: TC-FR-11-001actory_get_llm_003
+# Test Case ID: TC_AI_TestLlmFactory_get_llm_003
 # Test Objective: Kiểm tra raise ValueError khi provider không hợp lệ
 # Input: Config.LLM_PROVIDER = "invalid_provider"
 # Expected Output: Raise ValueError với message chứa "Unsupported"
@@ -67,7 +67,7 @@ def test_get_llm_invalid_provider(mock_config):
         factory_module.get_llm()
 
 
-# Test Case ID: TC-FR-11-001actory_get_llm_004
+# Test Case ID: TC_AI_TestLlmFactory_get_llm_004
 # Test Objective: Kiểm tra singleton – gọi get_llm lần 2 trả cùng instance
 # Input: Gọi get_llm() 2 lần liên tiếp
 # Expected Output: Cùng một instance, constructor chỉ gọi 1 lần
@@ -85,7 +85,7 @@ def test_get_llm_singleton_returns_same_instance(mock_config, mock_openai_cls):
     mock_openai_cls.assert_called_once()
 
 
-# Test Case ID: TC-FR-11-001actory_get_llm_005
+# Test Case ID: TC_AI_TestLlmFactory_get_llm_005
 # Test Objective: Kiểm tra provider viết hoa (case insensitive)
 # Input: Config.LLM_PROVIDER = "OpenAI"
 # Expected Output: Tạo OpenAIClient (lower() trước khi so sánh)

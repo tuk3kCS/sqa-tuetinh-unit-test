@@ -11,7 +11,7 @@ from unittest.mock import patch, MagicMock
 # CHAT endpoint – POST /api/v3/agent/chat
 # ============================================================
 
-# Test Case ID: TC-FR-00-001gentController_chat_001
+# Test Case ID: TC_AI_TestAgentController_chat_001
 # Test Objective: Kiểm tra chat thành công với message hợp lệ
 # Input: POST {"message": "Xin chào"} với JWT hợp lệ
 # Expected Output: 200, response chứa kết quả từ AgentService.chat
@@ -31,7 +31,7 @@ def test_chat_success(mock_service, client, mock_jwt_identity):
     assert data["type"] == "message"
 
 
-# Test Case ID: TC-FR-00-001gentController_chat_002
+# Test Case ID: TC_AI_TestAgentController_chat_002
 # Test Objective: Kiểm tra chat thiếu message → 400
 # Input: POST {} (không có key "message")
 # Expected Output: 400, {"error": "Message is required"}
@@ -47,7 +47,7 @@ def test_chat_missing_message(mock_service, client, mock_jwt_identity):
     assert "Message is required" in resp.get_json()["error"]
 
 
-# Test Case ID: TC-FR-00-001gentController_chat_003
+# Test Case ID: TC_AI_TestAgentController_chat_003
 # Test Objective: Kiểm tra chat với body None (no JSON) → 400
 # Input: POST với content-type nhưng body rỗng
 # Expected Output: 400
@@ -62,7 +62,7 @@ def test_chat_no_body(mock_service, client, mock_jwt_identity):
     assert resp.status_code == 400
 
 
-# Test Case ID: TC-FR-00-001gentController_chat_004
+# Test Case ID: TC_AI_TestAgentController_chat_004
 # Test Objective: Kiểm tra chat khi user_id trong body khác JWT → 403
 # Input: POST {"message": "hi", "user_id": 999} nhưng JWT userId=1
 # Expected Output: 403, {"error": "Unauthorized"}
@@ -81,7 +81,7 @@ def test_chat_user_id_mismatch(mock_service, client, mock_jwt_identity):
 # GET MEAL PLAN – GET /api/v3/agent/meal-plan
 # ============================================================
 
-# Test Case ID: TC-FR-00-001gentController_get_meal_plan_001
+# Test Case ID: TC_AI_TestAgentController_get_meal_plan_001
 # Test Objective: Kiểm tra lấy meal plan thành công
 # Input: GET request với JWT hợp lệ
 # Expected Output: 200, response từ AgentService.get_meal_plan
@@ -99,7 +99,7 @@ def test_get_meal_plan_success(mock_service, client, mock_jwt_identity):
     assert resp.get_json()["type"] == "message"
 
 
-# Test Case ID: TC-FR-00-001gentController_get_meal_plan_002
+# Test Case ID: TC_AI_TestAgentController_get_meal_plan_002
 # Test Objective: Kiểm tra khi không có meal plan
 # Input: GET request, AgentService trả no_plan
 # Expected Output: 200, {"type": "no_plan"}
@@ -121,7 +121,7 @@ def test_get_meal_plan_no_plan(mock_service, client, mock_jwt_identity):
 # CREATE MEAL PLAN – POST /api/v3/agent/meal-plan
 # ============================================================
 
-# Test Case ID: TC-FR-00-001gentController_create_meal_plan_001
+# Test Case ID: TC_AI_TestAgentController_create_meal_plan_001
 # Test Objective: Kiểm tra tạo meal plan thành công
 # Input: POST với JWT, UserProfileClient trả profile hợp lệ
 # Expected Output: 200, plan_created response
@@ -145,7 +145,7 @@ def test_create_meal_plan_success(mock_profile_client, mock_service, client, moc
     assert resp.status_code == 200
 
 
-# Test Case ID: TC-FR-00-001gentController_create_meal_plan_002
+# Test Case ID: TC_AI_TestAgentController_create_meal_plan_002
 # Test Objective: Kiểm tra khi UserProfileClient raise Exception → 503
 # Input: UserProfileClient.get_ai_goal_input raise Exception
 # Expected Output: 503, {"error": "User profile service unavailable"}
@@ -160,7 +160,7 @@ def test_create_meal_plan_profile_service_unavailable(mock_profile_client, clien
     assert resp.status_code == 503
 
 
-# Test Case ID: TC-FR-00-001gentController_create_meal_plan_003
+# Test Case ID: TC_AI_TestAgentController_create_meal_plan_003
 # Test Objective: Kiểm tra khi DTO validation thất bại → 400
 # Input: UserProfileClient trả data thiếu required field
 # Expected Output: 400
@@ -179,7 +179,7 @@ def test_create_meal_plan_dto_validation_error(mock_profile_client, client, mock
 # GET WORKOUT PLAN – GET /api/v3/agent/workout-plan
 # ============================================================
 
-# Test Case ID: TC-FR-00-001gentController_get_workout_plan_001
+# Test Case ID: TC_AI_TestAgentController_get_workout_plan_001
 # Test Objective: Kiểm tra lấy workout plan thành công
 # Input: GET request với JWT hợp lệ
 # Expected Output: 200, response từ AgentService
@@ -200,7 +200,7 @@ def test_get_workout_plan_success(mock_service, client, mock_jwt_identity):
 # CREATE WORKOUT PLAN – POST /api/v3/agent/workout-plan
 # ============================================================
 
-# Test Case ID: TC-FR-00-001gentController_create_workout_plan_001
+# Test Case ID: TC_AI_TestAgentController_create_workout_plan_001
 # Test Objective: Kiểm tra tạo workout plan thành công
 # Input: POST với JWT, UserProfileClient trả profile hợp lệ
 # Expected Output: 200
@@ -224,7 +224,7 @@ def test_create_workout_plan_success(mock_profile_client, mock_service, client, 
     assert resp.status_code == 200
 
 
-# Test Case ID: TC-FR-00-001gentController_create_workout_plan_002
+# Test Case ID: TC_AI_TestAgentController_create_workout_plan_002
 # Test Objective: Kiểm tra khi profile service không khả dụng → 503
 # Input: UserProfileClient raise Exception
 # Expected Output: 503
@@ -243,7 +243,7 @@ def test_create_workout_plan_service_unavailable(mock_profile_client, client, mo
 # DB CRUD – workout-plan/db
 # ============================================================
 
-# Test Case ID: TC-FR-00-001gentController_post_workout_plan_001
+# Test Case ID: TC_AI_TestAgentController_post_workout_plan_001
 # Test Objective: Kiểm tra POST workout plan DB thành công
 # Input: POST {"plan": {...}} qua /workout-plan/db
 # Expected Output: 201, plan_created
@@ -260,7 +260,7 @@ def test_post_workout_plan_db_success(mock_create, client, mock_jwt_identity):
     assert resp.get_json()["type"] == "plan_created"
 
 
-# Test Case ID: TC-FR-00-001gentController_post_workout_plan_002
+# Test Case ID: TC_AI_TestAgentController_post_workout_plan_002
 # Test Objective: Kiểm tra POST workout plan DB thiếu plan → 400
 # Input: POST {} (thiếu key "plan")
 # Expected Output: 400, error message
@@ -275,7 +275,7 @@ def test_post_workout_plan_db_missing_plan(mock_create, client, mock_jwt_identit
     assert resp.status_code == 400
 
 
-# Test Case ID: TC-FR-00-001gentController_post_workout_plan_003
+# Test Case ID: TC_AI_TestAgentController_post_workout_plan_003
 # Test Objective: Kiểm tra POST workout plan DB khi đã tồn tại → 400
 # Input: WorkoutPlanService.create raise ValueError
 # Expected Output: 400
@@ -291,7 +291,7 @@ def test_post_workout_plan_db_already_exists(mock_create, client, mock_jwt_ident
     assert resp.status_code == 400
 
 
-# Test Case ID: TC-FR-00-001gentController_put_workout_plan_001
+# Test Case ID: TC_AI_TestAgentController_put_workout_plan_001
 # Test Objective: Kiểm tra PUT workout plan DB thành công
 # Input: PUT {"plan": {...}}
 # Expected Output: 200, plan_updated
@@ -308,7 +308,7 @@ def test_put_workout_plan_db_success(mock_update, client, mock_jwt_identity):
     assert resp.get_json()["type"] == "plan_updated"
 
 
-# Test Case ID: TC-FR-00-001gentController_put_workout_plan_002
+# Test Case ID: TC_AI_TestAgentController_put_workout_plan_002
 # Test Objective: Kiểm tra PUT workout plan DB khi không tìm thấy → 404
 # Input: WorkoutPlanService.update raise ValueError
 # Expected Output: 404
@@ -324,7 +324,7 @@ def test_put_workout_plan_db_not_found(mock_update, client, mock_jwt_identity):
     assert resp.status_code == 404
 
 
-# Test Case ID: TC-FR-00-001gentController_delete_workout_plan_001
+# Test Case ID: TC_AI_TestAgentController_delete_workout_plan_001
 # Test Objective: Kiểm tra DELETE workout plan DB thành công
 # Input: DELETE request
 # Expected Output: 200, plan_deleted
@@ -340,7 +340,7 @@ def test_delete_workout_plan_db_success(mock_delete, client, mock_jwt_identity):
     assert resp.get_json()["type"] == "plan_deleted"
 
 
-# Test Case ID: TC-FR-00-001gentController_delete_workout_plan_002
+# Test Case ID: TC_AI_TestAgentController_delete_workout_plan_002
 # Test Objective: Kiểm tra DELETE workout plan DB không tìm thấy → 404
 # Input: WorkoutPlanService.delete raise ValueError
 # Expected Output: 404
@@ -359,7 +359,7 @@ def test_delete_workout_plan_db_not_found(mock_delete, client, mock_jwt_identity
 # DB CRUD – meal-plan/db
 # ============================================================
 
-# Test Case ID: TC-FR-00-001gentController_post_meal_plan_001
+# Test Case ID: TC_AI_TestAgentController_post_meal_plan_001
 # Test Objective: Kiểm tra POST meal plan DB thành công
 # Input: POST {"plan": {...}}
 # Expected Output: 201, plan_created
@@ -376,7 +376,7 @@ def test_post_meal_plan_db_success(mock_create, client, mock_jwt_identity):
     assert resp.get_json()["type"] == "plan_created"
 
 
-# Test Case ID: TC-FR-00-001gentController_put_meal_plan_001
+# Test Case ID: TC_AI_TestAgentController_put_meal_plan_001
 # Test Objective: Kiểm tra PUT meal plan DB thành công
 # Input: PUT {"plan": {...}}
 # Expected Output: 200, plan_updated
@@ -393,7 +393,7 @@ def test_put_meal_plan_db_success(mock_update, client, mock_jwt_identity):
     assert resp.get_json()["type"] == "plan_updated"
 
 
-# Test Case ID: TC-FR-00-001gentController_put_meal_plan_002
+# Test Case ID: TC_AI_TestAgentController_put_meal_plan_002
 # Test Objective: Kiểm tra PUT meal plan DB không tìm thấy → 404
 # Input: MealPlanService.update raise ValueError
 # Expected Output: 404
@@ -409,7 +409,7 @@ def test_put_meal_plan_db_not_found(mock_update, client, mock_jwt_identity):
     assert resp.status_code == 404
 
 
-# Test Case ID: TC-FR-00-001gentController_delete_meal_plan_001
+# Test Case ID: TC_AI_TestAgentController_delete_meal_plan_001
 # Test Objective: Kiểm tra DELETE meal plan DB thành công
 # Input: DELETE request
 # Expected Output: 200, plan_deleted
@@ -424,7 +424,7 @@ def test_delete_meal_plan_db_success(mock_delete, client, mock_jwt_identity):
     assert resp.get_json()["type"] == "plan_deleted"
 
 
-# Test Case ID: TC-FR-00-001gentController_delete_meal_plan_002
+# Test Case ID: TC_AI_TestAgentController_delete_meal_plan_002
 # Test Objective: Kiểm tra DELETE meal plan DB không tìm thấy → 404
 # Input: MealPlanService.delete raise ValueError
 # Expected Output: 404

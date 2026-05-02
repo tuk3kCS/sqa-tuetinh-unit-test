@@ -36,7 +36,7 @@ def _seed_entity(session, user_id=1, diagnosis="acne", confidence=0.9):
 # POST /api/v1/analysis/predict
 # ============================================================
 
-# Test Case ID: TC-FR-07-001nalysisController_predict_001
+# Test Case ID: TC_SKIN_TestAnalysisController_predict_001
 # Test Objective: Trả 401 khi không có JWT token
 # Input: POST /predict không header Authorization
 # Expected Output: HTTP 401 hoặc 422
@@ -51,7 +51,7 @@ def test_predict_missing_jwt(client):
     assert resp.status_code in (401, 422)
 
 
-# Test Case ID: TC-FR-07-001nalysisController_predict_002
+# Test Case ID: TC_SKIN_TestAnalysisController_predict_002
 # Test Objective: Trả 400 khi thiếu trường bắt buộc
 # Input: POST /predict với JWT hợp lệ nhưng thiếu aiDiagnosis
 # Expected Output: HTTP 400, body chứa "Missing field"
@@ -68,7 +68,7 @@ def test_predict_missing_field(client, mock_jwt_identity):
     assert "Missing field" in data.get("error", "")
 
 
-# Test Case ID: TC-FR-07-001nalysisController_predict_003
+# Test Case ID: TC_SKIN_TestAnalysisController_predict_003
 # Test Objective: Trả 201 khi request hợp lệ và lưu DB thành công
 # Input: POST /predict với đầy đủ 4 trường bắt buộc + JWT
 # Expected Output: HTTP 201, body chứa aiDiagnosis
@@ -103,7 +103,7 @@ def test_predict_success(mock_svc, client, mock_jwt_identity):
 # PATCH /api/v1/analysis/<id>/doctor-note
 # ============================================================
 
-# Test Case ID: TC-FR-07-001nalysisController_update_doctor_note_001
+# Test Case ID: TC_SKIN_TestAnalysisController_update_doctor_note_001
 # Test Objective: Trả 401 khi không có JWT
 # Input: PATCH /<id>/doctor-note không header Authorization
 # Expected Output: HTTP 401 hoặc 422
@@ -117,7 +117,7 @@ def test_update_doctor_note_missing_jwt(client):
     assert resp.status_code in (401, 422)
 
 
-# Test Case ID: TC-FR-07-001nalysisController_update_doctor_note_002
+# Test Case ID: TC_SKIN_TestAnalysisController_update_doctor_note_002
 # Test Objective: Trả 400 khi thiếu doctorNote trong body
 # Input: PATCH với JWT hợp lệ nhưng body rỗng
 # Expected Output: HTTP 400, "Missing doctorNote"
@@ -133,7 +133,7 @@ def test_update_doctor_note_missing_field(client, mock_jwt_identity):
     assert "Missing doctorNote" in resp.get_json().get("error", "")
 
 
-# Test Case ID: TC-FR-07-001nalysisController_update_doctor_note_003
+# Test Case ID: TC_SKIN_TestAnalysisController_update_doctor_note_003
 # Test Objective: Trả 404 khi record không tồn tại hoặc unauthorized
 # Input: record_id không tồn tại, JWT hợp lệ
 # Expected Output: HTTP 404
@@ -151,7 +151,7 @@ def test_update_doctor_note_not_found(mock_svc, client, mock_jwt_identity):
     assert resp.status_code == 404
 
 
-# Test Case ID: TC-FR-07-001nalysisController_update_doctor_note_004
+# Test Case ID: TC_SKIN_TestAnalysisController_update_doctor_note_004
 # Test Objective: Trả 200 khi cập nhật thành công
 # Input: record hợp lệ, doctorNote mới, JWT chính chủ
 # Expected Output: HTTP 200, body có doctorNote đã cập nhật
@@ -181,7 +181,7 @@ def test_update_doctor_note_success(mock_svc, client, mock_jwt_identity):
 # GET /api/v1/analysis/history
 # ============================================================
 
-# Test Case ID: TC-FR-07-001nalysisController_history_001
+# Test Case ID: TC_SKIN_TestAnalysisController_history_001
 # Test Objective: Trả 401 khi không có JWT
 # Input: GET /history không header
 # Expected Output: HTTP 401 hoặc 422
@@ -192,7 +192,7 @@ def test_history_missing_jwt(client):
     assert resp.status_code in (401, 422)
 
 
-# Test Case ID: TC-FR-07-001nalysisController_history_002
+# Test Case ID: TC_SKIN_TestAnalysisController_history_002
 # Test Objective: Trả 200 + danh sách khi user có lịch sử
 # Input: JWT hợp lệ, DB có bản ghi cho user
 # Expected Output: HTTP 200, JSON array
@@ -215,7 +215,7 @@ def test_history_success(mock_svc, client, mock_jwt_identity):
     assert len(data) == 1
 
 
-# Test Case ID: TC-FR-07-001nalysisController_history_003
+# Test Case ID: TC_SKIN_TestAnalysisController_history_003
 # Test Objective: Trả 200 + list rỗng khi user chưa có lịch sử
 # Input: JWT hợp lệ, DB không có bản ghi
 # Expected Output: HTTP 200, []
@@ -234,7 +234,7 @@ def test_history_empty(mock_svc, client, mock_jwt_identity):
 # POST /api/v1/analysis/save-ai-result
 # ============================================================
 
-# Test Case ID: TC-FR-07-001nalysisController_save_ai_result_001
+# Test Case ID: TC_SKIN_TestAnalysisController_save_ai_result_001
 # Test Objective: Trả 401 khi không có JWT
 # Input: POST /save-ai-result không header
 # Expected Output: HTTP 401 hoặc 422
@@ -248,7 +248,7 @@ def test_save_ai_result_missing_jwt(client):
     assert resp.status_code in (401, 422)
 
 
-# Test Case ID: TC-FR-07-001nalysisController_save_ai_result_002
+# Test Case ID: TC_SKIN_TestAnalysisController_save_ai_result_002
 # Test Objective: Trả 400 khi DTO validation fail (thiếu trường)
 # Input: JSON thiếu required fields
 # Expected Output: HTTP 400
@@ -263,7 +263,7 @@ def test_save_ai_result_invalid_dto(client, mock_jwt_identity):
     assert resp.status_code == 400
 
 
-# Test Case ID: TC-FR-07-001nalysisController_save_ai_result_003
+# Test Case ID: TC_SKIN_TestAnalysisController_save_ai_result_003
 # Test Objective: Trả 201 khi DTO hợp lệ và lưu thành công
 # Input: JSON đầy đủ các trường bắt buộc
 # Expected Output: HTTP 201, JSON response

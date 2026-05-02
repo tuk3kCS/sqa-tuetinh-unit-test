@@ -13,7 +13,7 @@ from app.agent.safety import run_safety_check, _map_loose_safety
 # run_safety_check – Tin nhắn an toàn (qua LLM classifier)
 # ============================================================
 
-# Test Case ID: TC-FR-00-001afety_run_safety_check_001
+# Test Case ID: TC_AI_TestAgentSafety_run_safety_check_001
 # Test Objective: Kiểm tra tin nhắn an toàn khi LLM trả JSON hợp lệ
 # Input: Message bình thường, LLM trả {"safe": true, "category": "general", "confidence": 0.95, "reason": "general nutrition"}
 # Expected Output: Dict safe=True, category="general"
@@ -30,7 +30,7 @@ def test_run_safety_check_safe_message():
     assert result["category"] == "general"
 
 
-# Test Case ID: TC-FR-00-001afety_run_safety_check_002
+# Test Case ID: TC_AI_TestAgentSafety_run_safety_check_002
 # Test Objective: Kiểm tra tin nhắn không an toàn (medical)
 # Input: Message y tế, LLM trả {"safe": false, "category": "medical", "confidence": 0.9}
 # Expected Output: Dict safe=False, category="medical"
@@ -47,7 +47,7 @@ def test_run_safety_check_unsafe_medical_message():
     assert result["category"] == "medical"
 
 
-# Test Case ID: TC-FR-00-001afety_run_safety_check_003
+# Test Case ID: TC_AI_TestAgentSafety_run_safety_check_003
 # Test Objective: Kiểm tra fallback khi LLM trả JSON không hợp lệ
 # Input: LLM trả chuỗi văn bản không phải JSON
 # Expected Output: Dict safe=False, reason="invalid_safety_response"
@@ -61,7 +61,7 @@ def test_run_safety_check_invalid_llm_response_fallback():
     assert result["reason"] == "invalid_safety_response"
 
 
-# Test Case ID: TC-FR-00-001afety_run_safety_check_004
+# Test Case ID: TC_AI_TestAgentSafety_run_safety_check_004
 # Test Objective: Kiểm tra moderation API trả kết quả flagged (self-harm)
 # Input: moderate() trả {"flagged": True, "categories": {"self-harm": True}}
 # Expected Output: Dict safe=False, category="emergency"
@@ -78,7 +78,7 @@ def test_run_safety_check_moderation_flagged_emergency():
     assert result["confidence"] == 0.99
 
 
-# Test Case ID: TC-FR-00-001afety_run_safety_check_005
+# Test Case ID: TC_AI_TestAgentSafety_run_safety_check_005
 # Test Objective: Kiểm tra moderation API trả kết quả flagged (medical)
 # Input: moderate() trả {"flagged": True, "categories": {"medical": True}}
 # Expected Output: Dict safe=False, category="medical"
@@ -95,7 +95,7 @@ def test_run_safety_check_moderation_flagged_medical():
     assert result["confidence"] == 0.9
 
 
-# Test Case ID: TC-FR-00-001afety_run_safety_check_006
+# Test Case ID: TC_AI_TestAgentSafety_run_safety_check_006
 # Test Objective: Kiểm tra moderation API trả kết quả flagged (generic - không rơi vào emergency/medical)
 # Input: moderate() trả {"flagged": True, "categories": {"hate": True}}
 # Expected Output: Dict safe=False, category="general"
@@ -112,7 +112,7 @@ def test_run_safety_check_moderation_flagged_generic():
     assert result["confidence"] == 0.8
 
 
-# Test Case ID: TC-FR-00-001afety_run_safety_check_007
+# Test Case ID: TC_AI_TestAgentSafety_run_safety_check_007
 # Test Objective: Kiểm tra moderation API trả kết quả không flagged
 # Input: moderate() trả {"flagged": False}
 # Expected Output: Dict safe=True, reason="moderation_allow"
@@ -125,7 +125,7 @@ def test_run_safety_check_moderation_not_flagged():
     assert result["reason"] == "moderation_allow"
 
 
-# Test Case ID: TC-FR-00-001afety_run_safety_check_008
+# Test Case ID: TC_AI_TestAgentSafety_run_safety_check_008
 # Test Objective: Kiểm tra khi moderate() raise exception → fallback sang LLM classifier
 # Input: moderate() raise Exception, LLM trả JSON hợp lệ safe=True
 # Expected Output: Dict safe=True (từ LLM classifier)
@@ -141,7 +141,7 @@ def test_run_safety_check_moderation_raises_exception():
     assert result["safe"] is True
 
 
-# Test Case ID: TC-FR-00-001afety_run_safety_check_009
+# Test Case ID: TC_AI_TestAgentSafety_run_safety_check_009
 # Test Objective: Kiểm tra low confidence → đánh dấu unsafe
 # Input: LLM trả confidence=0.3 (< 0.8 threshold)
 # Expected Output: Dict safe=False, reason chứa "low_confidence"
@@ -158,7 +158,7 @@ def test_run_safety_check_low_confidence_marks_unsafe():
     assert result["reason"] == "low_confidence"
 
 
-# Test Case ID: TC-FR-00-001afety_run_safety_check_010
+# Test Case ID: TC_AI_TestAgentSafety_run_safety_check_010
 # Test Objective: Kiểm tra LLM trả JSON trong markdown fences → regex extract thành công
 # Input: LLM trả ```json\n{...}\n``` wrapping
 # Expected Output: Dict parse thành công từ JSON bên trong
@@ -172,7 +172,7 @@ def test_run_safety_check_json_in_markdown_fences():
     assert result["category"] == "general"
 
 
-# Test Case ID: TC-FR-00-001afety_run_safety_check_011
+# Test Case ID: TC_AI_TestAgentSafety_run_safety_check_011
 # Test Objective: Kiểm tra moderation trả categories=None (edge case)
 # Input: moderate() trả {"flagged": True, "categories": None}
 # Expected Output: Dict safe=False, category="general" (generic flagged branch)
@@ -189,7 +189,7 @@ def test_run_safety_check_moderation_flagged_categories_none():
 # _map_loose_safety
 # ============================================================
 
-# Test Case ID: TC-FR-00-001afety_map_loose_safety_001
+# Test Case ID: TC_AI_TestAgentSafety_map_loose_safety_001
 # Test Objective: Kiểm tra mapping khi input có đủ "safe" và "category"
 # Input: {"safe": True, "category": "general", "confidence": 0.8}
 # Expected Output: Dict chuẩn hóa với safe=True, category="general"
@@ -201,7 +201,7 @@ def test_map_loose_safety_has_safe_and_category():
     assert result["confidence"] == 0.8
 
 
-# Test Case ID: TC-FR-00-001afety_map_loose_safety_002
+# Test Case ID: TC_AI_TestAgentSafety_map_loose_safety_002
 # Test Objective: Kiểm tra mapping classification "greeting" → safe
 # Input: {"classification": "greeting"}
 # Expected Output: Dict safe=True, category="general"
@@ -212,7 +212,7 @@ def test_map_loose_safety_classification_greeting():
     assert result["category"] == "general"
 
 
-# Test Case ID: TC-FR-00-001afety_map_loose_safety_003
+# Test Case ID: TC_AI_TestAgentSafety_map_loose_safety_003
 # Test Objective: Kiểm tra mapping classification "medical" → unsafe
 # Input: {"label": "medical_advice"}
 # Expected Output: Dict safe=False, category="medical"
@@ -223,7 +223,7 @@ def test_map_loose_safety_label_medical():
     assert result["category"] == "medical"
 
 
-# Test Case ID: TC-FR-00-001afety_map_loose_safety_004
+# Test Case ID: TC_AI_TestAgentSafety_map_loose_safety_004
 # Test Objective: Kiểm tra mapping classification "suicide" → emergency
 # Input: {"category": "suicide_risk"}
 # Expected Output: Dict safe=False, category="emergency"
@@ -235,7 +235,7 @@ def test_map_loose_safety_category_emergency():
     assert result["confidence"] == 0.99
 
 
-# Test Case ID: TC-FR-00-001afety_map_loose_safety_005
+# Test Case ID: TC_AI_TestAgentSafety_map_loose_safety_005
 # Test Objective: Kiểm tra mapping "is_safe" key
 # Input: {"is_safe": True}
 # Expected Output: Dict safe=True, category="general", confidence=0.6
@@ -246,7 +246,7 @@ def test_map_loose_safety_is_safe_key():
     assert result["confidence"] == 0.6
 
 
-# Test Case ID: TC-FR-00-001afety_map_loose_safety_006
+# Test Case ID: TC_AI_TestAgentSafety_map_loose_safety_006
 # Test Objective: Kiểm tra trả None khi input không có key nào phù hợp
 # Input: {"unknown_key": "value"}
 # Expected Output: None
@@ -256,7 +256,7 @@ def test_map_loose_safety_no_matching_keys():
     assert result is None
 
 
-# Test Case ID: TC-FR-00-001afety_map_loose_safety_007
+# Test Case ID: TC_AI_TestAgentSafety_map_loose_safety_007
 # Test Objective: Kiểm tra trả None khi input không phải dict
 # Input: "not a dict"
 # Expected Output: None
@@ -266,7 +266,7 @@ def test_map_loose_safety_non_dict_input():
     assert result is None
 
 
-# Test Case ID: TC-FR-00-001afety_map_loose_safety_008
+# Test Case ID: TC_AI_TestAgentSafety_map_loose_safety_008
 # Test Objective: Kiểm tra mapping "is_safe" = False
 # Input: {"is_safe": False}
 # Expected Output: Dict safe=False

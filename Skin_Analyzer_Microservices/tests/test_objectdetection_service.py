@@ -39,7 +39,7 @@ def _create_test_image(width=640, height=640):
 # preprocess
 # ============================================================
 
-# Test Case ID: TC-FR-07-001kinDetectionService_preprocess_001
+# Test Case ID: TC_SKIN_TestSkinDetectionService_preprocess_001
 # Test Objective: Preprocess ảnh PIL trả về tensor đúng shape và original_size
 # Input: PIL Image 640×640 RGB
 # Expected Output: numpy (1, 3, 640, 640) float32, original_size=(640, 640)
@@ -60,7 +60,7 @@ def test_detection_preprocess_valid_image(mock_ort):
     assert original_size == (800, 600)
 
 
-# Test Case ID: TC-FR-07-001kinDetectionService_preprocess_002
+# Test Case ID: TC_SKIN_TestSkinDetectionService_preprocess_002
 # Test Objective: Preprocess raise TypeError khi input không phải PIL Image
 # Input: string "not_an_image"
 # Expected Output: TypeError
@@ -77,7 +77,7 @@ def test_detection_preprocess_invalid_input(mock_ort):
         service.preprocess("not_an_image")
 
 
-# Test Case ID: TC-FR-07-001kinDetectionService_preprocess_003
+# Test Case ID: TC_SKIN_TestSkinDetectionService_preprocess_003
 # Test Objective: Giá trị pixel nằm trong khoảng [0, 1] sau chuẩn hóa
 # Input: PIL Image
 # Expected Output: tensor.min() >= 0 và tensor.max() <= 1
@@ -100,7 +100,7 @@ def test_detection_preprocess_normalized_values(mock_ort):
 # decode
 # ============================================================
 
-# Test Case ID: TC-FR-07-001kinDetectionService_decode_001
+# Test Case ID: TC_SKIN_TestSkinDetectionService_decode_001
 # Test Objective: Decode output có detection trên ngưỡng confidence
 # Input: ONNX output với 1 detection conf=0.9 > threshold
 # Expected Output: List 1 detection dict có class, confidence, bbox
@@ -126,7 +126,7 @@ def test_detection_decode_above_threshold(mock_ort):
     assert len(detections[0]["bbox"]) == 4
 
 
-# Test Case ID: TC-FR-07-001kinDetectionService_decode_002
+# Test Case ID: TC_SKIN_TestSkinDetectionService_decode_002
 # Test Objective: Lọc detection dưới ngưỡng confidence
 # Input: ONNX output với conf=0.1 < threshold (0.25)
 # Expected Output: List rỗng
@@ -147,7 +147,7 @@ def test_detection_decode_below_threshold(mock_ort):
     assert len(detections) == 0
 
 
-# Test Case ID: TC-FR-07-001kinDetectionService_decode_003
+# Test Case ID: TC_SKIN_TestSkinDetectionService_decode_003
 # Test Objective: Bbox được scale đúng khi ảnh gốc khác kích thước model
 # Input: original_size=(1280, 960), model input (640, 640)
 # Expected Output: bbox tọa độ đã scale ×2 theo chiều rộng, ×1.5 theo chiều cao
@@ -172,7 +172,7 @@ def test_detection_decode_bbox_scaling(mock_ort):
     assert bbox[3] == pytest.approx(300.0)  # 200 * 1.5
 
 
-# Test Case ID: TC-FR-07-001kinDetectionService_decode_004
+# Test Case ID: TC_SKIN_TestSkinDetectionService_decode_004
 # Test Objective: Decode nhiều detections, chỉ giữ các detection trên ngưỡng
 # Input: 3 detections – 2 trên ngưỡng, 1 dưới ngưỡng
 # Expected Output: List 2 detections
@@ -201,7 +201,7 @@ def test_detection_decode_mixed_confidences(mock_ort):
 # detect (integration với preprocess + decode)
 # ============================================================
 
-# Test Case ID: TC-FR-07-001kinDetectionService_detect_001
+# Test Case ID: TC_SKIN_TestSkinDetectionService_detect_001
 # Test Objective: Detect gọi preprocess rồi session.run rồi decode đúng flow
 # Input: PIL Image, mock session trả output hợp lệ
 # Expected Output: List detections từ decode
@@ -227,7 +227,7 @@ def test_detection_detect_end_to_end(mock_ort):
 # post_process (NMS + dedup)
 # ============================================================
 
-# Test Case ID: TC-FR-07-001kinDetectionService_post_process_001
+# Test Case ID: TC_SKIN_TestSkinDetectionService_post_process_001
 # Test Objective: post_process áp dụng NMS và dedup đúng
 # Input: 2 detections cùng class, bbox gần nhau (IoU > 0.5)
 # Expected Output: Chỉ còn 1 detection (merged)
@@ -250,7 +250,7 @@ def test_detection_post_process_nms_dedup(mock_ort):
     assert result[0]["confidence"] == 0.9
 
 
-# Test Case ID: TC-FR-07-001kinDetectionService_post_process_002
+# Test Case ID: TC_SKIN_TestSkinDetectionService_post_process_002
 # Test Objective: post_process giữ nguyên detections khác class
 # Input: 2 detections khác class, bbox trùng
 # Expected Output: Cả 2 đều còn (NMS chỉ gộp cùng class)
@@ -272,7 +272,7 @@ def test_detection_post_process_different_classes(mock_ort):
     assert len(result) == 2
 
 
-# Test Case ID: TC-FR-07-001kinDetectionService_post_process_003
+# Test Case ID: TC_SKIN_TestSkinDetectionService_post_process_003
 # Test Objective: post_process trả list rỗng khi input rỗng
 # Input: []
 # Expected Output: []

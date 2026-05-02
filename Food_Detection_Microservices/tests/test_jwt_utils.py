@@ -9,7 +9,7 @@ from unittest.mock import patch
 # GET CURRENT USER ID
 # ============================================================
 
-# Test Case ID: TC-FR-00-001wtUtils_get_current_user_id_001
+# Test Case ID: TC_AI_TestJwtUtils_get_current_user_id_001
 # Test Objective: Trả userId khi JWT claims hợp lệ
 # Input: JWT claims chứa userId=42
 # Expected Output: 42
@@ -22,7 +22,7 @@ def test_get_current_user_id_valid(mock_jwt):
     assert result == 42
 
 
-# Test Case ID: TC-FR-00-001wtUtils_get_current_user_id_002
+# Test Case ID: TC_AI_TestJwtUtils_get_current_user_id_002
 # Test Objective: Trả None khi JWT claims không chứa userId
 # Input: JWT claims rỗng hoặc thiếu userId
 # Expected Output: None
@@ -35,7 +35,7 @@ def test_get_current_user_id_missing_user_id(mock_jwt):
     assert result is None
 
 
-# Test Case ID: TC-FR-00-001wtUtils_get_current_user_id_003
+# Test Case ID: TC_AI_TestJwtUtils_get_current_user_id_003
 # Test Objective: Trả None khi JWT claims hoàn toàn rỗng
 # Input: JWT claims = {}
 # Expected Output: None
@@ -48,7 +48,7 @@ def test_get_current_user_id_empty_claims(mock_jwt):
     assert result is None
 
 
-# Test Case ID: TC-FR-00-001wtUtils_get_current_user_id_004
+# Test Case ID: TC_AI_TestJwtUtils_get_current_user_id_004
 # Test Objective: Trả userId khi userId = 0 (falsy nhưng hợp lệ)
 # Input: JWT claims chứa userId=0
 # Expected Output: None (vì 0 là falsy → not user_id = True)

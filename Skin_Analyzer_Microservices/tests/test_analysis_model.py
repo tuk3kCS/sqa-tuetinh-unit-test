@@ -38,7 +38,7 @@ def _make_entity(
 # __init__
 # ============================================================
 
-# Test Case ID: TC-FR-07-001nalysisResult___init___001
+# Test Case ID: TC_SKIN_TestAnalysisResult___init___001
 # Test Objective: Tạo AnalysisResult từ entity với đầy đủ attributes
 # Input: Mock entity với tất cả fields
 # Expected Output: AnalysisResult có các attribute map đúng (camelCase)
@@ -61,7 +61,7 @@ def test_analysis_result_init_from_entity():
     assert result.createdAt == "2025-06-15T10:30:00"
 
 
-# Test Case ID: TC-FR-07-001nalysisResult___init___002
+# Test Case ID: TC_SKIN_TestAnalysisResult___init___002
 # Test Objective: doctor_note = None khi entity chưa có ghi chú
 # Input: entity.doctor_note = None
 # Expected Output: result.doctorNote = None
@@ -73,7 +73,7 @@ def test_analysis_result_init_null_doctor_note():
     assert result.doctorNote is None
 
 
-# Test Case ID: TC-FR-07-001nalysisResult___init___003
+# Test Case ID: TC_SKIN_TestAnalysisResult___init___003
 # Test Objective: createdAt được chuyển sang ISO format string
 # Input: entity.created_at = datetime(2025, 1, 1, 0, 0, 0)
 # Expected Output: createdAt = "2025-01-01T00:00:00"
@@ -85,7 +85,7 @@ def test_analysis_result_init_created_at_iso():
     assert result.createdAt == "2025-12-31T23:59:59"
 
 
-# Test Case ID: TC-FR-07-001nalysisResult___init___004
+# Test Case ID: TC_SKIN_TestAnalysisResult___init___004
 # Test Objective: suggestions là dict JSON được giữ nguyên
 # Input: entity.suggestions = {"lifestyle": [...], "diet": [...]}
 # Expected Output: result.suggestions giữ nguyên dict
@@ -102,7 +102,7 @@ def test_analysis_result_init_suggestions_preserved():
 # to_json
 # ============================================================
 
-# Test Case ID: TC-FR-07-001nalysisResult_to_json_001
+# Test Case ID: TC_SKIN_TestAnalysisResult_to_json_001
 # Test Objective: to_json trả dict với camelCase keys đúng chuẩn
 # Input: AnalysisResult từ entity hợp lệ
 # Expected Output: Dict có 7 keys: id, analysisImageUrl, aiDiagnosis, aiConfidence, suggestions, doctorNote, createdAt
@@ -120,7 +120,7 @@ def test_analysis_result_to_json_keys():
     assert set(json_data.keys()) == expected_keys
 
 
-# Test Case ID: TC-FR-07-001nalysisResult_to_json_002
+# Test Case ID: TC_SKIN_TestAnalysisResult_to_json_002
 # Test Objective: to_json values khớp với attributes
 # Input: AnalysisResult từ entity cụ thể
 # Expected Output: Mỗi value trong dict khớp attribute tương ứng
@@ -143,7 +143,7 @@ def test_analysis_result_to_json_values():
     assert json_data["analysisImageUrl"] == "http://img.test/ann.jpg"
 
 
-# Test Case ID: TC-FR-07-001nalysisResult_to_json_003
+# Test Case ID: TC_SKIN_TestAnalysisResult_to_json_003
 # Test Objective: to_json xử lý doctorNote = None đúng
 # Input: entity chưa có doctor_note
 # Expected Output: json["doctorNote"] = None
@@ -156,7 +156,7 @@ def test_analysis_result_to_json_null_doctor_note():
     assert json_data["doctorNote"] is None
 
 
-# Test Case ID: TC-FR-07-001nalysisResult_to_json_004
+# Test Case ID: TC_SKIN_TestAnalysisResult_to_json_004
 # Test Objective: to_json trả suggestions đúng format nested dict
 # Input: suggestions chứa lifestyle và diet arrays
 # Expected Output: JSON suggestions giữ nguyên nested structure

@@ -43,7 +43,7 @@ def _create_test_image(width=640, height=480):
 # PREPROCESS
 # ============================================================
 
-# Test Case ID: TC-FR-00-001oodDetectionService_preprocess_001
+# Test Case ID: TC_FOOD_TestFoodDetectionService_preprocess_001
 # Test Objective: Tiền xử lý ảnh PIL thành công
 # Input: PIL Image 640x480
 # Expected Output: numpy array shape (1, 3, 640, 640), original_size = (640, 480)
@@ -63,7 +63,7 @@ def test_food_detection_preprocess_valid_image(app):
     assert result.min() >= 0.0
 
 
-# Test Case ID: TC-FR-00-001oodDetectionService_preprocess_002
+# Test Case ID: TC_FOOD_TestFoodDetectionService_preprocess_002
 # Test Objective: Raise TypeError khi input không phải PIL Image
 # Input: numpy array thay vì PIL Image
 # Expected Output: TypeError
@@ -76,7 +76,7 @@ def test_food_detection_preprocess_invalid_input(app):
         service.preprocess(np.zeros((100, 100, 3)))
 
 
-# Test Case ID: TC-FR-00-001oodDetectionService_preprocess_003
+# Test Case ID: TC_FOOD_TestFoodDetectionService_preprocess_003
 # Test Objective: Tiền xử lý ảnh kích thước khác nhau
 # Input: PIL Image 1920x1080 (lớn hơn target)
 # Expected Output: numpy array vẫn resize thành (1, 3, 640, 640)
@@ -96,7 +96,7 @@ def test_food_detection_preprocess_large_image(app):
 # DECODE
 # ============================================================
 
-# Test Case ID: TC-FR-00-001oodDetectionService_decode_001
+# Test Case ID: TC_FOOD_TestFoodDetectionService_decode_001
 # Test Objective: Decode detections trên confidence threshold
 # Input: ONNX output với 1 detection confidence=0.8 (> 0.25)
 # Expected Output: 1 detection với class name đúng
@@ -117,7 +117,7 @@ def test_food_detection_decode_above_threshold(app):
     assert len(detections[0]["bbox"]) == 4
 
 
-# Test Case ID: TC-FR-00-001oodDetectionService_decode_002
+# Test Case ID: TC_FOOD_TestFoodDetectionService_decode_002
 # Test Objective: Bỏ qua detections dưới confidence threshold
 # Input: ONNX output với confidence=0.1 (< 0.25)
 # Expected Output: danh sách rỗng
@@ -133,7 +133,7 @@ def test_food_detection_decode_below_threshold(app):
     assert len(detections) == 0
 
 
-# Test Case ID: TC-FR-00-001oodDetectionService_decode_003
+# Test Case ID: TC_FOOD_TestFoodDetectionService_decode_003
 # Test Objective: Lọc bỏ class "Mì" trong decode
 # Input: ONNX output với cls_id=41 (Mì)
 # Expected Output: danh sách rỗng
@@ -154,7 +154,7 @@ def test_food_detection_decode_filter_mi(app):
 # DETECT FOODS (end-to-end)
 # ============================================================
 
-# Test Case ID: TC-FR-00-001oodDetectionService_detect_foods_001
+# Test Case ID: TC_FOOD_TestFoodDetectionService_detect_foods_001
 # Test Objective: End-to-end detection với ONNX mocked
 # Input: PIL Image, ONNX session trả về 1 detection
 # Expected Output: danh sách detections
@@ -184,7 +184,7 @@ def test_food_detection_detect_foods_integration(app):
 # POST PROCESS
 # ============================================================
 
-# Test Case ID: TC-FR-00-001oodDetectionService_post_process_001
+# Test Case ID: TC_FOOD_TestFoodDetectionService_post_process_001
 # Test Objective: Post-process áp dụng NMS và dedup
 # Input: danh sách foods với 2 detections cùng class (overlapping)
 # Expected Output: 1 detection sau dedup
@@ -204,7 +204,7 @@ def test_food_detection_post_process_nms_dedup(app):
     assert len(result) == 1
 
 
-# Test Case ID: TC-FR-00-001oodDetectionService_post_process_002
+# Test Case ID: TC_FOOD_TestFoodDetectionService_post_process_002
 # Test Objective: Post-process trả rỗng khi input rỗng
 # Input: foods = []
 # Expected Output: danh sách rỗng
@@ -216,7 +216,7 @@ def test_food_detection_post_process_empty(app):
     assert result == []
 
 
-# Test Case ID: TC-FR-00-001oodDetectionService_post_process_003
+# Test Case ID: TC_FOOD_TestFoodDetectionService_post_process_003
 # Test Objective: Post-process giữ lại các detections khác class
 # Input: foods với 2 class khác nhau
 # Expected Output: 2 detections (mỗi class giữ 1)
@@ -238,7 +238,7 @@ def test_food_detection_post_process_different_classes(app):
 # UPLOAD IMAGES
 # ============================================================
 
-# Test Case ID: TC-FR-00-001oodDetectionService_upload_annotated_image_001
+# Test Case ID: TC_FOOD_TestFoodDetectionService_upload_annotated_image_001
 # Test Objective: Upload ảnh annotated lên Cloudinary
 # Input: PIL Image + detections
 # Expected Output: URL từ Cloudinary
@@ -258,7 +258,7 @@ def test_food_detection_upload_annotated_image(mock_b64, mock_draw, mock_upload,
     mock_upload.assert_called_once_with("base64data", folder="food-detection/annotated")
 
 
-# Test Case ID: TC-FR-00-001oodDetectionService_upload_original_image_001
+# Test Case ID: TC_FOOD_TestFoodDetectionService_upload_original_image_001
 # Test Objective: Upload ảnh gốc lên Cloudinary
 # Input: PIL Image
 # Expected Output: URL từ Cloudinary
