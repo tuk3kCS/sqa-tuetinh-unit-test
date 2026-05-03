@@ -7,6 +7,7 @@ import com.example.AuthService.enums.PaymentStatus;
 import com.example.AuthService.repository.DrugRepository;
 import com.example.AuthService.repository.OrderRepository;
 import com.example.AuthService.repository.PaymentRepository;
+import com.example.AuthService.util.VnPayUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -152,18 +153,24 @@ class PaymentServiceImplTest {
      * Test Objective: handleVnpayReturn trả về false khi payment không tồn tại
      * Input: params với vnp_TxnRef không có trong DB
      * Expected Output: false
-     * Notes: Kiểm tra nhánh payment == null (signature skipped do verifySignature internal)
+     * Notes: Phải ký vnp_SecureHash hợp lệ (cùng hashSecret test) thì mới tới bước tra DB
      */
     @Test
     @DisplayName("TC_AUTH_PaymentServiceImpl_handleVnpayReturn_001: Payment không tồn tại → false")
     void TC_AUTH_PaymentServiceImpl_handleVnpayReturn_001() {
-        when(paymentRepository.findByVnpTxnRef(anyString())).thenReturn(Optional.empty());
+        Map<String, String> vnpParams = new TreeMap<>();
+        vnpParams.put("vnp_Amount", "10000000");
+        vnpParams.put("vnp_ResponseCode", "00");
+        vnpParams.put("vnp_TxnRef", "nonexistent");
+        String hashSecret = "TESTHASHSECRET1234567890ABCDEFGH";
+        String secureHash = VnPayUtil.hmacSHA512(hashSecret, VnPayUtil.buildHashData(vnpParams));
 
-        boolean result = paymentService.handleVnpayReturn(Map.of(
-                "vnp_TxnRef", "nonexistent",
-                "vnp_ResponseCode", "00",
-                "vnp_Amount", "10000000"
-        ));
+        Map<String, String> params = new HashMap<>(vnpParams);
+        params.put("vnp_SecureHash", secureHash);
+
+        when(paymentRepository.findByVnpTxnRef("nonexistent")).thenReturn(Optional.empty());
+
+        boolean result = paymentService.handleVnpayReturn(params);
 
         assertThat(result).isFalse();
     }

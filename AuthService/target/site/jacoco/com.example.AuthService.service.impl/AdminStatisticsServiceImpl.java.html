@@ -1,0 +1,853 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AdminStatisticsServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">AuthService</a> &gt; <a href="index.source.html" class="el_package">com.example.AuthService.service.impl</a> &gt; <span class="el_source">AdminStatisticsServiceImpl.java</span></div><h1>AdminStatisticsServiceImpl.java</h1><pre class="source lang-java linenums">package com.example.AuthService.service.impl;
+
+import com.example.AuthService.dto.stats.*;
+import com.example.AuthService.entity.OrderItem;
+import com.example.AuthService.enums.*;
+import com.example.AuthService.repository.OrderRepository;
+import com.example.AuthService.repository.PaymentRepository;
+import com.example.AuthService.service.AdminStatisticsService;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.TemporalAdjusters;
+import java.util.*;
+import java.util.stream.Collectors;
+
+@Service
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
+public class AdminStatisticsServiceImpl implements AdminStatisticsService {
+
+    private final OrderRepository orderRepository;
+    private final PaymentRepository paymentRepository;
+    private final EntityManager em;
+
+    /* ========================= PUBLIC ========================= */
+
+//    @Override
+//    public RevenueSummaryDto getRevenueSummary(RevenueStatsFilter f) {
+//        LocalDateTime from = requireFrom(f.getFrom());
+//        LocalDateTime to = requireTo(f.getTo());
+//
+//        // ===== Revenue =====
+//        BigDecimal vnpayGross = sumPaymentAmountByPaidAt(PaymentStatus.SUCCESS, PaymentMethod.VNPAY, from, to);
+//        BigDecimal refundAmount =
+//                sumPaymentAmountByRefundedAt(PaymentStatus.REFUNDED, PaymentMethod.VNPAY, from, to);
+//
+//        BigDecimal codRevenue = BigDecimal.ZERO;
+//        if (f.getMode() == StatsMode.SALES_ALL) {
+//            codRevenue = sumCodCompletedOrders(from, to);
+//        }
+//
+//        BigDecimal grossRevenue = (f.getMode() == StatsMode.CASHFLOW_VNPAY_ONLY)
+//                ? vnpayGross
+//                : vnpayGross.add(codRevenue);
+//
+//        BigDecimal netRevenue = grossRevenue.subtract(refundAmount);
+//
+//        // ===== Orders count (để AOV) =====
+//        long vnpayOrders = countDistinctOrdersFromPayments(PaymentStatus.SUCCESS, PaymentMethod.VNPAY, from, to);
+//        long codOrders = (f.getMode() == StatsMode.SALES_ALL) ? countCodCompletedOrders(from, to) : 0;
+//        long ordersCount = (f.getMode() == StatsMode.CASHFLOW_VNPAY_ONLY) ? vnpayOrders : (vnpayOrders + codOrders);
+//
+//        BigDecimal aov = (ordersCount &gt; 0)
+//                ? netRevenue.divide(BigDecimal.valueOf(ordersCount), 2, RoundingMode.HALF_UP)
+//                : BigDecimal.ZERO;
+//
+//        // ===== COGS (tiền vốn) =====
+//        BigDecimal vnpayCogs = sumVnpayCogsSuccess(from, to);
+//        BigDecimal codCogs = (f.getMode() == StatsMode.SALES_ALL) ? sumCodCogsCompleted(from, to) : BigDecimal.ZERO;
+//
+//        BigDecimal grossCogs = (f.getMode() == StatsMode.CASHFLOW_VNPAY_ONLY)
+//                ? vnpayCogs
+//                : vnpayCogs.add(codCogs);
+//
+//        // refundedCogs hiện tính &quot;approx&quot; theo Payment.createdAt (vì chưa có refundedAt)
+//        BigDecimal refundedCogs = sumVnpayCogsRefunded(from, to);
+//        BigDecimal netCogs = grossCogs.subtract(refundedCogs);
+//
+//        // ===== Profit =====
+//        BigDecimal grossProfit = grossRevenue.subtract(grossCogs);
+//        BigDecimal netProfit = netRevenue.subtract(netCogs);
+//        BigDecimal netMarginPct = pct(netProfit, netRevenue);
+//
+//        return RevenueSummaryDto.builder()
+//                .grossRevenue(grossRevenue)
+//                .refundAmount(refundAmount)
+//                .netRevenue(netRevenue)
+//                .vnpayRevenue(vnpayGross)
+//                .codRevenue(codRevenue)
+//                .ordersCount(ordersCount)
+//                .aov(aov)
+//
+//                .grossCogs(grossCogs)
+//                .refundedCogs(refundedCogs)
+//                .netCogs(netCogs)
+//
+//                .grossProfit(grossProfit)
+//                .netProfit(netProfit)
+//                .netMarginPct(netMarginPct)
+//                .build();
+//    }
+
+    @Override
+    public RevenueSummaryDto getRevenueSummary(RevenueStatsFilter f) {
+<span class="fc" id="L106">        LocalDateTime from = requireFrom(f.getFrom());</span>
+<span class="fc" id="L107">        LocalDateTime to = requireTo(f.getTo());</span>
+
+        // ===== Revenue =====
+<span class="fc" id="L110">        BigDecimal vnpayNet = sumPaymentAmountByPaidAt(PaymentStatus.SUCCESS, PaymentMethod.VNPAY, from, to);</span>
+<span class="fc" id="L111">        BigDecimal refundAmount =</span>
+<span class="fc" id="L112">                sumPaymentAmountByRefundedAt(PaymentStatus.REFUNDED, PaymentMethod.VNPAY, from, to);</span>
+
+<span class="fc" id="L114">        BigDecimal codRevenue = BigDecimal.ZERO;</span>
+<span class="fc bfc" id="L115" title="All 2 branches covered.">        if (f.getMode() == StatsMode.SALES_ALL) {</span>
+<span class="fc" id="L116">            codRevenue = sumCodCompletedOrders(from, to);</span>
+        }
+
+<span class="fc bfc" id="L119" title="All 2 branches covered.">        BigDecimal netRevenue = (f.getMode() == StatsMode.CASHFLOW_VNPAY_ONLY)</span>
+<span class="fc" id="L120">                ? vnpayNet</span>
+<span class="fc" id="L121">                : vnpayNet.add(codRevenue);</span>
+
+<span class="fc" id="L123">        BigDecimal grossRevenue = netRevenue.add(refundAmount);</span>
+
+        // ===== Orders count (để AOV) =====
+<span class="fc" id="L126">        long vnpayOrders = countDistinctOrdersFromPayments(PaymentStatus.SUCCESS, PaymentMethod.VNPAY, from, to);</span>
+<span class="fc bfc" id="L127" title="All 2 branches covered.">        long codOrders = (f.getMode() == StatsMode.SALES_ALL) ? countCodCompletedOrders(from, to) : 0;</span>
+<span class="fc bfc" id="L128" title="All 2 branches covered.">        long ordersCount = (f.getMode() == StatsMode.CASHFLOW_VNPAY_ONLY) ? vnpayOrders : (vnpayOrders + codOrders);</span>
+
+<span class="fc bfc" id="L130" title="All 2 branches covered.">        BigDecimal aov = (ordersCount &gt; 0)</span>
+<span class="fc" id="L131">                ? netRevenue.divide(BigDecimal.valueOf(ordersCount), 2, RoundingMode.HALF_UP)</span>
+<span class="fc" id="L132">                : BigDecimal.ZERO;</span>
+
+        // ===== COGS (tiền vốn) =====
+<span class="fc" id="L135">        BigDecimal vnpayCogs = sumVnpayCogsSuccess(from, to);</span>
+<span class="fc bfc" id="L136" title="All 2 branches covered.">        BigDecimal codCogs = (f.getMode() == StatsMode.SALES_ALL) ? sumCodCogsCompleted(from, to) : BigDecimal.ZERO;</span>
+
+<span class="fc bfc" id="L138" title="All 2 branches covered.">        BigDecimal netCogs = (f.getMode() == StatsMode.CASHFLOW_VNPAY_ONLY)</span>
+<span class="fc" id="L139">                ? vnpayCogs</span>
+<span class="fc" id="L140">                : vnpayCogs.add(codCogs);</span>
+
+        // refundedCogs hiện tính &quot;approx&quot; theo Payment.createdAt (vì chưa có refundedAt)
+<span class="fc" id="L143">        BigDecimal refundedCogs = sumVnpayCogsRefunded(from, to);</span>
+<span class="fc" id="L144">        BigDecimal grossCogs = netCogs.add(refundedCogs);</span>
+
+        // ===== Profit =====
+<span class="fc" id="L147">        BigDecimal grossProfit = grossRevenue.subtract(grossCogs);</span>
+<span class="fc" id="L148">        BigDecimal netProfit = netRevenue.subtract(netCogs);</span>
+<span class="fc" id="L149">        BigDecimal netMarginPct = pct(netProfit, netRevenue);</span>
+
+<span class="fc" id="L151">        return RevenueSummaryDto.builder()</span>
+<span class="fc" id="L152">                .grossRevenue(grossRevenue)</span>
+<span class="fc" id="L153">                .refundAmount(refundAmount)</span>
+<span class="fc" id="L154">                .netRevenue(netRevenue)</span>
+<span class="fc" id="L155">                .vnpayRevenue(vnpayNet.add(refundAmount))</span>
+<span class="fc" id="L156">                .codRevenue(codRevenue)</span>
+<span class="fc" id="L157">                .ordersCount(ordersCount)</span>
+<span class="fc" id="L158">                .aov(aov)</span>
+
+<span class="fc" id="L160">                .grossCogs(grossCogs)</span>
+<span class="fc" id="L161">                .refundedCogs(refundedCogs)</span>
+<span class="fc" id="L162">                .netCogs(netCogs)</span>
+
+<span class="fc" id="L164">                .grossProfit(grossProfit)</span>
+<span class="fc" id="L165">                .netProfit(netProfit)</span>
+<span class="fc" id="L166">                .netMarginPct(netMarginPct)</span>
+<span class="fc" id="L167">                .build();</span>
+    }
+
+//    @Override
+//    public RevenueTimeSeriesDto getRevenueTimeSeries(RevenueStatsFilter f) {
+//        LocalDateTime from = requireFrom(f.getFrom());
+//        LocalDateTime to = requireTo(f.getTo());
+//
+//        // ===== Daily maps (Revenue) =====
+//        Map&lt;LocalDate, BigDecimal&gt; vnpayByDay = sumPaymentSuccessByDay(from, to);
+//        Map&lt;LocalDate, BigDecimal&gt; refundByDay = sumPaymentRefundByDayApprox(from, to); // approx theo createdAt
+//        Map&lt;LocalDate, BigDecimal&gt; codByDay = (f.getMode() == StatsMode.SALES_ALL)
+//                ? sumCodCompletedByDay(from, to)
+//                : Collections.emptyMap();
+//
+//        // ===== Daily maps (COGS) =====
+//        Map&lt;LocalDate, BigDecimal&gt; vnpayCogsByDay = sumVnpayCogsSuccessByDay(from, to);
+//        Map&lt;LocalDate, BigDecimal&gt; refundCogsByDay = sumVnpayCogsRefundedByDayApprox(from, to);
+//        Map&lt;LocalDate, BigDecimal&gt; codCogsByDay = (f.getMode() == StatsMode.SALES_ALL)
+//                ? sumCodCogsCompletedByDay(from, to)
+//                : Collections.emptyMap();
+//
+//        // Buckets
+//        LocalDate startDate = from.toLocalDate();
+//        LocalDate endExclusive = to.toLocalDate(); // vì to là exclusive (thường là đầu ngày + 1)
+//        List&lt;LocalDate&gt; buckets = generateBuckets(startDate, endExclusive, f.getGroupBy());
+//
+//        List&lt;RevenueTimePointDto&gt; points = new ArrayList&lt;&gt;();
+//        for (LocalDate bucketStart : buckets) {
+//            LocalDate bucketEndExclusive = nextBucketStart(bucketStart, f.getGroupBy());
+//
+//            BigDecimal vnpay = sumBetween(vnpayByDay, bucketStart, bucketEndExclusive);
+//            BigDecimal cod = sumBetween(codByDay, bucketStart, bucketEndExclusive);
+//            BigDecimal refund = sumBetween(refundByDay, bucketStart, bucketEndExclusive);
+//
+//            BigDecimal grossRevenue = (f.getMode() == StatsMode.CASHFLOW_VNPAY_ONLY) ? vnpay : vnpay.add(cod);
+//            BigDecimal netRevenue = grossRevenue.subtract(refund);
+//
+//            BigDecimal vnpayCogs = sumBetween(vnpayCogsByDay, bucketStart, bucketEndExclusive);
+//            BigDecimal codCogs = sumBetween(codCogsByDay, bucketStart, bucketEndExclusive);
+//            BigDecimal refundedCogs = sumBetween(refundCogsByDay, bucketStart, bucketEndExclusive);
+//
+//            BigDecimal grossCogs = (f.getMode() == StatsMode.CASHFLOW_VNPAY_ONLY) ? vnpayCogs : vnpayCogs.add(codCogs);
+//            BigDecimal netCogs = grossCogs.subtract(refundedCogs);
+//
+//            BigDecimal netProfit = netRevenue.subtract(netCogs);
+//            BigDecimal netMarginPct = pct(netProfit, netRevenue);
+//
+//            points.add(RevenueTimePointDto.builder()
+//                    .bucket(bucketStart)
+//                    .vnpayGross(vnpay)
+//                    .codRevenue(cod)
+//                    .refundAmount(refund)
+//                    .netRevenue(netRevenue)
+//
+//                    .grossCogs(grossCogs)
+//                    .refundedCogs(refundedCogs)
+//                    .netCogs(netCogs)
+//
+//                    .netProfit(netProfit)
+//                    .netMarginPct(netMarginPct)
+//                    .build());
+//        }
+//
+//        return RevenueTimeSeriesDto.builder()
+//                .groupBy(f.getGroupBy())
+//                .points(points)
+//                .build();
+//    }
+@Override
+public RevenueTimeSeriesDto getRevenueTimeSeries(RevenueStatsFilter f) {
+<span class="fc" id="L238">    LocalDateTime from = requireFrom(f.getFrom());</span>
+<span class="fc" id="L239">    LocalDateTime to = requireTo(f.getTo());</span>
+
+    // ===== Daily maps (Revenue) =====
+<span class="fc" id="L242">    Map&lt;LocalDate, BigDecimal&gt; vnpayNetByDay = sumPaymentSuccessByDay(from, to);</span>
+<span class="fc" id="L243">    Map&lt;LocalDate, BigDecimal&gt; refundByDay = sumPaymentRefundByDayApprox(from, to);</span>
+<span class="fc bfc" id="L244" title="All 2 branches covered.">    Map&lt;LocalDate, BigDecimal&gt; codByDay = (f.getMode() == StatsMode.SALES_ALL)</span>
+<span class="fc" id="L245">            ? sumCodCompletedByDay(from, to)</span>
+<span class="fc" id="L246">            : Collections.emptyMap();</span>
+
+    // ===== Daily maps (COGS) =====
+<span class="fc" id="L249">    Map&lt;LocalDate, BigDecimal&gt; vnpayCogsByDay = sumVnpayCogsSuccessByDay(from, to);</span>
+<span class="fc" id="L250">    Map&lt;LocalDate, BigDecimal&gt; refundCogsByDay = sumVnpayCogsRefundedByDayApprox(from, to);</span>
+<span class="fc bfc" id="L251" title="All 2 branches covered.">    Map&lt;LocalDate, BigDecimal&gt; codCogsByDay = (f.getMode() == StatsMode.SALES_ALL)</span>
+<span class="fc" id="L252">            ? sumCodCogsCompletedByDay(from, to)</span>
+<span class="fc" id="L253">            : Collections.emptyMap();</span>
+
+    // Buckets
+<span class="fc" id="L256">    LocalDate startDate = from.toLocalDate();</span>
+<span class="fc" id="L257">    LocalDate endExclusive = to.toLocalDate();</span>
+<span class="fc" id="L258">    List&lt;LocalDate&gt; buckets = generateBuckets(startDate, endExclusive, f.getGroupBy());</span>
+
+<span class="fc" id="L260">    List&lt;RevenueTimePointDto&gt; points = new ArrayList&lt;&gt;();</span>
+
+<span class="fc bfc" id="L262" title="All 2 branches covered.">    for (LocalDate bucketStart : buckets) {</span>
+<span class="fc" id="L263">        LocalDate bucketEndExclusive = nextBucketStart(bucketStart, f.getGroupBy());</span>
+
+        // ===== Revenue =====
+<span class="fc" id="L266">        BigDecimal vnpayNet = sumBetween(vnpayNetByDay, bucketStart, bucketEndExclusive);</span>
+<span class="fc" id="L267">        BigDecimal refundAmount = sumBetween(refundByDay, bucketStart, bucketEndExclusive);</span>
+<span class="fc" id="L268">        BigDecimal codRevenue = sumBetween(codByDay, bucketStart, bucketEndExclusive);</span>
+
+<span class="fc" id="L270">        BigDecimal vnpayGross = vnpayNet.add(refundAmount);</span>
+
+<span class="fc bfc" id="L272" title="All 2 branches covered.">        BigDecimal netRevenue = (f.getMode() == StatsMode.CASHFLOW_VNPAY_ONLY)</span>
+<span class="fc" id="L273">                ? vnpayNet</span>
+<span class="fc" id="L274">                : vnpayNet.add(codRevenue);</span>
+
+        // ===== COGS =====
+<span class="fc" id="L277">        BigDecimal vnpayCogs = sumBetween(vnpayCogsByDay, bucketStart, bucketEndExclusive);</span>
+<span class="fc" id="L278">        BigDecimal codCogs = sumBetween(codCogsByDay, bucketStart, bucketEndExclusive);</span>
+<span class="fc" id="L279">        BigDecimal refundedCogs = sumBetween(refundCogsByDay, bucketStart, bucketEndExclusive);</span>
+
+<span class="fc bfc" id="L281" title="All 2 branches covered.">        BigDecimal netCogs = (f.getMode() == StatsMode.CASHFLOW_VNPAY_ONLY)</span>
+<span class="fc" id="L282">                ? vnpayCogs</span>
+<span class="fc" id="L283">                : vnpayCogs.add(codCogs);</span>
+
+<span class="fc" id="L285">        BigDecimal grossCogs = netCogs.add(refundedCogs);</span>
+
+        // ===== Profit =====
+<span class="fc" id="L288">        BigDecimal netProfit = netRevenue.subtract(netCogs);</span>
+<span class="fc" id="L289">        BigDecimal netMarginPct = pct(netProfit, netRevenue);</span>
+
+<span class="fc" id="L291">        points.add(RevenueTimePointDto.builder()</span>
+<span class="fc" id="L292">                .bucket(bucketStart)</span>
+
+                // Revenue
+<span class="fc" id="L295">                .vnpayGross(vnpayGross)</span>
+<span class="fc" id="L296">                .codRevenue(codRevenue)</span>
+<span class="fc" id="L297">                .refundAmount(refundAmount)</span>
+<span class="fc" id="L298">                .netRevenue(netRevenue)</span>
+
+                // COGS
+<span class="fc" id="L301">                .grossCogs(grossCogs)</span>
+<span class="fc" id="L302">                .refundedCogs(refundedCogs)</span>
+<span class="fc" id="L303">                .netCogs(netCogs)</span>
+
+                // Profit
+<span class="fc" id="L306">                .netProfit(netProfit)</span>
+<span class="fc" id="L307">                .netMarginPct(netMarginPct)</span>
+<span class="fc" id="L308">                .build());</span>
+<span class="fc" id="L309">    }</span>
+
+<span class="fc" id="L311">    return RevenueTimeSeriesDto.builder()</span>
+<span class="fc" id="L312">            .groupBy(f.getGroupBy())</span>
+<span class="fc" id="L313">            .points(points)</span>
+<span class="fc" id="L314">            .build();</span>
+}
+
+
+    @Override
+    public Page&lt;TopProductDto&gt; getTopProducts(RevenueStatsFilter f) {
+<span class="fc" id="L320">        LocalDateTime from = requireFrom(f.getFrom());</span>
+<span class="fc" id="L321">        LocalDateTime to = requireTo(f.getTo());</span>
+
+<span class="pc bpc" id="L323" title="1 of 4 branches missed.">        int topN = (f.getTopN() != null &amp;&amp; f.getTopN() &gt; 0) ? f.getTopN() : 10;</span>
+
+        // vnpay (SUCCESS)
+<span class="fc" id="L326">        List&lt;TopProductDto&gt; vnpay = topProductsVnpay(from, to, topN, f.getDrugIds(), f.getUserId());</span>
+
+        // cod (COMPLETED)
+<span class="fc bfc" id="L329" title="All 2 branches covered.">        List&lt;TopProductDto&gt; cod = (f.getMode() == StatsMode.SALES_ALL)</span>
+<span class="fc" id="L330">                ? topProductsCod(from, to, topN, f.getDrugIds(), f.getUserId())</span>
+<span class="fc" id="L331">                : List.of();</span>
+
+        // Merge by drugId (recompute profit/margin)
+<span class="fc" id="L334">        Map&lt;Long, TopProductDto&gt; merged = new HashMap&lt;&gt;();</span>
+<span class="pc bpc" id="L335" title="1 of 2 branches missed.">        for (TopProductDto t : vnpay) {</span>
+<span class="nc" id="L336">            merged.put(t.getDrugId(), t);</span>
+<span class="nc" id="L337">        }</span>
+<span class="pc bpc" id="L338" title="1 of 2 branches missed.">        for (TopProductDto t : cod) {</span>
+<span class="nc" id="L339">            merged.merge(t.getDrugId(), t, (a, b) -&gt; {</span>
+<span class="nc" id="L340">                BigDecimal revenue = nz(a.getRevenue()).add(nz(b.getRevenue()));</span>
+<span class="nc" id="L341">                BigDecimal cogs = nz(a.getCogs()).add(nz(b.getCogs()));</span>
+<span class="nc" id="L342">                long qty = a.getQuantity() + b.getQuantity();</span>
+
+<span class="nc" id="L344">                BigDecimal profit = revenue.subtract(cogs);</span>
+<span class="nc" id="L345">                BigDecimal margin = pct(profit, revenue);</span>
+
+<span class="nc" id="L347">                return TopProductDto.builder()</span>
+<span class="nc" id="L348">                        .drugId(a.getDrugId())</span>
+<span class="nc bnc" id="L349" title="All 2 branches missed.">                        .drugName(a.getDrugName() != null ? a.getDrugName() : b.getDrugName())</span>
+<span class="nc" id="L350">                        .quantity(qty)</span>
+<span class="nc" id="L351">                        .revenue(revenue)</span>
+<span class="nc" id="L352">                        .cogs(cogs)</span>
+<span class="nc" id="L353">                        .profit(profit)</span>
+<span class="nc" id="L354">                        .marginPct(margin)</span>
+<span class="nc" id="L355">                        .build();</span>
+            });
+<span class="nc" id="L357">        }</span>
+
+<span class="fc" id="L359">        List&lt;TopProductDto&gt; sorted = merged.values().stream()</span>
+<span class="fc" id="L360">                .sorted(Comparator.comparing(TopProductDto::getRevenue, Comparator.nullsFirst(Comparator.naturalOrder())).reversed())</span>
+<span class="fc" id="L361">                .limit(topN)</span>
+<span class="fc" id="L362">                .collect(Collectors.toList());</span>
+
+<span class="fc" id="L364">        return new PageImpl&lt;&gt;(sorted, PageRequest.of(0, topN), sorted.size());</span>
+    }
+
+    /* ========================= PROFIT HELPERS ========================= */
+
+    private BigDecimal pct(BigDecimal num, BigDecimal den) {
+<span class="pc bpc" id="L370" title="1 of 4 branches missed.">        if (den == null || den.compareTo(BigDecimal.ZERO) == 0) return BigDecimal.ZERO;</span>
+<span class="pc bpc" id="L371" title="1 of 2 branches missed.">        if (num == null) num = BigDecimal.ZERO;</span>
+<span class="fc" id="L372">        return num.multiply(BigDecimal.valueOf(100)).divide(den, 2, RoundingMode.HALF_UP);</span>
+    }
+
+    private BigDecimal nz(BigDecimal v) {
+<span class="nc bnc" id="L376" title="All 2 branches missed.">        return v == null ? BigDecimal.ZERO : v;</span>
+    }
+
+    /* ========================= TIME VALIDATION ========================= */
+
+    private LocalDateTime requireFrom(LocalDateTime from) {
+<span class="fc bfc" id="L382" title="All 2 branches covered.">        return (from == null) ? LocalDateTime.now().minusDays(30) : from;</span>
+    }
+
+    private LocalDateTime requireTo(LocalDateTime to) {
+<span class="fc bfc" id="L386" title="All 2 branches covered.">        return (to == null) ? LocalDateTime.now() : to;</span>
+    }
+
+    /* ========================= REVENUE QUERIES ========================= */
+
+    private BigDecimal sumPaymentAmountByPaidAt(PaymentStatus st, PaymentMethod pm, LocalDateTime from, LocalDateTime to) {
+<span class="fc" id="L392">        String jpql = &quot;&quot;&quot;</span>
+            select coalesce(sum(p.amount), 0)
+            from Payment p
+            where p.status = :st
+              and p.method = :pm
+              and p.paidAt is not null
+              and p.paidAt &gt;= :from and p.paidAt &lt; :to
+        &quot;&quot;&quot;;
+<span class="fc" id="L400">        return em.createQuery(jpql, BigDecimal.class)</span>
+<span class="fc" id="L401">                .setParameter(&quot;st&quot;, st)</span>
+<span class="fc" id="L402">                .setParameter(&quot;pm&quot;, pm)</span>
+<span class="fc" id="L403">                .setParameter(&quot;from&quot;, from)</span>
+<span class="fc" id="L404">                .setParameter(&quot;to&quot;, to)</span>
+<span class="fc" id="L405">                .getSingleResult();</span>
+    }
+
+    // refund amount &quot;approx&quot; theo createdAt
+    private BigDecimal sumPaymentAmountByRefundedAt(
+            PaymentStatus st,
+            PaymentMethod pm,
+            LocalDateTime from,
+            LocalDateTime to
+    ) {
+<span class="fc" id="L415">        String jpql = &quot;&quot;&quot;</span>
+        select coalesce(sum(p.amount), 0)
+        from Payment p
+        where p.status = :st
+          and p.method = :pm
+          and p.refundedAt is not null
+          and p.refundedAt &gt;= :from and p.refundedAt &lt; :to
+    &quot;&quot;&quot;;
+<span class="fc" id="L423">        return em.createQuery(jpql, BigDecimal.class)</span>
+<span class="fc" id="L424">                .setParameter(&quot;st&quot;, st)</span>
+<span class="fc" id="L425">                .setParameter(&quot;pm&quot;, pm)</span>
+<span class="fc" id="L426">                .setParameter(&quot;from&quot;, from)</span>
+<span class="fc" id="L427">                .setParameter(&quot;to&quot;, to)</span>
+<span class="fc" id="L428">                .getSingleResult();</span>
+    }
+
+
+    private BigDecimal sumCodCompletedOrders(LocalDateTime from, LocalDateTime to) {
+<span class="fc" id="L433">        String jpql = &quot;&quot;&quot;</span>
+            select coalesce(sum(o.totalAmount), 0)
+            from Order o
+            where o.paymentMethod = :cod
+              and o.status = :st
+              and o.createdAt &gt;= :from and o.createdAt &lt; :to
+        &quot;&quot;&quot;;
+<span class="fc" id="L440">        return em.createQuery(jpql, BigDecimal.class)</span>
+<span class="fc" id="L441">                .setParameter(&quot;cod&quot;, PaymentMethod.COD)</span>
+<span class="fc" id="L442">                .setParameter(&quot;st&quot;, OrderStatus.COMPLETED)</span>
+<span class="fc" id="L443">                .setParameter(&quot;from&quot;, from)</span>
+<span class="fc" id="L444">                .setParameter(&quot;to&quot;, to)</span>
+<span class="fc" id="L445">                .getSingleResult();</span>
+    }
+
+    private long countCodCompletedOrders(LocalDateTime from, LocalDateTime to) {
+<span class="fc" id="L449">        String jpql = &quot;&quot;&quot;</span>
+            select count(o.id)
+            from Order o
+            where o.paymentMethod = :cod
+              and o.status = :st
+              and o.createdAt &gt;= :from and o.createdAt &lt; :to
+        &quot;&quot;&quot;;
+<span class="fc" id="L456">        Long v = em.createQuery(jpql, Long.class)</span>
+<span class="fc" id="L457">                .setParameter(&quot;cod&quot;, PaymentMethod.COD)</span>
+<span class="fc" id="L458">                .setParameter(&quot;st&quot;, OrderStatus.COMPLETED)</span>
+<span class="fc" id="L459">                .setParameter(&quot;from&quot;, from)</span>
+<span class="fc" id="L460">                .setParameter(&quot;to&quot;, to)</span>
+<span class="fc" id="L461">                .getSingleResult();</span>
+<span class="pc bpc" id="L462" title="1 of 2 branches missed.">        return v == null ? 0 : v;</span>
+    }
+
+    private long countDistinctOrdersFromPayments(PaymentStatus st, PaymentMethod pm, LocalDateTime from, LocalDateTime to) {
+<span class="fc" id="L466">        String jpql = &quot;&quot;&quot;</span>
+            select count(distinct p.order.id)
+            from Payment p
+            where p.status = :st
+              and p.method = :pm
+              and p.paidAt is not null
+              and p.paidAt &gt;= :from and p.paidAt &lt; :to
+        &quot;&quot;&quot;;
+<span class="fc" id="L474">        Long v = em.createQuery(jpql, Long.class)</span>
+<span class="fc" id="L475">                .setParameter(&quot;st&quot;, st)</span>
+<span class="fc" id="L476">                .setParameter(&quot;pm&quot;, pm)</span>
+<span class="fc" id="L477">                .setParameter(&quot;from&quot;, from)</span>
+<span class="fc" id="L478">                .setParameter(&quot;to&quot;, to)</span>
+<span class="fc" id="L479">                .getSingleResult();</span>
+<span class="pc bpc" id="L480" title="1 of 2 branches missed.">        return v == null ? 0 : v;</span>
+    }
+
+    private Map&lt;LocalDate, BigDecimal&gt; sumPaymentSuccessByDay(LocalDateTime from, LocalDateTime to) {
+<span class="fc" id="L484">        String jpql = &quot;&quot;&quot;</span>
+            select function('date', p.paidAt), coalesce(sum(p.amount), 0)
+            from Payment p
+            where p.status = :st
+              and p.method = :pm
+              and p.paidAt is not null
+              and p.paidAt &gt;= :from and p.paidAt &lt; :to
+            group by function('date', p.paidAt)
+            order by function('date', p.paidAt)
+        &quot;&quot;&quot;;
+<span class="fc" id="L494">        List&lt;Object[]&gt; rows = em.createQuery(jpql, Object[].class)</span>
+<span class="fc" id="L495">                .setParameter(&quot;st&quot;, PaymentStatus.SUCCESS)</span>
+<span class="fc" id="L496">                .setParameter(&quot;pm&quot;, PaymentMethod.VNPAY)</span>
+<span class="fc" id="L497">                .setParameter(&quot;from&quot;, from)</span>
+<span class="fc" id="L498">                .setParameter(&quot;to&quot;, to)</span>
+<span class="fc" id="L499">                .getResultList();</span>
+<span class="fc" id="L500">        return toDateMap(rows);</span>
+    }
+
+    private Map&lt;LocalDate, BigDecimal&gt; sumPaymentRefundByDayApprox(LocalDateTime from, LocalDateTime to) {
+<span class="fc" id="L504">        String jpql = &quot;&quot;&quot;</span>
+            select function('date', p.createdAt), coalesce(sum(p.amount), 0)
+            from Payment p
+            where p.status = :st
+              and p.method = :pm
+              and p.createdAt &gt;= :from and p.createdAt &lt; :to
+            group by function('date', p.createdAt)
+            order by function('date', p.createdAt)
+        &quot;&quot;&quot;;
+<span class="fc" id="L513">        List&lt;Object[]&gt; rows = em.createQuery(jpql, Object[].class)</span>
+<span class="fc" id="L514">                .setParameter(&quot;st&quot;, PaymentStatus.REFUNDED)</span>
+<span class="fc" id="L515">                .setParameter(&quot;pm&quot;, PaymentMethod.VNPAY)</span>
+<span class="fc" id="L516">                .setParameter(&quot;from&quot;, from)</span>
+<span class="fc" id="L517">                .setParameter(&quot;to&quot;, to)</span>
+<span class="fc" id="L518">                .getResultList();</span>
+<span class="fc" id="L519">        return toDateMap(rows);</span>
+    }
+
+    private Map&lt;LocalDate, BigDecimal&gt; sumCodCompletedByDay(LocalDateTime from, LocalDateTime to) {
+<span class="fc" id="L523">        String jpql = &quot;&quot;&quot;</span>
+            select function('date', o.createdAt), coalesce(sum(o.totalAmount), 0)
+            from Order o
+            where o.paymentMethod = :cod
+              and o.status = :st
+              and o.createdAt &gt;= :from and o.createdAt &lt; :to
+            group by function('date', o.createdAt)
+            order by function('date', o.createdAt)
+        &quot;&quot;&quot;;
+<span class="fc" id="L532">        List&lt;Object[]&gt; rows = em.createQuery(jpql, Object[].class)</span>
+<span class="fc" id="L533">                .setParameter(&quot;cod&quot;, PaymentMethod.COD)</span>
+<span class="fc" id="L534">                .setParameter(&quot;st&quot;, OrderStatus.COMPLETED)</span>
+<span class="fc" id="L535">                .setParameter(&quot;from&quot;, from)</span>
+<span class="fc" id="L536">                .setParameter(&quot;to&quot;, to)</span>
+<span class="fc" id="L537">                .getResultList();</span>
+<span class="fc" id="L538">        return toDateMap(rows);</span>
+    }
+
+    /* ========================= COGS QUERIES ========================= */
+
+    // VNPAY COGS for SUCCESS (by paidAt)
+    private BigDecimal sumVnpayCogsSuccess(LocalDateTime from, LocalDateTime to) {
+<span class="fc" id="L545">        String jpql = &quot;&quot;&quot;</span>
+            select coalesce(sum(d.importPrice * oi.quantity), 0)
+            from OrderItem oi
+            join oi.drug d
+            join oi.order o,
+                 Payment p
+            where p.order = o
+              and p.status = :st
+              and p.method = :pm
+              and p.paidAt is not null
+              and p.paidAt &gt;= :from and p.paidAt &lt; :to
+        &quot;&quot;&quot;;
+<span class="fc" id="L557">        return em.createQuery(jpql, BigDecimal.class)</span>
+<span class="fc" id="L558">                .setParameter(&quot;st&quot;, PaymentStatus.SUCCESS)</span>
+<span class="fc" id="L559">                .setParameter(&quot;pm&quot;, PaymentMethod.VNPAY)</span>
+<span class="fc" id="L560">                .setParameter(&quot;from&quot;, from)</span>
+<span class="fc" id="L561">                .setParameter(&quot;to&quot;, to)</span>
+<span class="fc" id="L562">                .getSingleResult();</span>
+    }
+
+    // COD COGS for COMPLETED (by order.createdAt)
+    private BigDecimal sumCodCogsCompleted(LocalDateTime from, LocalDateTime to) {
+<span class="fc" id="L567">        String jpql = &quot;&quot;&quot;</span>
+            select coalesce(sum(d.importPrice * oi.quantity), 0)
+            from OrderItem oi
+            join oi.drug d
+            join oi.order o
+            where o.paymentMethod = :cod
+              and o.status = :st
+              and o.createdAt &gt;= :from and o.createdAt &lt; :to
+        &quot;&quot;&quot;;
+<span class="fc" id="L576">        return em.createQuery(jpql, BigDecimal.class)</span>
+<span class="fc" id="L577">                .setParameter(&quot;cod&quot;, PaymentMethod.COD)</span>
+<span class="fc" id="L578">                .setParameter(&quot;st&quot;, OrderStatus.COMPLETED)</span>
+<span class="fc" id="L579">                .setParameter(&quot;from&quot;, from)</span>
+<span class="fc" id="L580">                .setParameter(&quot;to&quot;, to)</span>
+<span class="fc" id="L581">                .getSingleResult();</span>
+    }
+
+    // REFUNDED COGS approx by payment.createdAt
+    private BigDecimal sumVnpayCogsRefunded(LocalDateTime from, LocalDateTime to) {
+<span class="fc" id="L586">        String jpql = &quot;&quot;&quot;</span>
+        select coalesce(sum(d.importPrice * oi.quantity), 0)
+        from OrderItem oi
+        join oi.drug d
+        join oi.order o,
+             Payment p
+        where p.order = o
+          and p.status = :st
+          and p.method = :pm
+          and p.refundedAt is not null
+          and p.refundedAt &gt;= :from and p.refundedAt &lt; :to
+    &quot;&quot;&quot;;
+<span class="fc" id="L598">        return em.createQuery(jpql, BigDecimal.class)</span>
+<span class="fc" id="L599">                .setParameter(&quot;st&quot;, PaymentStatus.REFUNDED)</span>
+<span class="fc" id="L600">                .setParameter(&quot;pm&quot;, PaymentMethod.VNPAY)</span>
+<span class="fc" id="L601">                .setParameter(&quot;from&quot;, from)</span>
+<span class="fc" id="L602">                .setParameter(&quot;to&quot;, to)</span>
+<span class="fc" id="L603">                .getSingleResult();</span>
+    }
+
+
+    private Map&lt;LocalDate, BigDecimal&gt; sumVnpayCogsSuccessByDay(LocalDateTime from, LocalDateTime to) {
+<span class="fc" id="L608">        String jpql = &quot;&quot;&quot;</span>
+            select function('date', p.paidAt), coalesce(sum(d.importPrice * oi.quantity), 0)
+            from OrderItem oi
+            join oi.drug d
+            join oi.order o,
+                 Payment p
+            where p.order = o
+              and p.status = :st
+              and p.method = :pm
+              and p.paidAt is not null
+              and p.paidAt &gt;= :from and p.paidAt &lt; :to
+            group by function('date', p.paidAt)
+            order by function('date', p.paidAt)
+        &quot;&quot;&quot;;
+<span class="fc" id="L622">        List&lt;Object[]&gt; rows = em.createQuery(jpql, Object[].class)</span>
+<span class="fc" id="L623">                .setParameter(&quot;st&quot;, PaymentStatus.SUCCESS)</span>
+<span class="fc" id="L624">                .setParameter(&quot;pm&quot;, PaymentMethod.VNPAY)</span>
+<span class="fc" id="L625">                .setParameter(&quot;from&quot;, from)</span>
+<span class="fc" id="L626">                .setParameter(&quot;to&quot;, to)</span>
+<span class="fc" id="L627">                .getResultList();</span>
+<span class="fc" id="L628">        return toDateMap(rows);</span>
+    }
+
+    private Map&lt;LocalDate, BigDecimal&gt; sumVnpayCogsRefundedByDayApprox(LocalDateTime from, LocalDateTime to) {
+<span class="fc" id="L632">        String jpql = &quot;&quot;&quot;</span>
+            select function('date', p.createdAt), coalesce(sum(d.importPrice * oi.quantity), 0)
+            from OrderItem oi
+            join oi.drug d
+            join oi.order o,
+                 Payment p
+            where p.order = o
+              and p.status = :st
+              and p.method = :pm
+              and p.createdAt &gt;= :from and p.createdAt &lt; :to
+            group by function('date', p.createdAt)
+            order by function('date', p.createdAt)
+        &quot;&quot;&quot;;
+<span class="fc" id="L645">        List&lt;Object[]&gt; rows = em.createQuery(jpql, Object[].class)</span>
+<span class="fc" id="L646">                .setParameter(&quot;st&quot;, PaymentStatus.REFUNDED)</span>
+<span class="fc" id="L647">                .setParameter(&quot;pm&quot;, PaymentMethod.VNPAY)</span>
+<span class="fc" id="L648">                .setParameter(&quot;from&quot;, from)</span>
+<span class="fc" id="L649">                .setParameter(&quot;to&quot;, to)</span>
+<span class="fc" id="L650">                .getResultList();</span>
+<span class="fc" id="L651">        return toDateMap(rows);</span>
+    }
+
+    private Map&lt;LocalDate, BigDecimal&gt; sumCodCogsCompletedByDay(LocalDateTime from, LocalDateTime to) {
+<span class="fc" id="L655">        String jpql = &quot;&quot;&quot;</span>
+            select function('date', o.createdAt), coalesce(sum(d.importPrice * oi.quantity), 0)
+            from OrderItem oi
+            join oi.drug d
+            join oi.order o
+            where o.paymentMethod = :cod
+              and o.status = :st
+              and o.createdAt &gt;= :from and o.createdAt &lt; :to
+            group by function('date', o.createdAt)
+            order by function('date', o.createdAt)
+        &quot;&quot;&quot;;
+<span class="fc" id="L666">        List&lt;Object[]&gt; rows = em.createQuery(jpql, Object[].class)</span>
+<span class="fc" id="L667">                .setParameter(&quot;cod&quot;, PaymentMethod.COD)</span>
+<span class="fc" id="L668">                .setParameter(&quot;st&quot;, OrderStatus.COMPLETED)</span>
+<span class="fc" id="L669">                .setParameter(&quot;from&quot;, from)</span>
+<span class="fc" id="L670">                .setParameter(&quot;to&quot;, to)</span>
+<span class="fc" id="L671">                .getResultList();</span>
+<span class="fc" id="L672">        return toDateMap(rows);</span>
+    }
+
+    /* ========================= TOP PRODUCTS ========================= */
+
+    private List&lt;TopProductDto&gt; topProductsVnpay(
+            LocalDateTime from,
+            LocalDateTime to,
+            int topN,
+            Set&lt;Long&gt; drugIds,
+            Long userId
+    ) {
+        // build JPQL dynamically -&gt; tránh lỗi param drugIds khi rỗng
+<span class="fc" id="L685">        StringBuilder jpql = new StringBuilder(&quot;&quot;&quot;</span>
+            select d.id, d.name,
+                   coalesce(sum(oi.quantity), 0),
+                   coalesce(sum(oi.totalPrice), 0),
+                   coalesce(sum(d.importPrice * oi.quantity), 0)
+            from OrderItem oi
+            join oi.drug d
+            join oi.order o,
+                 Payment p
+            where p.order = o
+              and p.status = :pst
+              and p.method = :pm
+              and p.paidAt is not null
+              and p.paidAt &gt;= :from and p.paidAt &lt; :to
+        &quot;&quot;&quot;);
+
+<span class="pc bpc" id="L701" title="1 of 2 branches missed.">        if (userId != null) jpql.append(&quot; and o.user.id = :userId &quot;);</span>
+<span class="pc bpc" id="L702" title="3 of 4 branches missed.">        if (drugIds != null &amp;&amp; !drugIds.isEmpty()) jpql.append(&quot; and d.id in :drugIds &quot;);</span>
+
+<span class="fc" id="L704">        jpql.append(&quot;&quot;&quot;</span>
+            group by d.id, d.name
+            order by coalesce(sum(oi.totalPrice), 0) desc
+        &quot;&quot;&quot;);
+
+<span class="fc" id="L709">        TypedQuery&lt;Object[]&gt; q = em.createQuery(jpql.toString(), Object[].class)</span>
+<span class="fc" id="L710">                .setParameter(&quot;pst&quot;, PaymentStatus.SUCCESS)</span>
+<span class="fc" id="L711">                .setParameter(&quot;pm&quot;, PaymentMethod.VNPAY)</span>
+<span class="fc" id="L712">                .setParameter(&quot;from&quot;, from)</span>
+<span class="fc" id="L713">                .setParameter(&quot;to&quot;, to);</span>
+
+<span class="pc bpc" id="L715" title="1 of 2 branches missed.">        if (userId != null) q.setParameter(&quot;userId&quot;, userId);</span>
+<span class="pc bpc" id="L716" title="3 of 4 branches missed.">        if (drugIds != null &amp;&amp; !drugIds.isEmpty()) q.setParameter(&quot;drugIds&quot;, drugIds);</span>
+
+<span class="fc" id="L718">        q.setMaxResults(topN);</span>
+
+<span class="fc" id="L720">        return mapTopProductRows(q.getResultList());</span>
+    }
+
+    private List&lt;TopProductDto&gt; topProductsCod(
+            LocalDateTime from,
+            LocalDateTime to,
+            int topN,
+            Set&lt;Long&gt; drugIds,
+            Long userId
+    ) {
+<span class="fc" id="L730">        StringBuilder jpql = new StringBuilder(&quot;&quot;&quot;</span>
+            select d.id, d.name,
+                   coalesce(sum(oi.quantity), 0),
+                   coalesce(sum(oi.totalPrice), 0),
+                   coalesce(sum(d.importPrice * oi.quantity), 0)
+            from OrderItem oi
+            join oi.drug d
+            join oi.order o
+            where o.paymentMethod = :cod
+              and o.status = :ost
+              and o.createdAt &gt;= :from and o.createdAt &lt; :to
+        &quot;&quot;&quot;);
+
+<span class="pc bpc" id="L743" title="1 of 2 branches missed.">        if (userId != null) jpql.append(&quot; and o.user.id = :userId &quot;);</span>
+<span class="pc bpc" id="L744" title="3 of 4 branches missed.">        if (drugIds != null &amp;&amp; !drugIds.isEmpty()) jpql.append(&quot; and d.id in :drugIds &quot;);</span>
+
+<span class="fc" id="L746">        jpql.append(&quot;&quot;&quot;</span>
+            group by d.id, d.name
+            order by coalesce(sum(oi.totalPrice), 0) desc
+        &quot;&quot;&quot;);
+
+<span class="fc" id="L751">        TypedQuery&lt;Object[]&gt; q = em.createQuery(jpql.toString(), Object[].class)</span>
+<span class="fc" id="L752">                .setParameter(&quot;cod&quot;, PaymentMethod.COD)</span>
+<span class="fc" id="L753">                .setParameter(&quot;ost&quot;, OrderStatus.COMPLETED)</span>
+<span class="fc" id="L754">                .setParameter(&quot;from&quot;, from)</span>
+<span class="fc" id="L755">                .setParameter(&quot;to&quot;, to);</span>
+
+<span class="pc bpc" id="L757" title="1 of 2 branches missed.">        if (userId != null) q.setParameter(&quot;userId&quot;, userId);</span>
+<span class="pc bpc" id="L758" title="3 of 4 branches missed.">        if (drugIds != null &amp;&amp; !drugIds.isEmpty()) q.setParameter(&quot;drugIds&quot;, drugIds);</span>
+
+<span class="fc" id="L760">        q.setMaxResults(topN);</span>
+
+<span class="fc" id="L762">        return mapTopProductRows(q.getResultList());</span>
+    }
+
+    private List&lt;TopProductDto&gt; mapTopProductRows(List&lt;Object[]&gt; rows) {
+<span class="fc" id="L766">        List&lt;TopProductDto&gt; list = new ArrayList&lt;&gt;();</span>
+<span class="pc bpc" id="L767" title="1 of 2 branches missed.">        for (Object[] r : rows) {</span>
+<span class="nc" id="L768">            Long drugId = ((Number) r[0]).longValue();</span>
+<span class="nc" id="L769">            String name = String.valueOf(r[1]);</span>
+<span class="nc" id="L770">            long qty = ((Number) r[2]).longValue();</span>
+
+            // totalPrice đang Double -&gt; cast Number -&gt; BigDecimal
+<span class="nc" id="L773">            BigDecimal revenue = BigDecimal.valueOf(((Number) r[3]).doubleValue());</span>
+
+            BigDecimal cogs;
+<span class="nc bnc" id="L776" title="All 2 branches missed.">            if (r[4] instanceof BigDecimal bd) cogs = bd;</span>
+<span class="nc" id="L777">            else cogs = BigDecimal.valueOf(((Number) r[4]).doubleValue());</span>
+
+<span class="nc" id="L779">            BigDecimal profit = revenue.subtract(cogs);</span>
+<span class="nc" id="L780">            BigDecimal margin = pct(profit, revenue);</span>
+
+<span class="nc" id="L782">            list.add(TopProductDto.builder()</span>
+<span class="nc" id="L783">                    .drugId(drugId)</span>
+<span class="nc" id="L784">                    .drugName(name)</span>
+<span class="nc" id="L785">                    .quantity(qty)</span>
+<span class="nc" id="L786">                    .revenue(revenue)</span>
+<span class="nc" id="L787">                    .cogs(cogs)</span>
+<span class="nc" id="L788">                    .profit(profit)</span>
+<span class="nc" id="L789">                    .marginPct(margin)</span>
+<span class="nc" id="L790">                    .build());</span>
+<span class="nc" id="L791">        }</span>
+<span class="fc" id="L792">        return list;</span>
+    }
+
+    /* ========================= BUCKET HELPERS ========================= */
+
+    private List&lt;LocalDate&gt; generateBuckets(LocalDate start, LocalDate endExclusive, StatsGroupBy g) {
+<span class="fc" id="L798">        LocalDate cur = alignToBucketStart(start, g);</span>
+<span class="fc" id="L799">        List&lt;LocalDate&gt; out = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L800" title="All 2 branches covered.">        while (cur.isBefore(endExclusive)) {</span>
+<span class="fc" id="L801">            out.add(cur);</span>
+<span class="fc" id="L802">            cur = nextBucketStart(cur, g);</span>
+<span class="pc bpc" id="L803" title="1 of 2 branches missed.">            if (out.size() &gt; 5000) break;</span>
+        }
+<span class="fc" id="L805">        return out;</span>
+    }
+
+    private LocalDate alignToBucketStart(LocalDate d, StatsGroupBy g) {
+<span class="pc bpc" id="L809" title="1 of 3 branches missed.">        return switch (g) {</span>
+<span class="fc" id="L810">            case DAY -&gt; d;</span>
+<span class="fc" id="L811">            case WEEK -&gt; d.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));</span>
+<span class="nc" id="L812">            case MONTH -&gt; d.withDayOfMonth(1);</span>
+        };
+    }
+
+    private LocalDate nextBucketStart(LocalDate bucketStart, StatsGroupBy g) {
+<span class="pc bpc" id="L817" title="1 of 3 branches missed.">        return switch (g) {</span>
+<span class="fc" id="L818">            case DAY -&gt; bucketStart.plusDays(1);</span>
+<span class="fc" id="L819">            case WEEK -&gt; bucketStart.plusWeeks(1);</span>
+<span class="nc" id="L820">            case MONTH -&gt; bucketStart.plusMonths(1).withDayOfMonth(1);</span>
+        };
+    }
+
+    private BigDecimal sumBetween(Map&lt;LocalDate, BigDecimal&gt; daily, LocalDate start, LocalDate endExclusive) {
+<span class="pc bpc" id="L825" title="2 of 4 branches missed.">        if (daily == null || daily.isEmpty()) return BigDecimal.ZERO;</span>
+<span class="nc" id="L826">        BigDecimal sum = BigDecimal.ZERO;</span>
+<span class="nc" id="L827">        LocalDate cur = start;</span>
+<span class="nc bnc" id="L828" title="All 2 branches missed.">        while (cur.isBefore(endExclusive)) {</span>
+<span class="nc" id="L829">            sum = sum.add(daily.getOrDefault(cur, BigDecimal.ZERO));</span>
+<span class="nc" id="L830">            cur = cur.plusDays(1);</span>
+<span class="nc bnc" id="L831" title="All 2 branches missed.">            if (sum.scale() &gt; 10) sum = sum.setScale(10, RoundingMode.HALF_UP);</span>
+        }
+<span class="nc" id="L833">        return sum;</span>
+    }
+
+    private Map&lt;LocalDate, BigDecimal&gt; toDateMap(List&lt;Object[]&gt; rows) {
+<span class="fc" id="L837">        Map&lt;LocalDate, BigDecimal&gt; map = new HashMap&lt;&gt;();</span>
+<span class="pc bpc" id="L838" title="1 of 2 branches missed.">        for (Object[] r : rows) {</span>
+            LocalDate d;
+<span class="nc bnc" id="L840" title="All 2 branches missed.">            if (r[0] instanceof java.sql.Date sqlDate) d = sqlDate.toLocalDate();</span>
+<span class="nc bnc" id="L841" title="All 2 branches missed.">            else if (r[0] instanceof LocalDate ld) d = ld;</span>
+<span class="nc" id="L842">            else d = LocalDate.parse(String.valueOf(r[0]));</span>
+
+            BigDecimal v;
+<span class="nc bnc" id="L845" title="All 2 branches missed.">            if (r[1] instanceof BigDecimal bd) v = bd;</span>
+<span class="nc" id="L846">            else v = BigDecimal.valueOf(((Number) r[1]).doubleValue());</span>
+
+<span class="nc" id="L848">            map.put(d, v);</span>
+<span class="nc" id="L849">        }</span>
+<span class="fc" id="L850">        return map;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

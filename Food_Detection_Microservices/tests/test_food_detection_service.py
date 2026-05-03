@@ -11,6 +11,32 @@ from PIL import Image
 from app.config import Config
 
 
+# conftest.py đặt sys.modules["cv2"] = MagicMock(); service cần cvtColor/resize thật cho preprocess.
+class _Cv2Stub:
+    COLOR_RGB2BGR = 4
+
+    @staticmethod
+    def cvtColor(src, code):
+        return np.ascontiguousarray(src[..., ::-1])
+
+    @staticmethod
+    def resize(src, dsize):
+        w, h = dsize
+        rgb = np.ascontiguousarray(src[..., ::-1])
+        pil = Image.fromarray(rgb).resize((w, h), Image.Resampling.BILINEAR)
+        out = np.asarray(pil)
+        return np.ascontiguousarray(out[..., ::-1])
+
+
+@pytest.fixture(autouse=True)
+def _patch_cv2_in_food_detection_service(monkeypatch):
+    monkeypatch.setattr(
+        "app.services_AI.food_detection_services.cv2",
+        _Cv2Stub,
+        raising=False,
+    )
+
+
 # --------------- Helpers --------------- #
 
 def _make_mock_ort():
@@ -105,15 +131,15 @@ def test_food_detection_decode_above_threshold(app):
     """Decode detection trên ngưỡng confidence."""
     service = _create_service()
 
-    # Giả lập output ONNX: [x1, y1, x2, y2, conf, cls_id]
-    preds = np.array([[[100, 50, 300, 250, 0.8, 0]]])  # cls_id=0 → "Bánh canh"
+    # Giống session.run: list[np.ndarray] batch (1, N, 6)
+    outputs = [np.array([[[100, 50, 300, 250, 0.8, 0]]], dtype=np.float32)]
     original_size = (640, 480)
 
-    detections = service.decode(preds, original_size)
+    detections = service.decode(outputs, original_size)
 
     assert len(detections) == 1
     assert detections[0]["class"] == "Bánh canh"  # CLASS_NAMES[0]
-    assert detections[0]["confidence"] == 0.8
+    assert detections[0]["confidence"] == pytest.approx(0.8)
     assert len(detections[0]["bbox"]) == 4
 
 
@@ -126,10 +152,10 @@ def test_food_detection_decode_below_threshold(app):
     """Bỏ qua detection dưới ngưỡng confidence."""
     service = _create_service()
 
-    preds = np.array([[[100, 50, 300, 250, 0.1, 0]]])
+    outputs = [np.array([[[100, 50, 300, 250, 0.1, 0]]], dtype=np.float32)]
     original_size = (640, 480)
 
-    detections = service.decode(preds, original_size)
+    detections = service.decode(outputs, original_size)
     assert len(detections) == 0
 
 
@@ -143,10 +169,10 @@ def test_food_detection_decode_filter_mi(app):
     service = _create_service()
 
     mi_idx = Config.CLASS_NAMES.index("Mì")
-    preds = np.array([[[100, 50, 300, 250, 0.9, mi_idx]]])
+    outputs = [np.array([[[100, 50, 300, 250, 0.9, mi_idx]]], dtype=np.float32)]
     original_size = (640, 480)
 
-    detections = service.decode(preds, original_size)
+    detections = service.decode(outputs, original_size)
     assert len(detections) == 0
 
 

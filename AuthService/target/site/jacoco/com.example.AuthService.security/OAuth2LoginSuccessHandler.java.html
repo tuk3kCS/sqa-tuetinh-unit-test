@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>OAuth2LoginSuccessHandler.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">AuthService</a> &gt; <a href="index.source.html" class="el_package">com.example.AuthService.security</a> &gt; <span class="el_source">OAuth2LoginSuccessHandler.java</span></div><h1>OAuth2LoginSuccessHandler.java</h1><pre class="source lang-java linenums">// com.example.AuthService.security.OAuth2LoginSuccessHandler
+package com.example.AuthService.security;
+
+import com.example.AuthService.dto.response.AuthTokenResponse;
+import com.example.AuthService.entity.User;
+import com.example.AuthService.service.OAuth2TokenService;
+import com.example.AuthService.service.SocialLoginService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.stereotype.Component;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.Map;
+
+@Component
+@RequiredArgsConstructor
+public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
+
+    private final OAuth2TokenService tokenService;
+    private final SocialLoginService socialLoginService;   // &lt;--- THÊM
+    private final ObjectMapper objectMapper;
+
+    @Override
+    public void onAuthenticationSuccess(HttpServletRequest request,
+                                        HttpServletResponse response,
+                                        Authentication authentication) throws IOException {
+<span class="fc" id="L35">        Object principal = authentication.getPrincipal();</span>
+
+        UserDetails userDetails;
+        Map&lt;String, Object&gt; attributes;
+
+<span class="fc bfc" id="L40" title="All 2 branches covered.">        if (principal instanceof OAuth2UserPrincipal p) {</span>
+<span class="fc" id="L41">            userDetails = p; // đã là UserDetails (entity) + attributes</span>
+<span class="fc bfc" id="L42" title="All 2 branches covered.">            attributes = p.getAttributes() != null ? p.getAttributes() : Collections.emptyMap();</span>
+
+<span class="fc bfc" id="L44" title="All 2 branches covered.">        } else if (principal instanceof OAuth2User o) {</span>
+            // fallback an toàn: upsert + lấy User (UserDetails) từ DB
+<span class="fc" id="L46">            User saved = socialLoginService.upsertGoogleUser(o);</span>
+<span class="fc" id="L47">            userDetails = saved; // User implements UserDetails</span>
+<span class="pc bpc" id="L48" title="1 of 2 branches missed.">            attributes = o.getAttributes() != null ? o.getAttributes() : Collections.emptyMap();</span>
+
+<span class="fc bfc" id="L50" title="All 2 branches covered.">        } else if (principal instanceof UserDetails u) {</span>
+<span class="fc" id="L51">            userDetails = u;</span>
+<span class="fc" id="L52">            attributes = Collections.emptyMap();</span>
+
+        } else {
+<span class="fc" id="L55">            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);</span>
+<span class="fc" id="L56">            response.setContentType(MediaType.APPLICATION_JSON_VALUE);</span>
+<span class="fc" id="L57">            response.getWriter().write(&quot;{\&quot;error\&quot;:\&quot;Unsupported principal type\&quot;}&quot;);</span>
+<span class="fc" id="L58">            return;</span>
+        }
+
+<span class="fc" id="L61">        AuthTokenResponse payload = tokenService.buildTokenResponse(userDetails, attributes);</span>
+<span class="fc" id="L62">        response.setStatus(HttpServletResponse.SC_OK);</span>
+<span class="fc" id="L63">        response.setContentType(MediaType.APPLICATION_JSON_VALUE);</span>
+<span class="fc" id="L64">        objectMapper.writeValue(response.getWriter(), payload);</span>
+<span class="fc" id="L65">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

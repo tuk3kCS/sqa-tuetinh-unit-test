@@ -206,7 +206,7 @@ class AdminStatisticsControllerTest {
 
         mockMvc.perform(get("/api/admin/statistics/revenue/top-products"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].drugName").value("Paracetamol"));
+                .andExpect(jsonPath("$.content[0].drugName").value("Paracetamol"));
     }
 
     /**
@@ -224,8 +224,8 @@ class AdminStatisticsControllerTest {
 
         mockMvc.perform(get("/api/admin/statistics/revenue/top-products"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$").isEmpty());
+                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.content").isEmpty());
     }
 
     /**

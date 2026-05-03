@@ -12,6 +12,32 @@ from PIL import Image
 from app.config import Config
 
 
+# conftest đặt sys.modules["cv2"] = MagicMock; preprocess cần cvtColor/resize thật.
+class _Cv2Stub:
+    COLOR_RGB2BGR = 4
+
+    @staticmethod
+    def cvtColor(src, code):
+        return np.ascontiguousarray(src[..., ::-1])
+
+    @staticmethod
+    def resize(src, dsize):
+        w, h = dsize
+        rgb = np.ascontiguousarray(src[..., ::-1])
+        pil = Image.fromarray(rgb).resize((w, h), Image.Resampling.BILINEAR)
+        out = np.asarray(pil)
+        return np.ascontiguousarray(out[..., ::-1])
+
+
+@pytest.fixture(autouse=True)
+def _patch_cv2_in_objectdetection_service(monkeypatch):
+    monkeypatch.setattr(
+        "app.services_AI.objectdetection.objectdetection_service.cv2",
+        _Cv2Stub,
+        raising=False,
+    )
+
+
 # ============================================================
 # Helpers
 # ============================================================
@@ -122,7 +148,7 @@ def test_detection_decode_above_threshold(mock_ort):
 
     assert len(detections) == 1
     assert detections[0]["class"] == Config.CLASS_NAMES[0]
-    assert detections[0]["confidence"] == 0.9
+    assert detections[0]["confidence"] == pytest.approx(0.9)
     assert len(detections[0]["bbox"]) == 4
 
 

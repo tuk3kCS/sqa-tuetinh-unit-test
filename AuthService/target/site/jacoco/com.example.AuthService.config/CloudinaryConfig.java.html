@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CloudinaryConfig.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">AuthService</a> &gt; <a href="index.source.html" class="el_package">com.example.AuthService.config</a> &gt; <span class="el_source">CloudinaryConfig.java</span></div><h1>CloudinaryConfig.java</h1><pre class="source lang-java linenums">package com.example.AuthService.config;
+
+import com.cloudinary.Cloudinary;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+import java.util.HashMap;
+import java.util.Map;
+
+@Configuration
+<span class="fc" id="L12">public class CloudinaryConfig {</span>
+
+    @Value(&quot;${cloudinary.cloud-name}&quot;)
+    private String cloudName;
+
+    @Value(&quot;${cloudinary.api-key}&quot;)
+    private String apiKey;
+
+    @Value(&quot;${cloudinary.api-secret}&quot;)
+    private String apiSecret;
+
+    @Bean
+    public Cloudinary cloudinary() {
+<span class="fc" id="L25">        Map&lt;String, String&gt; config = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L26">        config.put(&quot;cloud_name&quot;, cloudName);</span>
+<span class="fc" id="L27">        config.put(&quot;api_key&quot;, apiKey);</span>
+<span class="fc" id="L28">        config.put(&quot;api_secret&quot;, apiSecret);</span>
+<span class="fc" id="L29">        return new Cloudinary(config);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

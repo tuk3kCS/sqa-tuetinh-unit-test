@@ -6,9 +6,71 @@ Mock onnxruntime.InferenceSession để không cần model thật.
 
 import pytest
 import numpy as np
-from unittest.mock import MagicMock, patch, PropertyMock
+from unittest.mock import MagicMock, patch
 from PIL import Image
 from io import BytesIO
+
+from app.config import Config
+
+
+@pytest.fixture(autouse=True)
+def _stub_torchvision_and_torch_ops_for_classification(monkeypatch):
+    """
+    conftest gán torch/torchvision = MagicMock và có thể không có torchvision thật.
+    Stub Compose (preprocess) + softmax/from_numpy/max bằng numpy để test không cần PyTorch runtime.
+    """
+    _h, _w = Config.CLASSIFICATION_IMG_SIZE
+
+    def _fake_compose(_transform_list):
+        class _Compose:
+            def __call__(self, _pil_img):
+                mid = MagicMock()
+                leaf = MagicMock()
+                leaf.numpy.return_value = np.zeros((1, 3, _h, _w), dtype=np.float32)
+                mid.unsqueeze.return_value = leaf
+                return mid
+
+        return _Compose()
+
+    def _softmax_np(x, dim=1):
+        x = np.asarray(x, dtype=np.float64)
+        ex = np.exp(x - np.max(x, axis=dim, keepdims=True))
+        return ex / np.sum(ex, axis=dim, keepdims=True)
+
+    def _from_numpy(a):
+        return np.asarray(a, dtype=np.float32)
+
+    def _torch_max_np(probs, dim):
+        arr = np.asarray(probs)
+        pred_i = int(np.argmax(arr, axis=dim).reshape(-1)[0])
+        conf_v = float(np.max(arr, axis=dim).reshape(-1)[0])
+
+        class _Conf:
+            def item(self):
+                return conf_v
+
+        class _Pred:
+            def item(self):
+                return pred_i
+
+        return _Conf(), _Pred()
+
+    monkeypatch.setattr(
+        "app.services_AI.classification.classification_service.transforms.Compose",
+        _fake_compose,
+    )
+    monkeypatch.setattr(
+        "app.services_AI.classification.classification_service.torch.softmax",
+        _softmax_np,
+    )
+    monkeypatch.setattr(
+        "app.services_AI.classification.classification_service.torch.from_numpy",
+        _from_numpy,
+    )
+    monkeypatch.setattr(
+        "app.services_AI.classification.classification_service.torch.max",
+        _torch_max_np,
+    )
 
 
 # ============================================================

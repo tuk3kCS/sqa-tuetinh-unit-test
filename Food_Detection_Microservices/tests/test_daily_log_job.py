@@ -12,7 +12,7 @@ from app.jobs.daily_log_job import daily_log_job
 # Input: Flask app object
 # Expected Output: create_daily_logs_for_all_users được gọi 1 lần
 # Notes: Mock create_daily_logs_for_all_users
-@patch("app.jobs.daily_log_job.create_daily_logs_for_all_users")
+@patch("app.services.daily_log_service.create_daily_logs_for_all_users")
 def test_daily_log_job_calls_create(mock_create, app):
     """Job gọi create_daily_logs_for_all_users."""
     daily_log_job(app)
@@ -24,7 +24,7 @@ def test_daily_log_job_calls_create(mock_create, app):
 # Input: Flask app object
 # Expected Output: print được gọi với "START" và "END"
 # Notes: Mock print để kiểm tra logging
-@patch("app.jobs.daily_log_job.create_daily_logs_for_all_users")
+@patch("app.services.daily_log_service.create_daily_logs_for_all_users")
 @patch("builtins.print")
 def test_daily_log_job_prints_messages(mock_print, mock_create, app):
     """Job in thông báo START và END."""
@@ -43,6 +43,6 @@ def test_daily_log_job_prints_messages(mock_print, mock_create, app):
 # Notes: Kiểm tra context manager pattern
 def test_daily_log_job_uses_app_context(app):
     """Job sử dụng app.app_context() để chạy."""
-    with patch("app.jobs.daily_log_job.create_daily_logs_for_all_users") as mock_create:
+    with patch("app.services.daily_log_service.create_daily_logs_for_all_users") as mock_create:
         daily_log_job(app)
         mock_create.assert_called_once()

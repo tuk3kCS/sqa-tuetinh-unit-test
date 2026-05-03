@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AuthServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">AuthService</a> &gt; <a href="index.source.html" class="el_package">com.example.AuthService.service.impl</a> &gt; <span class="el_source">AuthServiceImpl.java</span></div><h1>AuthServiceImpl.java</h1><pre class="source lang-java linenums">package com.example.AuthService.service.impl;
+
+import com.example.AuthService.dto.request.*;
+import com.example.AuthService.dto.response.TokenResponse;
+import com.example.AuthService.entity.Country;
+import com.example.AuthService.entity.Role;
+import com.example.AuthService.entity.User;
+import com.example.AuthService.otp.OtpService;
+import com.example.AuthService.otp.OtpType;
+import com.example.AuthService.repository.CountryRepository;
+import com.example.AuthService.repository.RoleRepository;
+import com.example.AuthService.repository.UserRepository;
+import com.example.AuthService.security.jwt.JwtService;
+import com.example.AuthService.service.AuthService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.*;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.time.LocalDate;
+import java.util.*;
+
+@Service
+@RequiredArgsConstructor
+public class AuthServiceImpl implements AuthService {
+
+    private final AuthenticationManager authManager;
+    private final UserRepository userRepo;
+    private final RoleRepository roleRepo;
+    private final CountryRepository countryRepo;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtService jwt;
+    private final OtpService otpService;
+    private final ObjectMapper objectMapper;
+
+    @Override
+    public TokenResponse login(String emailRaw, String password, String clientView) {
+<span class="fc" id="L42">        String email = normalize(emailRaw);</span>
+
+        try {
+<span class="fc" id="L45">            authManager.authenticate(</span>
+                    new UsernamePasswordAuthenticationToken(email, password)
+            );
+<span class="fc" id="L48">        } catch (BadCredentialsException e) {</span>
+<span class="fc" id="L49">            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, &quot;Bad credentials&quot;);</span>
+<span class="fc" id="L50">        } catch (DisabledException e) {</span>
+<span class="fc" id="L51">            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, &quot;User disabled&quot;);</span>
+<span class="fc" id="L52">        } catch (LockedException e) {</span>
+<span class="fc" id="L53">            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, &quot;User locked&quot;);</span>
+<span class="fc" id="L54">        }</span>
+
+<span class="fc" id="L56">        User user = userRepo.findByEmail(email)</span>
+<span class="pc" id="L57">                .orElseThrow(() -&gt; new UsernameNotFoundException(&quot;User not found&quot;));</span>
+
+<span class="fc bfc" id="L59" title="All 2 branches covered.">        if (&quot;ADMIN&quot;.equals(clientView)) {</span>
+<span class="fc" id="L60">            boolean isAdmin = user.getRole().</span>
+<span class="fc" id="L61">                    getName().equals(&quot;ADMIN&quot;);</span>
+
+<span class="fc bfc" id="L63" title="All 2 branches covered.">            if (!isAdmin) {</span>
+<span class="fc" id="L64">                throw new ResponseStatusException(</span>
+                        HttpStatus.FORBIDDEN,
+                        &quot;Only ADMIN can login to admin view&quot;
+                );
+            }
+        }
+
+<span class="fc" id="L71">        return new TokenResponse(</span>
+<span class="fc" id="L72">                jwt.generateAccessToken(user),</span>
+<span class="fc" id="L73">                jwt.generateRefreshToken(user.getUsername())</span>
+        );
+    }
+
+
+    @Override
+    public TokenResponse refresh(String refreshToken) {
+<span class="fc bfc" id="L80" title="All 2 branches covered.">        if (refreshToken == null) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, &quot;Missing refreshToken&quot;);</span>
+<span class="fc bfc" id="L81" title="All 2 branches covered.">        if (!jwt.isValid(refreshToken)) throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, &quot;Invalid refresh token&quot;);</span>
+
+<span class="fc" id="L83">        String username = jwt.extractUsername(refreshToken);</span>
+<span class="fc" id="L84">        User user = userRepo.findByEmail(username)</span>
+<span class="fc" id="L85">                .orElseThrow(() -&gt; new ResponseStatusException(HttpStatus.UNAUTHORIZED, &quot;User not found&quot;));</span>
+
+<span class="fc" id="L87">        String newAccess = jwt.generateAccessToken(user);</span>
+<span class="fc" id="L88">        return new TokenResponse(newAccess, refreshToken); // giữ refresh cũ</span>
+    }
+
+    // ===== Register OTP 2 bước =====
+    @Override
+    public void registerStart(RegisterStartRequest req) {
+<span class="fc" id="L94">        String email = normalize(req.getEmail());</span>
+
+<span class="fc bfc" id="L96" title="All 2 branches covered.">        if (userRepo.existsByEmail(email)) {</span>
+
+<span class="fc" id="L98">            throw new ResponseStatusException(HttpStatus.CONFLICT, &quot;Email Used&quot;);</span>
+        }
+
+        // Chuẩn bị dữ liệu gửi kèm OTP
+<span class="fc" id="L102">        Map&lt;String, Object&gt; payload = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L103">        payload.put(&quot;passwordHash&quot;, passwordEncoder.encode(req.getPassword()));</span>
+<span class="fc" id="L104">        payload.put(&quot;name&quot;,        req.getName());</span>
+<span class="fc" id="L105">        payload.put(&quot;gender&quot;,      req.getGender());</span>
+<span class="fc" id="L106">        payload.put(&quot;phoneNumber&quot;, req.getPhoneNumber());</span>
+<span class="fc bfc" id="L107" title="All 2 branches covered.">        payload.put(&quot;dateOfBirth&quot;, req.getDateOfBirth() != null ? req.getDateOfBirth().toString() : null);</span>
+<span class="fc" id="L108">        payload.put(&quot;countryId&quot;,   req.getCountryId());</span>
+<span class="fc" id="L109">        payload.put(&quot;photoUrl&quot;,    req.getPhotoUrl());</span>
+
+        // Gửi mã OTP
+<span class="fc" id="L112">        otpService.sendOtp(email, OtpType.REGISTER, Optional.of(payload));</span>
+
+
+<span class="fc" id="L115">    }</span>
+
+
+
+    @Override
+    public TokenResponse registerVerify(OtpVerifyRequest req) {
+<span class="fc" id="L121">        String email = normalize(req.getEmail());</span>
+<span class="fc" id="L122">        var otp = otpService.verify(email, OtpType.REGISTER, req.getCode());</span>
+
+        Map&lt;?,?&gt; payload;
+<span class="fc" id="L125">        try { payload = objectMapper.readValue(otp.getPayloadJson(), Map.class); }</span>
+<span class="pc" id="L126">        catch (Exception e) { throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, &quot;Invalid OTP payload&quot;); }</span>
+
+<span class="fc bfc" id="L128" title="All 2 branches covered.">        if (userRepo.existsByEmail(email)) {</span>
+<span class="fc" id="L129">            throw new ResponseStatusException(HttpStatus.CONFLICT, &quot;Email Used&quot;);</span>
+        }
+
+<span class="fc" id="L132">        Role userRole = roleRepo.findByName(&quot;USER&quot;)</span>
+<span class="pc" id="L133">                .orElseGet(() -&gt; roleRepo.save(Role.builder().name(&quot;USER&quot;).build()));</span>
+
+<span class="fc" id="L135">        Country country = null;</span>
+<span class="fc" id="L136">        Object countryIdObj = payload.get(&quot;countryId&quot;);</span>
+<span class="fc bfc" id="L137" title="All 2 branches covered.">        if (countryIdObj != null) {</span>
+<span class="fc" id="L138">            Long countryId = parseLong(countryIdObj);</span>
+<span class="pc bpc" id="L139" title="1 of 2 branches missed.">            if (countryId != null) {</span>
+<span class="fc" id="L140">                country = countryRepo.findById(countryId)</span>
+<span class="pc" id="L141">                        .orElseThrow(() -&gt; new ResponseStatusException(HttpStatus.BAD_REQUEST, &quot;Country không tồn tại&quot;));</span>
+            }
+        }
+
+<span class="fc" id="L145">        String name = (String) payload.get(&quot;name&quot;);</span>
+<span class="fc" id="L146">        String gender = (String) payload.get(&quot;gender&quot;);</span>
+<span class="fc" id="L147">        String phoneNumber = (String) payload.get(&quot;phoneNumber&quot;);</span>
+<span class="fc" id="L148">        String dobStr = (String) payload.get(&quot;dateOfBirth&quot;);</span>
+<span class="pc bpc" id="L149" title="1 of 4 branches missed.">        LocalDate dob = (dobStr != null &amp;&amp; !dobStr.isBlank()) ? LocalDate.parse(dobStr) : null;</span>
+<span class="fc" id="L150">        String photoUrl = (String) payload.get(&quot;photoUrl&quot;);</span>
+<span class="fc" id="L151">        String passwordHash = (String) payload.get(&quot;passwordHash&quot;);</span>
+
+<span class="fc" id="L153">        User user = User.builder()</span>
+<span class="fc" id="L154">                .email(email).name(name).password(passwordHash)</span>
+<span class="fc" id="L155">                .gender(gender).phoneNumber(phoneNumber).dateOfBirth(dob)</span>
+<span class="fc" id="L156">                .photoUrl(photoUrl).country(country).role(userRole)</span>
+<span class="fc" id="L157">                .enabled(true).accountNonExpired(true).accountNonLocked(true).credentialsNonExpired(true)</span>
+<span class="fc" id="L158">                .build();</span>
+
+<span class="fc" id="L160">        user = userRepo.save(user);</span>
+<span class="fc" id="L161">        return new TokenResponse(jwt.generateAccessToken(user), jwt.generateRefreshToken(user.getUsername()));</span>
+    }
+
+    // ===== Quên / đặt lại mật khẩu =====
+    @Override
+    public void forgotPassword(ForgotPasswordRequest req) {
+<span class="fc" id="L167">        String email = normalize(req.getEmail());</span>
+<span class="fc bfc" id="L168" title="All 2 branches covered.">        if (!userRepo.existsByEmail(email)) {</span>
+<span class="fc" id="L169">            throw new ResponseStatusException(HttpStatus.NOT_FOUND, &quot;Email not found&quot;);</span>
+        }
+<span class="fc" id="L171">        otpService.sendOtp(email, OtpType.RESET_PASSWORD, Optional.empty());</span>
+<span class="fc" id="L172">    }</span>
+
+    @Override
+    public void resetPassword(ResetPasswordRequest req) {
+<span class="fc" id="L176">        String email = normalize(req.getEmail());</span>
+<span class="fc" id="L177">        otpService.verify(email, OtpType.RESET_PASSWORD, req.getCode());</span>
+<span class="fc" id="L178">        User user = userRepo.findByEmail(email)</span>
+<span class="fc" id="L179">                .orElseThrow(() -&gt; new ResponseStatusException(HttpStatus.NOT_FOUND, &quot;User not found&quot;));</span>
+<span class="fc" id="L180">        user.setPassword(passwordEncoder.encode(req.getNewPassword()));</span>
+<span class="fc" id="L181">        userRepo.save(user);</span>
+<span class="fc" id="L182">    }</span>
+
+
+    @Override
+    public User getByEmailOrThrow(String emailRaw) {
+<span class="fc" id="L187">        return userRepo.findByEmail(normalize(emailRaw))</span>
+<span class="fc" id="L188">                .orElseThrow(() -&gt; new ResponseStatusException(HttpStatus.NOT_FOUND, &quot;User not found&quot;));</span>
+    }
+
+    private String normalize(String email) {
+<span class="pc bpc" id="L192" title="1 of 2 branches missed.">        return email == null ? null : email.trim().toLowerCase(Locale.ROOT);</span>
+    }
+    private Long parseLong(Object obj) {
+<span class="pc bpc" id="L195" title="1 of 2 branches missed.">        if (obj instanceof Number n) return n.longValue();</span>
+<span class="nc bnc" id="L196" title="All 4 branches missed.">        if (obj instanceof String s &amp;&amp; !s.isBlank()) return Long.valueOf(s);</span>
+<span class="nc" id="L197">        return null;</span>
+    }
+    @Override
+    public void resendOtp(OtpResendRequest req) {
+<span class="fc" id="L201">        String email = normalize(req.getEmail());</span>
+<span class="fc" id="L202">        OtpType type = req.getType();</span>
+
+<span class="fc bfc" id="L204" title="All 2 branches covered.">        if (type == null) {</span>
+<span class="fc" id="L205">            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, &quot;OtpType không được để trống&quot;);</span>
+        }
+
+<span class="pc bpc" id="L208" title="1 of 3 branches missed.">        switch (type) {</span>
+            case REGISTER -&gt; {
+<span class="fc bfc" id="L210" title="All 2 branches covered.">                if (userRepo.existsByEmail(email)) {</span>
+<span class="fc" id="L211">                    throw new ResponseStatusException(HttpStatus.CONFLICT, &quot;Email đã được sử dụng&quot;);</span>
+                }
+                // Gửi lại OTP cho đăng ký (payload có thể để trống, vì chỉ cần xác nhận email)
+<span class="fc" id="L214">                otpService.sendOtp(email, OtpType.REGISTER, Optional.empty());</span>
+<span class="fc" id="L215">            }</span>
+
+            case RESET_PASSWORD -&gt; {
+<span class="fc bfc" id="L218" title="All 2 branches covered.">                if (!userRepo.existsByEmail(email)) {</span>
+<span class="fc" id="L219">                    throw new ResponseStatusException(HttpStatus.NOT_FOUND, &quot;Email không tồn tại&quot;);</span>
+                }
+<span class="fc" id="L221">                otpService.sendOtp(email, OtpType.RESET_PASSWORD, Optional.empty());</span>
+<span class="fc" id="L222">            }</span>
+
+<span class="nc" id="L224">            default -&gt; throw new ResponseStatusException(HttpStatus.BAD_REQUEST, &quot;Loại OTP không hợp lệ&quot;);</span>
+        }
+<span class="fc" id="L226">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

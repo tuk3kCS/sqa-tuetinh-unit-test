@@ -43,13 +43,13 @@ class UserSpecificationTest {
         when(root.get(anyString())).thenReturn(path);
         when(cb.lower(any())).thenReturn(stringExpression);
         when(cb.like(any(Expression.class), anyString())).thenReturn(predicate);
-        when(cb.or(any(Predicate[].class))).thenReturn(predicate);
+        when(cb.or(any(Predicate.class), any(Predicate.class))).thenReturn(predicate);
         when(cb.and(any(Predicate[].class))).thenReturn(predicate);
 
         Specification<User> spec = UserSpecification.filter("test", null, null);
         spec.toPredicate(root, query, cb);
 
-        verify(cb).or(any(Predicate[].class));
+        verify(cb).or(any(Predicate.class), any(Predicate.class));
     }
 
     /**
@@ -125,15 +125,17 @@ class UserSpecificationTest {
         when(path.get("id")).thenReturn(nestedPath);
         when(cb.lower(any())).thenReturn(stringExpression);
         when(cb.like(any(Expression.class), anyString())).thenReturn(predicate);
-        when(cb.or(any(Predicate[].class))).thenReturn(predicate);
-        when(cb.equal(any(), any())).thenReturn(predicate);
+        when(cb.or(any(Predicate.class), any(Predicate.class))).thenReturn(predicate);
+        when(cb.equal(eq(nestedPath), eq(3L))).thenReturn(predicate);
+        when(cb.equal(eq(path), eq(true))).thenReturn(predicate);
         when(cb.and(any(Predicate[].class))).thenReturn(predicate);
 
         Specification<User> spec = UserSpecification.filter("admin", 3L, true);
         spec.toPredicate(root, query, cb);
 
-        verify(cb).or(any(Predicate[].class));
-        verify(cb, atLeast(2)).equal(any(), any());
+        verify(cb).or(any(Predicate.class), any(Predicate.class));
+        verify(cb).equal(nestedPath, 3L);
+        verify(cb).equal(path, true);
     }
 
     /**
@@ -151,7 +153,7 @@ class UserSpecificationTest {
         Specification<User> spec = UserSpecification.filter("   ", null, null);
         spec.toPredicate(root, query, cb);
 
-        verify(cb, never()).or(any(Predicate[].class));
+        verify(cb, never()).or(any(Predicate.class), any(Predicate.class));
     }
 
     /**

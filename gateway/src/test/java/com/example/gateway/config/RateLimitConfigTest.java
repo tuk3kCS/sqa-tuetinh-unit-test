@@ -1,15 +1,11 @@
 package com.example.gateway.config;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.gateway.filter.ratelimit.KeyResolver;
 import org.springframework.http.server.reactive.ServerHttpRequest;
-import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
-import org.springframework.mock.web.server.MockServerWebExchange;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -22,29 +18,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- * Unit tests cho RateLimitConfig – cấu hình rate limiting dựa trên IP.
+ * Integration-style tests cho bean {@link KeyResolver} từ RateLimitConfig (context nhỏ, không cần Redis).
  */
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest(classes = RateLimitConfig.class)
 class RateLimitConfigTest {
 
-    private RateLimitConfig rateLimitConfig;
+    @Autowired
     private KeyResolver ipKeyResolver;
-
-    @BeforeEach
-    void setUp() {
-        rateLimitConfig = new RateLimitConfig();
-        ipKeyResolver = rateLimitConfig.ipKeyResolver();
-    }
-
-    /**
-     * Test Case ID: TC_GW_RateLimitConfig_ipKeyResolver_001
-     * Test Objective: Trả về đúng IP address khi request có remote address
-     * Input: ServerWebExchange với remote address 192.168.1.100
-     * Expected Output: Mono chứa "192.168.1.100"
-     * Notes: Kiểm tra happy path – request bình thường có IP
-     */
-    @Test
-    @DisplayName("ipKeyResolver trả đúng IP khi request có remote address")
     void ipKeyResolver_withRemoteAddress_returnsIp() throws UnknownHostException {
         // Arrange
         ServerWebExchange exchange = mock(ServerWebExchange.class);

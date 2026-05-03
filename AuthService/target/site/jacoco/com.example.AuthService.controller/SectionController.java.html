@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SectionController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">AuthService</a> &gt; <a href="index.source.html" class="el_package">com.example.AuthService.controller</a> &gt; <span class="el_source">SectionController.java</span></div><h1>SectionController.java</h1><pre class="source lang-java linenums">package com.example.AuthService.controller;
+
+import com.example.AuthService.entity.Section;
+import com.example.AuthService.service.SectionService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequiredArgsConstructor
+@RequestMapping // dùng absolute path ở method cho rõ ràng
+public class SectionController {
+
+    private final SectionService sectionService;
+
+    /**
+     * LIST sections theo thuốc (KHÔNG phân trang)
+     * GET /api/drugs/{drugId}/sections
+     */
+    @GetMapping(&quot;/api/drugs/{drugId}/sections&quot;)
+    @PreAuthorize(&quot;hasAnyRole('USER','MODERATOR','ADMIN')&quot;)
+    public ResponseEntity&lt;List&lt;Section&gt;&gt; listByDrug(@PathVariable Long drugId) {
+<span class="fc" id="L26">        return ResponseEntity.ok(sectionService.listByDrug(drugId));</span>
+    }
+
+    /**
+     * CREATE section cho 1 thuốc
+     * POST /api/drugs/{drugId}/sections
+     * Body: { &quot;title&quot;: &quot;...&quot;, &quot;content&quot;: &quot;...&quot; }
+     */
+    @PostMapping(&quot;/api/drugs/{drugId}/sections&quot;)
+    @PreAuthorize(&quot;hasRole('ADMIN')&quot;)
+    public ResponseEntity&lt;Section&gt; create(
+            @PathVariable Long drugId,
+            @RequestBody Section payload
+    ) {
+<span class="fc" id="L40">        return ResponseEntity.ok(sectionService.create(drugId, payload));</span>
+    }
+
+    /**
+     * GET one section
+     * GET /api/sections/{id}
+     */
+    @GetMapping(&quot;/api/sections/{id}&quot;)
+    @PreAuthorize(&quot;hasAnyRole('USER','MODERATOR','ADMIN')&quot;)
+    public ResponseEntity&lt;Section&gt; getOne(@PathVariable Long id) {
+<span class="fc" id="L50">        return ResponseEntity.ok(sectionService.getById(id));</span>
+    }
+
+    /**
+     * UPDATE section (chỉ sửa title/content; không đổi drug)
+     * PUT /api/sections/{id}
+     * Body: { &quot;title&quot;: &quot;...&quot;, &quot;content&quot;: &quot;...&quot; }
+     */
+    @PutMapping(&quot;/api/sections/{id}&quot;)
+    @PreAuthorize(&quot;hasRole('ADMIN')&quot;)
+    public ResponseEntity&lt;Section&gt; update(
+            @PathVariable Long id,
+            @RequestBody Section payload
+    ) {
+<span class="fc" id="L64">        return ResponseEntity.ok(sectionService.update(id, payload));</span>
+    }
+
+    /**
+     * DELETE section
+     * DELETE /api/sections/{id}
+     */
+    @DeleteMapping(&quot;/api/sections/{id}&quot;)
+    @PreAuthorize(&quot;hasRole('ADMIN')&quot;)
+    public ResponseEntity&lt;Void&gt; delete(@PathVariable Long id) {
+<span class="fc" id="L74">        sectionService.delete(id);</span>
+<span class="fc" id="L75">        return ResponseEntity.noContent().build();</span>
+    }
+
+    /**
+     * (TÙY CHỌN) LIST tất cả sections (KHÔNG phân trang)
+     * GET /api/sections
+     */
+    @GetMapping(&quot;/api/sections&quot;)
+    @PreAuthorize(&quot;hasAnyRole('USER','MODERATOR','ADMIN')&quot;)
+    public ResponseEntity&lt;List&lt;Section&gt;&gt; listAll() {
+<span class="nc" id="L85">        return ResponseEntity.ok(sectionService.listAll());</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

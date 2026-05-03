@@ -32,10 +32,14 @@ if "torchvision" not in sys.modules:
 import os
 import pytest
 from unittest.mock import patch
+from sqlalchemy.orm import Session
 from sqlalchemy.pool import StaticPool
 
 os.environ.setdefault("SECRET_KEY", "test-secret-key")
-os.environ.setdefault("JWT_SECRET_KEY", "test-jwt-secret-key")
+os.environ.setdefault(
+    "JWT_SECRET_KEY",
+    "test-jwt-secret-key-32bytes-minimum!!",
+)
 os.environ.setdefault("DATABASE_URL", "sqlite:///:memory:")
 
 
@@ -53,7 +57,7 @@ def app():
             "connect_args": {"check_same_thread": False},
         }
         SECRET_KEY = "test-secret-key"
-        JWT_SECRET_KEY = "test-jwt-secret-key"
+        JWT_SECRET_KEY = "test-jwt-secret-key-32bytes-minimum!!"
 
     application = create_app(TestConfig)
     yield application
@@ -73,8 +77,10 @@ def _db(app):
 @pytest.fixture(autouse=True)
 def db_session(app, _db):
     """
-    Wrap each test in a transaction and ROLLBACK after completion.
-    Uses a SAVEPOINT so code/tests that call session.commit() still roll back.
+    Mỗi test: connection + transaction ngoài; rollback sau test.
+
+    Service gọi db.session.commit() — commit thật sẽ kết thúc transaction / phá savepoint
+    trên SQLite (StaticPool). Tạm thời map commit → flush + expire_all cho session test.
     """
     with app.app_context():
         connection = _db.engine.connect()
@@ -83,15 +89,25 @@ def db_session(app, _db):
         session = _db._make_scoped_session(dict(options))
         old_session = _db.session
         _db.session = session
-        bind_session = session()
-        bind_session.begin_nested()
 
-        yield session
+        real_commit = Session.commit
 
-        session.remove()
-        transaction.rollback()
-        connection.close()
-        _db.session = old_session
+        def commit_flush_only(self):
+            if getattr(self, "bind", None) is connection:
+                self.flush()
+                self.expire_all()
+            else:
+                real_commit(self)
+
+        Session.commit = commit_flush_only
+        try:
+            yield session
+        finally:
+            Session.commit = real_commit
+            session.remove()
+            transaction.rollback()
+            connection.close()
+            _db.session = old_session
 
 
 @pytest.fixture()
@@ -112,3 +128,16 @@ def mock_jwt_identity():
         patch("flask_jwt_extended.verify_jwt_in_request", return_value=None),
     ):
         yield
+
+
+@pytest.fixture()
+def auth_headers(app):
+    """Authorization: Bearer … ký bằng JWT_SECRET_KEY của app test (userId=1)."""
+    with app.app_context():
+        from flask_jwt_extended import create_access_token
+
+        token = create_access_token(
+            identity="test@test.com",
+            additional_claims={"userId": 1},
+        )
+    return {"Authorization": f"Bearer {token}"}

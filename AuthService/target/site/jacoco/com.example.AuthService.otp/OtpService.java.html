@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>OtpService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">AuthService</a> &gt; <a href="index.source.html" class="el_package">com.example.AuthService.otp</a> &gt; <span class="el_source">OtpService.java</span></div><h1>OtpService.java</h1><pre class="source lang-java linenums">package com.example.AuthService.otp;
+
+import com.example.AuthService.mail.EmailService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.security.SecureRandom;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.locks.ReentrantLock;
+
+@Service
+@RequiredArgsConstructor
+public class OtpService {
+
+    private final EmailOtpRepository repo;
+    private final OtpProperties props;
+    private final EmailService emailService;
+    private final ObjectMapper mapper = new ObjectMapper();
+    private final SecureRandom rnd = new SecureRandom();
+
+    // Khóa theo (type + email) để tránh gửi đồng thời
+    private final ConcurrentMap&lt;String, ReentrantLock&gt; locks = new ConcurrentHashMap&lt;&gt;();
+
+    private String genCode() {
+<span class="fc" id="L32">        int n = 100000 + rnd.nextInt(900000); // Mã 6 chữ số</span>
+<span class="fc" id="L33">        return String.valueOf(n);</span>
+    }
+
+    private LocalDateTime nowUtc() {
+<span class="fc" id="L37">        return LocalDateTime.now(ZoneOffset.UTC);</span>
+    }
+
+    public void sendOtp(String email, OtpType type, Optional&lt;Map&lt;String, Object&gt;&gt; payloadOpt) {
+<span class="fc" id="L41">        System.out.println(&quot;🟢 Calling sendOtp for &quot; + email + &quot;, type=&quot; + type);</span>
+
+<span class="fc" id="L43">        final String key = type + &quot;:&quot; + email;</span>
+<span class="fc" id="L44">        final ReentrantLock lock = locks.computeIfAbsent(key, k -&gt; new ReentrantLock());</span>
+<span class="fc" id="L45">        lock.lock();</span>
+        try {
+<span class="fc" id="L47">            final LocalDateTime now = nowUtc();</span>
+
+            // TTL khác nhau cho từng loại OTP
+<span class="fc bfc" id="L50" title="All 2 branches covered.">            final int ttl = (type == OtpType.REGISTER)</span>
+<span class="fc" id="L51">                    ? props.getRegisterTtlSeconds()</span>
+<span class="fc" id="L52">                    : props.getResetTtlSeconds();</span>
+
+            // ✅ Giới hạn gửi lại mỗi 60 giây (1 phút)
+<span class="fc" id="L55">            final int cooldown = 60; // hoặc props.getResendCooldownSeconds()</span>
+
+<span class="fc" id="L57">            var lastOpt = repo.findFirstByEmailAndTypeAndUsedFalseAndExpiresAtAfterOrderByIdDesc(email, type, now);</span>
+<span class="fc bfc" id="L58" title="All 2 branches covered.">            if (lastOpt.isPresent()) {</span>
+<span class="fc" id="L59">                var last = lastOpt.get();</span>
+
+                // Thời gian phát hành (issue time)
+<span class="pc bpc" id="L62" title="1 of 2 branches missed.">                LocalDateTime issuedAt = (last.getCreatedAt() != null)</span>
+<span class="fc" id="L63">                        ? last.getCreatedAt()</span>
+<span class="pc" id="L64">                        : last.getExpiresAt().minusSeconds(ttl);</span>
+
+
+            }
+
+            // Sinh OTP mới
+<span class="fc" id="L70">            String code = genCode();</span>
+<span class="fc" id="L71">            String payloadJson = payloadOpt.map(p -&gt; {</span>
+                try {
+<span class="fc" id="L73">                    return mapper.writeValueAsString(p);</span>
+<span class="nc" id="L74">                } catch (Exception e) {</span>
+<span class="nc" id="L75">                    throw new RuntimeException(&quot;Cannot write payload json&quot;, e);</span>
+                }
+<span class="fc" id="L77">            }).orElse(null);</span>
+
+            // Lưu OTP mới
+<span class="fc" id="L80">            var otp = EmailOtp.builder()</span>
+<span class="fc" id="L81">                    .email(email)</span>
+<span class="fc" id="L82">                    .type(type)</span>
+<span class="fc" id="L83">                    .code(code)</span>
+<span class="fc" id="L84">                    .createdAt(now)</span>
+<span class="fc" id="L85">                    .expiresAt(now.plusSeconds(ttl))</span>
+<span class="fc" id="L86">                    .payloadJson(payloadJson)</span>
+<span class="fc" id="L87">                    .used(false)</span>
+<span class="fc" id="L88">                    .attempts(0)</span>
+<span class="fc" id="L89">                    .build();</span>
+<span class="fc" id="L90">            repo.save(otp);</span>
+
+            // Gửi email
+<span class="fc bfc" id="L93" title="All 2 branches covered.">            String subject = (type == OtpType.REGISTER) ? &quot;Xác minh đăng ký&quot; : &quot;Mã đặt lại mật khẩu&quot;;</span>
+<span class="fc" id="L94">            String html = &quot;&quot;&quot;</span>
+                    &lt;p&gt;Xin chào,&lt;/p&gt;
+                    &lt;p&gt;Mã OTP của bạn là: &lt;b&gt;%s&lt;/b&gt;&lt;/p&gt;
+                    &lt;p&gt;Hết hạn sau %d phút.&lt;/p&gt;
+<span class="fc" id="L98">                    &quot;&quot;&quot;.formatted(code, ttl / 60);</span>
+
+<span class="fc" id="L100">            emailService.send(email, subject, html);</span>
+<span class="fc" id="L101">            System.out.println(&quot;✉️ Sending email OTP to &quot; + email + &quot; with code=&quot; + code);</span>
+
+        } finally {
+<span class="fc" id="L104">            lock.unlock();</span>
+<span class="pc bpc" id="L105" title="1 of 2 branches missed.">            if (!lock.hasQueuedThreads()) {</span>
+<span class="fc" id="L106">                locks.remove(key, lock);</span>
+            }
+        }
+<span class="fc" id="L109">    }</span>
+
+    public EmailOtp verify(String email, OtpType type, String code) {
+<span class="fc" id="L112">        final LocalDateTime now = nowUtc();</span>
+
+<span class="fc" id="L114">        var otp = repo.findFirstByEmailAndTypeAndUsedFalseAndExpiresAtAfterOrderByIdDesc(email, type, now)</span>
+<span class="fc" id="L115">                .orElseThrow(() -&gt; new IllegalStateException(&quot;OTP không tồn tại hoặc đã hết hạn.&quot;));</span>
+
+<span class="fc bfc" id="L117" title="All 2 branches covered.">        if (!otp.getCode().equals(code)) {</span>
+<span class="fc" id="L118">            otp.setAttempts(otp.getAttempts() + 1);</span>
+<span class="fc" id="L119">            repo.save(otp);</span>
+<span class="fc bfc" id="L120" title="All 2 branches covered.">            if (otp.getAttempts() &gt;= props.getMaxAttempts()) {</span>
+<span class="fc" id="L121">                otp.setUsed(true); // khoá OTP sau quá số lần thử</span>
+<span class="fc" id="L122">                repo.save(otp);</span>
+            }
+<span class="fc" id="L124">            throw new IllegalArgumentException(&quot;OTP không đúng.&quot;);</span>
+        }
+
+<span class="fc" id="L127">        otp.setUsed(true);</span>
+<span class="fc" id="L128">        repo.save(otp);</span>
+<span class="fc" id="L129">        return otp;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

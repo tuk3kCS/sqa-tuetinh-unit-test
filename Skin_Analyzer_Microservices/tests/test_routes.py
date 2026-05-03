@@ -71,9 +71,9 @@ def test_analyze_missing_jwt(client):
 # Input: POST /api/v1/analyze với JWT nhưng không có file
 # Expected Output: HTTP 400, "No image uploaded"
 # Notes: Kiểm tra validate file input
-def test_analyze_no_image(client, mock_jwt_identity):
+def test_analyze_no_image(client, auth_headers):
     """Không upload ảnh → 400."""
-    resp = client.post("/api/v1/analyze")
+    resp = client.post("/api/v1/analyze", headers=auth_headers)
     assert resp.status_code == 400
     assert "No image uploaded" in resp.get_json().get("error", "")
 
@@ -90,7 +90,7 @@ def test_analyze_no_image(client, mock_jwt_identity):
 @patch("app.routes.routes.upload_base64_to_cloudinary", return_value="http://cloud.test/img.jpg")
 @patch("app.routes.routes.image_to_base64", return_value="base64data")
 @patch("app.routes.routes.SkinDetectionService")
-def test_analyze_no_detections(mock_det_cls, mock_b64, mock_upload, client, mock_jwt_identity):
+def test_analyze_no_detections(mock_det_cls, mock_b64, mock_upload, client, auth_headers):
     """Không phát hiện → trả detection=[], suggestions mặc định."""
     mock_det_instance = MagicMock()
     mock_det_instance.detect.return_value = []
@@ -101,6 +101,7 @@ def test_analyze_no_detections(mock_det_cls, mock_b64, mock_upload, client, mock
         "/api/v1/analyze",
         data={"image": (img_bytes, "test.jpg")},
         content_type="multipart/form-data",
+        headers=auth_headers,
     )
 
     assert resp.status_code == 200
@@ -129,7 +130,7 @@ def test_analyze_no_detections(mock_det_cls, mock_b64, mock_upload, client, mock
 def test_analyze_with_detections_no_classification(
     mock_det_cls, mock_crop, mock_draw, mock_b64,
     mock_upload, mock_health, mock_lifestyle,
-    client, mock_jwt_identity,
+    client, auth_headers,
 ):
     """Detection trả kết quả, class không cần classification → response đầy đủ."""
     mock_det_instance = MagicMock()
@@ -144,6 +145,7 @@ def test_analyze_with_detections_no_classification(
         "/api/v1/analyze",
         data={"image": (img_bytes, "test.jpg")},
         content_type="multipart/form-data",
+        headers=auth_headers,
     )
 
     assert resp.status_code == 200
@@ -170,7 +172,7 @@ def test_analyze_with_detections_no_classification(
 def test_analyze_with_classification(
     mock_det_cls, mock_clf_cls, mock_crop, mock_draw,
     mock_b64, mock_upload, mock_health, mock_lifestyle,
-    client, mock_jwt_identity,
+    client, auth_headers,
 ):
     """Class cần classification → gọi classify, response có disease_prediction."""
     # Detection
@@ -194,6 +196,7 @@ def test_analyze_with_classification(
         "/api/v1/analyze",
         data={"image": (img_bytes, "test.jpg")},
         content_type="multipart/form-data",
+        headers=auth_headers,
     )
 
     assert resp.status_code == 200

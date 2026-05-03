@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GlobalExceptionHandler.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">AuthService</a> &gt; <a href="index.source.html" class="el_package">com.example.AuthService.exception</a> &gt; <span class="el_source">GlobalExceptionHandler.java</span></div><h1>GlobalExceptionHandler.java</h1><pre class="source lang-java linenums">package com.example.AuthService.exception;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authorization.AuthorizationDeniedException;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.*;
+
+@RestControllerAdvice
+<span class="fc" id="L18">public class GlobalExceptionHandler {</span>
+
+    @ExceptionHandler({AccessDeniedException.class, AuthorizationDeniedException.class})
+    public ResponseEntity&lt;Map&lt;String, Object&gt;&gt; handleAccessDenied(Exception ex) {
+<span class="nc" id="L22">        Map&lt;String, Object&gt; response = new LinkedHashMap&lt;&gt;();</span>
+
+<span class="nc" id="L24">        response.put(&quot;success&quot;, false);</span>
+<span class="nc" id="L25">        response.put(&quot;code&quot;, HttpStatus.FORBIDDEN.value());</span>
+<span class="nc" id="L26">        response.put(&quot;message&quot;, &quot;Access Denied&quot;);</span>
+
+<span class="nc" id="L28">        Map&lt;String, Object&gt; debug = new LinkedHashMap&lt;&gt;();</span>
+<span class="nc" id="L29">        debug.put(&quot;headers&quot;, new HashMap&lt;&gt;());</span>
+<span class="nc" id="L30">        debug.put(&quot;original&quot;, buildOriginalDebug(ex));</span>
+<span class="nc" id="L31">        debug.put(&quot;exception&quot;, null);</span>
+<span class="nc" id="L32">        response.put(&quot;debug&quot;, debug);</span>
+
+<span class="nc" id="L34">        return new ResponseEntity&lt;&gt;(response, HttpStatus.FORBIDDEN);</span>
+    }
+
+    @ExceptionHandler(ResponseStatusException.class)
+    public ResponseEntity&lt;Map&lt;String, Object&gt;&gt; handleResponseStatusException(ResponseStatusException ex) {
+<span class="fc" id="L39">        Map&lt;String, Object&gt; response = new LinkedHashMap&lt;&gt;();</span>
+
+<span class="fc" id="L41">        response.put(&quot;success&quot;, false);</span>
+<span class="fc" id="L42">        response.put(&quot;code&quot;, ex.getStatusCode().value());</span>
+<span class="fc" id="L43">        response.put(&quot;message&quot;, ex.getReason());</span>
+
+        // ======== DEBUG OBJECT ==========
+<span class="fc" id="L46">        Map&lt;String, Object&gt; debug = new LinkedHashMap&lt;&gt;();</span>
+<span class="fc" id="L47">        debug.put(&quot;headers&quot;, new HashMap&lt;&gt;());</span>
+<span class="fc" id="L48">        debug.put(&quot;original&quot;, buildOriginalDebug(ex));</span>
+<span class="fc" id="L49">        debug.put(&quot;exception&quot;, null);</span>
+<span class="fc" id="L50">        response.put(&quot;debug&quot;, debug);</span>
+        // =================================
+
+<span class="fc" id="L53">        return new ResponseEntity&lt;&gt;(response, ex.getStatusCode());</span>
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity&lt;Map&lt;String, Object&gt;&gt; handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
+<span class="fc" id="L58">        Map&lt;String, Object&gt; response = new LinkedHashMap&lt;&gt;();</span>
+
+<span class="fc" id="L60">        String message = ex.getBindingResult().getFieldErrors().stream()</span>
+<span class="fc" id="L61">                .map(FieldError::getDefaultMessage)</span>
+<span class="pc bpc" id="L62" title="2 of 4 branches missed.">                .filter(m -&gt; m != null &amp;&amp; !m.isBlank())</span>
+<span class="fc" id="L63">                .findFirst()</span>
+<span class="fc" id="L64">                .orElse(&quot;Validation failed&quot;);</span>
+
+<span class="fc" id="L66">        response.put(&quot;success&quot;, false);</span>
+<span class="fc" id="L67">        response.put(&quot;code&quot;, HttpStatus.BAD_REQUEST.value());</span>
+<span class="fc" id="L68">        response.put(&quot;message&quot;, message);</span>
+
+<span class="fc" id="L70">        Map&lt;String, Object&gt; debug = new LinkedHashMap&lt;&gt;();</span>
+<span class="fc" id="L71">        debug.put(&quot;headers&quot;, new HashMap&lt;&gt;());</span>
+<span class="fc" id="L72">        debug.put(&quot;original&quot;, buildOriginalDebug(ex));</span>
+<span class="fc" id="L73">        debug.put(&quot;exception&quot;, null);</span>
+<span class="fc" id="L74">        response.put(&quot;debug&quot;, debug);</span>
+
+<span class="fc" id="L76">        return new ResponseEntity&lt;&gt;(response, HttpStatus.BAD_REQUEST);</span>
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity&lt;Map&lt;String, Object&gt;&gt; handleGenericException(Exception ex) {
+<span class="fc" id="L81">        Map&lt;String, Object&gt; response = new LinkedHashMap&lt;&gt;();</span>
+
+<span class="fc" id="L83">        response.put(&quot;success&quot;, false);</span>
+<span class="fc" id="L84">        response.put(&quot;code&quot;, HttpStatus.INTERNAL_SERVER_ERROR.value());</span>
+<span class="fc" id="L85">        response.put(&quot;message&quot;, &quot;Internal Server Error&quot;);</span>
+
+<span class="fc" id="L87">        Map&lt;String, Object&gt; debug = new LinkedHashMap&lt;&gt;();</span>
+<span class="fc" id="L88">        debug.put(&quot;headers&quot;, new HashMap&lt;&gt;());</span>
+<span class="fc" id="L89">        debug.put(&quot;original&quot;, buildOriginalDebug(ex));</span>
+<span class="fc" id="L90">        debug.put(&quot;exception&quot;, null);</span>
+<span class="fc" id="L91">        response.put(&quot;debug&quot;, debug);</span>
+
+<span class="fc" id="L93">        return new ResponseEntity&lt;&gt;(response, HttpStatus.INTERNAL_SERVER_ERROR);</span>
+    }
+
+    private Map&lt;String, Object&gt; buildOriginalDebug(Exception ex) {
+<span class="fc" id="L97">        Map&lt;String, Object&gt; original = new LinkedHashMap&lt;&gt;();</span>
+<span class="fc" id="L98">        original.put(&quot;message&quot;, ex.getMessage());</span>
+<span class="fc" id="L99">        original.put(&quot;exception&quot;, ex.getClass().getName());</span>
+
+        // Lấy file và dòng lỗi
+<span class="pc bpc" id="L102" title="1 of 2 branches missed.">        if (ex.getStackTrace().length &gt; 0) {</span>
+<span class="fc" id="L103">            StackTraceElement element = ex.getStackTrace()[0];</span>
+<span class="fc" id="L104">            original.put(&quot;file&quot;, element.getFileName());</span>
+<span class="fc" id="L105">            original.put(&quot;line&quot;, element.getLineNumber());</span>
+<span class="fc" id="L106">        } else {</span>
+<span class="nc" id="L107">            original.put(&quot;file&quot;, null);</span>
+<span class="nc" id="L108">            original.put(&quot;line&quot;, null);</span>
+        }
+
+        // Convert stack trace thành mảng string
+<span class="fc" id="L112">        List&lt;String&gt; trace = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L113" title="All 2 branches covered.">        for (StackTraceElement element : ex.getStackTrace()) {</span>
+<span class="fc" id="L114">            trace.add(element.toString());</span>
+        }
+<span class="fc" id="L116">        original.put(&quot;trace&quot;, trace);</span>
+
+<span class="fc" id="L118">        return original;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

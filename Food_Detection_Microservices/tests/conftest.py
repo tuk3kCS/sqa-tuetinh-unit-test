@@ -3,7 +3,7 @@ Shared pytest fixtures for Food_Detection_Microservices unit tests.
 
 Provides:
 - Flask application and test client with in-memory SQLite DB
-- Automatic DB creation and rollback per test (transaction isolation)
+- Per-test DB transaction: commit trong app → flush + expire_all; rollback sau mỗi test
 - Mocked JWT identity for deterministic testing
 - Sample data factories for UserProfile, FoodRecord, DailyEnergyLog
 """
@@ -20,6 +20,7 @@ import pytest
 from unittest.mock import patch
 from datetime import date
 from sqlalchemy import Integer
+from sqlalchemy.orm import Session
 from sqlalchemy.pool import StaticPool
 
 os.environ.setdefault("JWT_SECRET_KEY", "test-jwt-secret-key")
@@ -76,8 +77,11 @@ def _db(app):
 @pytest.fixture(autouse=True)
 def db_session(app, _db):
     """
-    Wrap each test in a transaction and ROLLBACK after completion.
-    Uses a SAVEPOINT so code/tests that call session.commit() still roll back.
+    Mỗi test: một connection + transaction ngoài; rollback sau test.
+
+    Service code gọi db.session.commit() — nếu commit thật sẽ kết thúc transaction
+    và dữ liệu vẫn nằm trên SQLite (StaticPool dùng chung connection), test sau bị trùng PK.
+    Tạm thời biến commit() thành flush() cho mọi Session gắn với connection test.
     """
     with app.app_context():
         connection = _db.engine.connect()
@@ -86,15 +90,26 @@ def db_session(app, _db):
         session = _db._make_scoped_session(dict(options))
         old_session = _db.session
         _db.session = session
-        bind_session = session()
-        bind_session.begin_nested()
 
-        yield session
+        real_commit = Session.commit
 
-        session.remove()
-        transaction.rollback()
-        connection.close()
-        _db.session = old_session
+        def commit_flush_only(self):
+            if getattr(self, "bind", None) is connection:
+                self.flush()
+                # Giống sau commit thật: expire để đọc lại (SAEnum → instance, không còn str thuần)
+                self.expire_all()
+            else:
+                real_commit(self)
+
+        Session.commit = commit_flush_only
+        try:
+            yield session
+        finally:
+            Session.commit = real_commit
+            session.remove()
+            transaction.rollback()
+            connection.close()
+            _db.session = old_session
 
 
 @pytest.fixture()

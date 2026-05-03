@@ -19,6 +19,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
+import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.http.HttpStatus.*;
@@ -65,7 +66,7 @@ class AdminUserControllerTest {
 
         mockMvc.perform(get("/api/admin/users"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray());
+                .andExpect(jsonPath("$", hasSize(0)));
     }
 
     /**

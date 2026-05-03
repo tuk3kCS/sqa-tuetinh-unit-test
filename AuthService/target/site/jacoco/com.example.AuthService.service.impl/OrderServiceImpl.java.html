@@ -1,0 +1,814 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>OrderServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">AuthService</a> &gt; <a href="index.source.html" class="el_package">com.example.AuthService.service.impl</a> &gt; <span class="el_source">OrderServiceImpl.java</span></div><h1>OrderServiceImpl.java</h1><pre class="source lang-java linenums">package com.example.AuthService.service.impl;
+
+import com.example.AuthService.dto.request.CreateOrderRequest;
+import com.example.AuthService.dto.request.OrderItemRequest;
+import com.example.AuthService.dto.response.*;
+import com.example.AuthService.entity.*;
+import com.example.AuthService.enums.OrderStatus;
+import com.example.AuthService.enums.PaymentMethod;
+import com.example.AuthService.enums.PaymentStatus;
+import com.example.AuthService.repository.DrugRepository;
+import com.example.AuthService.repository.OrderRepository;
+import com.example.AuthService.repository.PaymentRepository;
+import com.example.AuthService.service.InventoryService;
+import com.example.AuthService.service.OrderService;
+import com.example.AuthService.service.PaymentService;
+import com.example.AuthService.spec.OrderSpecification;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.nio.file.AccessDeniedException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
+@Service
+@RequiredArgsConstructor
+@Transactional
+public class OrderServiceImpl implements OrderService {
+
+    private final OrderRepository orderRepository;
+    private final DrugRepository drugRepository;
+    private final PaymentRepository paymentRepository;
+    private final PaymentService paymentService;
+    private final InventoryService inventoryService;
+    @Override
+    @Transactional
+    public Order createOrder(CreateOrderRequest request, User user) {
+
+<span class="fc" id="L49">        List&lt;OrderItem&gt; orderItems = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L50">        BigDecimal totalAmount = BigDecimal.ZERO;</span>
+
+<span class="fc bfc" id="L52" title="All 2 branches covered.">        for (OrderItemRequest itemReq : request.getItems()) {</span>
+
+<span class="fc" id="L54">            Drug drug = drugRepository.findById(itemReq.getDrugId())</span>
+<span class="fc" id="L55">                    .orElseThrow(() -&gt;</span>
+<span class="fc" id="L56">                            new RuntimeException(&quot;Không tìm thấy thuốc ID: &quot; + itemReq.getDrugId()));</span>
+
+<span class="fc bfc" id="L58" title="All 2 branches covered.">            if (itemReq.getQuantity() &lt;= 0) {</span>
+<span class="fc" id="L59">                throw new RuntimeException(&quot;Số lượng không hợp lệ&quot;);</span>
+            }
+
+
+<span class="fc" id="L63">            Integer available = inventoryService.calculateStock(drug.getId()) - drug.getReservedQuantity();</span>
+
+<span class="fc bfc" id="L65" title="All 2 branches covered.">            if (available &lt; itemReq.getQuantity()) {</span>
+<span class="fc" id="L66">                throw new RuntimeException(</span>
+<span class="fc" id="L67">                        &quot;Không đủ tồn kho cho thuốc: &quot; + drug.getName()</span>
+                );
+            }
+
+
+<span class="fc" id="L72">            drug.setReservedQuantity(drug.getReservedQuantity() + itemReq.getQuantity());</span>
+
+<span class="fc" id="L74">            BigDecimal unitPrice = drug.getPrice();</span>
+<span class="fc" id="L75">            BigDecimal itemTotal = unitPrice.multiply(BigDecimal.valueOf(itemReq.getQuantity()));</span>
+
+<span class="fc" id="L77">            OrderItem orderItem = OrderItem.builder()</span>
+<span class="fc" id="L78">                    .drug(drug)</span>
+<span class="fc" id="L79">                    .quantity(itemReq.getQuantity())</span>
+<span class="fc" id="L80">                    .unitPrice(unitPrice.doubleValue())</span>
+<span class="fc" id="L81">                    .totalPrice(itemTotal.doubleValue())</span>
+<span class="fc" id="L82">                    .build();</span>
+
+<span class="fc" id="L84">            orderItems.add(orderItem);</span>
+<span class="fc" id="L85">            totalAmount = totalAmount.add(itemTotal);</span>
+<span class="fc" id="L86">        }</span>
+
+<span class="fc" id="L88">        Order order = Order.builder()</span>
+<span class="fc" id="L89">                .user(user)</span>
+<span class="fc" id="L90">                .shippingAddress(request.getShippingAddress())</span>
+<span class="fc" id="L91">                .receiverName(request.getReceiverName())</span>
+<span class="fc" id="L92">                .receiverPhone(request.getReceiverPhone())</span>
+<span class="fc" id="L93">                .totalAmount(totalAmount)</span>
+<span class="fc" id="L94">                .status(OrderStatus.PENDING)</span>
+<span class="fc" id="L95">                .build();</span>
+
+<span class="fc" id="L97">        orderItems.forEach(item -&gt; item.setOrder(order));</span>
+<span class="fc" id="L98">        order.setItems(orderItems);</span>
+
+<span class="fc" id="L100">        return orderRepository.save(order);</span>
+    }
+
+
+    @Override
+    @Transactional
+    public Order confirmCodPayment(Long orderId, User user) {
+
+<span class="fc" id="L108">        Order order = orderRepository.findById(orderId)</span>
+<span class="fc" id="L109">                .orElseThrow(() -&gt;</span>
+<span class="nc" id="L110">                        new RuntimeException(&quot;Không tìm thấy order ID: &quot; + orderId));</span>
+
+<span class="fc bfc" id="L112" title="All 2 branches covered.">        if (!order.getUser().getId().equals(user.getId())) {</span>
+<span class="fc" id="L113">            throw new RuntimeException(&quot;Bạn không có quyền với đơn hàng này&quot;);</span>
+        }
+
+<span class="fc bfc" id="L116" title="All 2 branches covered.">        if (order.getStatus() != OrderStatus.PENDING) {</span>
+<span class="fc" id="L117">            throw new RuntimeException(&quot;Đơn hàng không ở trạng thái PENDING&quot;);</span>
+        }
+
+<span class="pc bpc" id="L120" title="2 of 4 branches missed.">        if (order.getItems() == null || order.getItems().isEmpty()) {</span>
+<span class="nc" id="L121">            throw new RuntimeException(&quot;Đơn hàng không có sản phẩm&quot;);</span>
+        }
+
+<span class="fc bfc" id="L124" title="All 2 branches covered.">        if (order.getPaymentMethod() != null) {</span>
+<span class="fc" id="L125">            throw new RuntimeException(&quot;Đơn hàng đã chọn phương thức thanh toán&quot;);</span>
+        }
+
+<span class="fc" id="L128">        order.setPaymentMethod(PaymentMethod.COD);</span>
+
+<span class="fc" id="L130">        return orderRepository.save(order);</span>
+    }
+
+//    @Transactional
+//    @Override
+//    public void updateOrderStatus(Long orderId, OrderStatus newStatus, User user) {
+//
+//        Order order = orderRepository.findById(orderId)
+//                .orElseThrow(() -&gt; new RuntimeException(&quot;Không tìm thấy order&quot;));
+//
+//        OrderStatus current = order.getStatus();
+//
+//        Payment payment = paymentRepository.findByOrderId(orderId).orElse(null);
+//        PaymentMethod method = payment != null ? payment.getMethod() : PaymentMethod.COD;
+//
+//        boolean isAdminOrMod =
+//                user.getRole().getName().equalsIgnoreCase(&quot;ADMIN&quot;) ||
+//                        user.getRole().getName().equalsIgnoreCase(&quot;MODERATOR&quot;);
+//
+//        if (!isAdminOrMod) {
+//            throw new RuntimeException(&quot;Chỉ ADMIN hoặc MODERATOR mới có quyền cập nhật trạng thái&quot;);
+//        }
+//
+//        switch (newStatus) {
+//
+//            case SHIPPED:
+//                if (
+//                        (current == OrderStatus.PENDING &amp;&amp; method == PaymentMethod.COD) ||
+//                                (current == OrderStatus.PAID &amp;&amp; method == PaymentMethod.VNPAY)
+//                ) {
+//
+//
+//                    if (method == PaymentMethod.COD) {
+//                        for (OrderItem item : order.getItems()) {
+//                            Drug drug = item.getDrug();
+//
+//                            if (drug.getStockQuantity() &lt; item.getQuantity()) {
+//                                throw new RuntimeException(&quot;Thuốc hết hàng: &quot; + drug.getName());
+//                            }
+//
+//                            drug.setStockQuantity(
+//                                    drug.getStockQuantity() - item.getQuantity()
+//                            );
+//                            drugRepository.save(drug);
+//                        }
+//                    }
+//
+//                    order.setStatus(OrderStatus.SHIPPED);
+//
+//                } else {
+//                    throw new RuntimeException(&quot;Không thể chuyển sang SHIPPED&quot;);
+//                }
+//                break;
+//
+//            case COMPLETED:
+//                if (current == OrderStatus.SHIPPED) {
+//                    order.setStatus(OrderStatus.COMPLETED);
+//                    for (OrderItem item : order.getItems()) {
+//                        Drug drug = item.getDrug();
+//
+//
+//                        drug.setSoldQuantity(
+//                                drug.getSoldQuantity() - item.getQuantity()
+//                        );
+//                        drugRepository.save(drug);
+//                    }
+//                } else {
+//                    throw new RuntimeException(&quot;Chỉ đơn SHIPPED mới hoàn tất&quot;);
+//                }
+//                break;
+//
+//            default:
+//                throw new RuntimeException(&quot;Không cho phép set trạng thái này&quot;);
+//        }
+//
+//        orderRepository.save(order);
+//    }
+
+    @Transactional
+    @Override
+    public void cancelOrder(Long orderId, User user) {
+
+<span class="fc" id="L212">        Order order = orderRepository.findById(orderId)</span>
+<span class="pc" id="L213">                .orElseThrow(() -&gt; new RuntimeException(&quot;Không tìm thấy order&quot;));</span>
+
+<span class="fc bfc" id="L215" title="All 2 branches covered.">        if (!order.getUser().getId().equals(user.getId())) {</span>
+<span class="fc" id="L216">            throw new RuntimeException(&quot;Không có quyền huỷ đơn này&quot;);</span>
+        }
+
+<span class="fc" id="L219">        OrderStatus status = order.getStatus();</span>
+
+<span class="fc bfc" id="L221" title="All 2 branches covered.">        if (status == OrderStatus.PENDING) {</span>
+
+<span class="fc bfc" id="L223" title="All 2 branches covered.">            for (OrderItem item : order.getItems()) {</span>
+<span class="fc" id="L224">                Drug drug = item.getDrug();</span>
+<span class="fc" id="L225">                int qty = item.getQuantity();</span>
+<span class="fc" id="L226">                drug.setReservedQuantity(drug.getReservedQuantity() - qty);</span>
+<span class="fc" id="L227">            }</span>
+
+<span class="fc" id="L229">            order.setStatus(OrderStatus.CANCELLED);</span>
+<span class="fc" id="L230">            orderRepository.save(order);</span>
+<span class="fc" id="L231">            return;</span>
+        }
+
+<span class="fc bfc" id="L234" title="All 2 branches covered.">        if (status == OrderStatus.PAID</span>
+<span class="pc bpc" id="L235" title="1 of 2 branches missed.">                &amp;&amp; order.getPaymentMethod() == PaymentMethod.VNPAY) {</span>
+
+<span class="fc" id="L237">            order.setStatus(OrderStatus.CANCEL_REQUESTED);</span>
+
+<span class="fc" id="L239">            Payment payment = paymentRepository.findByOrder(order)</span>
+<span class="pc" id="L240">                    .orElseThrow(() -&gt; new RuntimeException(&quot;Không tìm thấy payment&quot;));</span>
+
+<span class="fc" id="L242">            payment.setStatus(PaymentStatus.REFUND_PENDING);</span>
+
+<span class="fc" id="L244">            orderRepository.save(order);</span>
+<span class="fc" id="L245">            paymentRepository.save(payment);</span>
+<span class="fc" id="L246">            return;</span>
+        }
+
+<span class="fc" id="L249">        throw new RuntimeException(&quot;Không thể huỷ đơn ở trạng thái hiện tại&quot;);</span>
+    }
+
+
+
+
+
+    @Override
+    public PageResponse&lt;OrderResponse&gt; getOrders(
+            User user,
+            OrderStatus status,
+            PaymentMethod paymentMethod,
+            LocalDateTime fromDate,
+            LocalDateTime toDate,
+            Long userId,
+            Pageable pageable
+    ) {
+
+<span class="fc" id="L267">        boolean isAdminOrMod =</span>
+<span class="fc bfc" id="L268" title="All 2 branches covered.">                user.getRole().getName().equalsIgnoreCase(&quot;ADMIN&quot;) ||</span>
+<span class="pc bpc" id="L269" title="1 of 2 branches missed.">                        user.getRole().getName().equalsIgnoreCase(&quot;MODERATOR&quot;);</span>
+
+<span class="fc" id="L271">        Specification&lt;Order&gt; spec = Specification.allOf();</span>
+
+<span class="fc bfc" id="L273" title="All 2 branches covered.">        if (status != null) {</span>
+<span class="fc" id="L274">            spec = spec.and((root, query, cb) -&gt;</span>
+<span class="nc" id="L275">                    cb.equal(root.get(&quot;status&quot;), status));</span>
+        }
+
+<span class="pc bpc" id="L278" title="1 of 2 branches missed.">        if (paymentMethod != null) {</span>
+<span class="nc" id="L279">            spec = spec.and((root, query, cb) -&gt;</span>
+<span class="nc" id="L280">                    cb.equal(root.get(&quot;paymentMethod&quot;), paymentMethod));</span>
+        }
+
+<span class="pc bpc" id="L283" title="1 of 2 branches missed.">        if (fromDate != null) {</span>
+<span class="nc" id="L284">            spec = spec.and((root, query, cb) -&gt;</span>
+<span class="nc" id="L285">                    cb.greaterThanOrEqualTo(root.get(&quot;createdAt&quot;), fromDate));</span>
+        }
+
+<span class="pc bpc" id="L288" title="1 of 2 branches missed.">        if (toDate != null) {</span>
+<span class="nc" id="L289">            spec = spec.and((root, query, cb) -&gt;</span>
+<span class="nc" id="L290">                    cb.lessThanOrEqualTo(root.get(&quot;createdAt&quot;), toDate));</span>
+        }
+
+
+        // 🔐 USER chỉ xem đơn của mình
+<span class="fc bfc" id="L295" title="All 2 branches covered.">        if (!isAdminOrMod) {</span>
+<span class="fc" id="L296">            spec = spec.and((root, query, cb) -&gt;</span>
+<span class="nc" id="L297">                    cb.equal(root.get(&quot;user&quot;).get(&quot;id&quot;), user.getId()));</span>
+        }
+
+        // 👮 ADMIN / MOD lọc theo userId
+<span class="pc bpc" id="L301" title="1 of 4 branches missed.">        if (isAdminOrMod &amp;&amp; userId != null) {</span>
+<span class="nc" id="L302">            spec = spec.and((root, query, cb) -&gt;</span>
+<span class="nc" id="L303">                    cb.equal(root.get(&quot;user&quot;).get(&quot;id&quot;), userId));</span>
+        }
+
+<span class="fc bfc" id="L306" title="All 2 branches covered.">        if (status != null) {</span>
+<span class="fc" id="L307">            spec = spec.and((root, query, cb) -&gt;</span>
+<span class="nc" id="L308">                    cb.equal(root.get(&quot;status&quot;), status));</span>
+        }
+
+<span class="pc bpc" id="L311" title="1 of 2 branches missed.">        if (paymentMethod != null) {</span>
+<span class="nc" id="L312">            spec = spec.and((root, query, cb) -&gt;</span>
+<span class="nc" id="L313">                    cb.equal(root.get(&quot;paymentMethod&quot;), paymentMethod));</span>
+        }
+
+<span class="pc bpc" id="L316" title="1 of 2 branches missed.">        if (fromDate != null) {</span>
+<span class="nc" id="L317">            spec = spec.and((root, query, cb) -&gt;</span>
+<span class="nc" id="L318">                    cb.greaterThanOrEqualTo(root.get(&quot;createdAt&quot;), fromDate));</span>
+        }
+
+<span class="pc bpc" id="L321" title="1 of 2 branches missed.">        if (toDate != null) {</span>
+<span class="nc" id="L322">            spec = spec.and((root, query, cb) -&gt;</span>
+<span class="nc" id="L323">                    cb.lessThanOrEqualTo(root.get(&quot;createdAt&quot;), toDate));</span>
+        }
+
+<span class="fc" id="L326">        Page&lt;Order&gt; page = orderRepository.findAll(spec, pageable);</span>
+
+<span class="fc" id="L328">        return PageResponse.&lt;OrderResponse&gt;builder()</span>
+<span class="fc" id="L329">                .content(page.getContent().stream()</span>
+<span class="fc" id="L330">                        .map(this::mapToResponse)</span>
+<span class="fc" id="L331">                        .toList())</span>
+<span class="fc" id="L332">                .page(page.getNumber())</span>
+<span class="fc" id="L333">                .size(page.getSize())</span>
+<span class="fc" id="L334">                .totalElements(page.getTotalElements())</span>
+<span class="fc" id="L335">                .totalPages(page.getTotalPages())</span>
+<span class="fc" id="L336">                .last(page.isLast())</span>
+<span class="fc" id="L337">                .build();</span>
+    }
+
+    private OrderResponse mapToResponse(Order order) {
+
+<span class="fc" id="L342">        return OrderResponse.builder()</span>
+<span class="fc" id="L343">                .orderId(order.getId())</span>
+<span class="fc" id="L344">                .totalAmount(order.getTotalAmount())</span>
+<span class="fc" id="L345">                .status(order.getStatus())</span>
+<span class="fc" id="L346">                .paymentMethod(order.getPaymentMethod())</span>
+<span class="fc" id="L347">                .createdAt(order.getCreatedAt())</span>
+<span class="fc" id="L348">                .shippingAddress(order.getShippingAddress())</span>
+<span class="fc" id="L349">                .receiverName(order.getReceiverName())</span>
+<span class="fc" id="L350">                .receiverPhone(order.getReceiverPhone())</span>
+<span class="fc" id="L351">                .userId(order.getUser().getId())</span>
+<span class="fc" id="L352">                .userEmail(order.getUser().getEmail())</span>
+<span class="fc" id="L353">                .items(</span>
+<span class="fc" id="L354">                        order.getItems().stream()</span>
+<span class="fc" id="L355">                                .map(item -&gt; OrderItemResponse.builder()</span>
+<span class="fc" id="L356">                                        .drugId(item.getDrug().getId())</span>
+<span class="fc" id="L357">                                        .drugName(item.getDrug().getName())</span>
+<span class="fc" id="L358">                                        .quantity(item.getQuantity())</span>
+<span class="fc" id="L359">                                        .unitPrice(item.getUnitPrice())</span>
+<span class="fc" id="L360">                                        .totalPrice(item.getTotalPrice())</span>
+<span class="fc" id="L361">                                        .imgUrl(item.getDrug().getImage())</span>
+<span class="fc" id="L362">                                        .build())</span>
+<span class="fc" id="L363">                                .toList()</span>
+                )
+<span class="fc" id="L365">                .build();</span>
+    }
+
+    @Override
+    public OrderResponse getOrderById(User user, Long orderId) throws AccessDeniedException {
+
+<span class="fc" id="L371">        boolean isAdminOrMod =</span>
+<span class="fc bfc" id="L372" title="All 2 branches covered.">                user.getRole().getName().equalsIgnoreCase(&quot;ADMIN&quot;) ||</span>
+<span class="pc bpc" id="L373" title="1 of 2 branches missed.">                        user.getRole().getName().equalsIgnoreCase(&quot;MODERATOR&quot;);</span>
+
+<span class="fc" id="L375">        Order order = orderRepository.findById(orderId)</span>
+<span class="pc" id="L376">                .orElseThrow(() -&gt; new RuntimeException(&quot;Không tìm thấy đơn hàng&quot;));</span>
+
+        // 🔐 USER chỉ được xem đơn của chính mình
+<span class="fc bfc" id="L379" title="All 2 branches covered.">        if (!isAdminOrMod) {</span>
+<span class="fc bfc" id="L380" title="All 2 branches covered.">            if (!order.getUser().getId().equals(user.getId())) {</span>
+<span class="fc" id="L381">                throw new AccessDeniedException(&quot;Bạn không có quyền xem đơn hàng này&quot;);</span>
+            }
+        }
+
+<span class="fc" id="L385">        return mapToResponse(order);</span>
+    }
+
+    @Transactional
+    @Override
+    public void approveRefund(Long orderId, User admin) {
+
+<span class="fc" id="L392">        Order order = orderRepository.findById(orderId)</span>
+<span class="pc" id="L393">                .orElseThrow(() -&gt; new RuntimeException(&quot;Không tìm thấy order&quot;));</span>
+
+<span class="fc bfc" id="L395" title="All 2 branches covered.">        if (order.getStatus() != OrderStatus.CANCEL_REQUESTED) {</span>
+<span class="fc" id="L396">            throw new RuntimeException(&quot;Order không ở trạng thái yêu cầu hoàn&quot;);</span>
+        }
+
+<span class="pc bpc" id="L399" title="1 of 2 branches missed.">        if (order.getPaymentMethod() != PaymentMethod.VNPAY) {</span>
+<span class="nc" id="L400">            throw new RuntimeException(&quot;Chỉ hỗ trợ hoàn tiền cho VNPAY&quot;);</span>
+        }
+
+<span class="fc" id="L403">        Payment payment = paymentRepository.findByOrder(order)</span>
+<span class="pc" id="L404">                .orElseThrow(() -&gt; new RuntimeException(&quot;Không tìm thấy payment&quot;));</span>
+
+<span class="pc bpc" id="L406" title="1 of 2 branches missed.">        if (payment.getStatus() == PaymentStatus.REFUNDED) {</span>
+<span class="nc" id="L407">            throw new RuntimeException(&quot;Đơn hàng đã được hoàn tiền&quot;);</span>
+        }
+
+<span class="pc bpc" id="L410" title="1 of 2 branches missed.">        if (payment.getStatus() != PaymentStatus.REFUND_PENDING) {</span>
+<span class="nc" id="L411">            throw new RuntimeException(&quot;Payment không hợp lệ&quot;);</span>
+        }
+
+<span class="fc" id="L414">        boolean refundSuccess = paymentService.callVnPayRefund(payment, admin);</span>
+
+<span class="fc bfc" id="L416" title="All 2 branches covered.">        if (!refundSuccess) {</span>
+<span class="fc" id="L417">            payment.setStatus(PaymentStatus.REFUND_FAILED);</span>
+<span class="fc" id="L418">            throw new RuntimeException(&quot;Hoàn tiền thất bại&quot;);</span>
+        }
+
+<span class="fc bfc" id="L421" title="All 2 branches covered.">        for (OrderItem item : order.getItems()) {</span>
+<span class="fc" id="L422">            Drug drug = item.getDrug();</span>
+<span class="fc" id="L423">            int qty = item.getQuantity();</span>
+
+
+<span class="fc" id="L426">            drug.setSoldQuantity(drug.getSoldQuantity() - qty);</span>
+<span class="fc" id="L427">        }</span>
+
+<span class="fc" id="L429">        payment.setStatus(PaymentStatus.REFUNDED);</span>
+<span class="fc" id="L430">        payment.setRefundedAt(LocalDateTime.now());</span>
+<span class="fc" id="L431">        order.setStatus(OrderStatus.REFUNDED);</span>
+<span class="fc" id="L432">    }</span>
+
+    @Transactional
+    @Override
+    public void rejectRefund(Long orderId, User admin) {
+
+<span class="fc" id="L438">        Order order = orderRepository.findById(orderId)</span>
+<span class="pc" id="L439">                .orElseThrow(() -&gt; new RuntimeException(&quot;Không tìm thấy order&quot;));</span>
+
+<span class="pc bpc" id="L441" title="1 of 2 branches missed.">        if (order.getStatus() != OrderStatus.CANCEL_REQUESTED) {</span>
+<span class="nc" id="L442">            throw new RuntimeException(&quot;Order không ở trạng thái yêu cầu hoàn&quot;);</span>
+        }
+
+<span class="fc bfc" id="L445" title="All 2 branches covered.">        if (order.getPaymentMethod() != PaymentMethod.VNPAY) {</span>
+<span class="fc" id="L446">            throw new RuntimeException(&quot;Đơn hàng không hỗ trợ hoàn tiền online&quot;);</span>
+        }
+
+<span class="fc" id="L449">        Payment payment = paymentRepository.findByOrder(order)</span>
+<span class="pc" id="L450">                .orElseThrow(() -&gt; new RuntimeException(&quot;Không tìm thấy payment&quot;));</span>
+
+<span class="pc bpc" id="L452" title="1 of 2 branches missed.">        if (payment.getStatus() != PaymentStatus.REFUND_PENDING) {</span>
+<span class="nc" id="L453">            throw new RuntimeException(&quot;Payment không ở trạng thái chờ hoàn&quot;);</span>
+        }
+
+<span class="fc" id="L456">        order.setStatus(OrderStatus.PAID);</span>
+<span class="fc" id="L457">        payment.setStatus(PaymentStatus.REFUND_FAILED);</span>
+<span class="fc" id="L458">    }</span>
+
+
+    @Override
+    public Page&lt;OrderResponse&gt; getOrdersForAdmin(
+            OrderStatus status,
+            PaymentMethod paymentMethod,
+            Long userId,
+            String keyword,
+            LocalDate fromDate,
+            LocalDate toDate,
+            String sortBy,
+            String sortDir,
+            int page,
+            int size
+    ) {
+
+        // ===== ALLOWED SORT FIELDS =====
+<span class="nc" id="L476">        Set&lt;String&gt; allowedSortFields = Set.of(</span>
+                &quot;id&quot;,
+                &quot;createdAt&quot;,
+                &quot;totalAmount&quot;,
+                &quot;status&quot;
+        );
+
+<span class="nc bnc" id="L483" title="All 4 branches missed.">        String sortField = (sortBy == null || sortBy.isBlank())</span>
+<span class="nc" id="L484">                ? &quot;createdAt&quot;</span>
+<span class="nc" id="L485">                : sortBy;</span>
+
+<span class="nc bnc" id="L487" title="All 2 branches missed.">        if (!allowedSortFields.contains(sortField)) {</span>
+<span class="nc" id="L488">            sortField = &quot;createdAt&quot;;</span>
+        }
+
+<span class="nc bnc" id="L491" title="All 2 branches missed.">        Sort.Direction direction = &quot;asc&quot;.equalsIgnoreCase(sortDir)</span>
+<span class="nc" id="L492">                ? Sort.Direction.ASC</span>
+<span class="nc" id="L493">                : Sort.Direction.DESC;</span>
+
+<span class="nc" id="L495">        Pageable pageable = PageRequest.of(</span>
+                page,
+                size,
+<span class="nc" id="L498">                Sort.by(direction, sortField)</span>
+        );
+
+<span class="nc bnc" id="L501" title="All 2 branches missed.">        LocalDateTime fromDateTime = fromDate != null</span>
+<span class="nc" id="L502">                ? fromDate.atStartOfDay()</span>
+<span class="nc" id="L503">                : null;</span>
+
+<span class="nc bnc" id="L505" title="All 2 branches missed.">        LocalDateTime toDateTime = toDate != null</span>
+<span class="nc" id="L506">                ? toDate.atTime(LocalTime.MAX)</span>
+<span class="nc" id="L507">                : null;</span>
+
+<span class="nc" id="L509">        Specification&lt;Order&gt; spec = OrderSpecification.filter(</span>
+                status,
+                paymentMethod,
+                userId,
+                keyword,
+                fromDateTime,
+                toDateTime
+        );
+
+<span class="nc" id="L518">        return orderRepository</span>
+<span class="nc" id="L519">                .findAll(spec, pageable)</span>
+<span class="nc" id="L520">                .map(this::mapToResponse);</span>
+    }
+
+
+    @Override
+    public OrderResponse getOrderDetailForAdmin(Long orderId) {
+
+<span class="nc" id="L527">        Order order = orderRepository.findDetailById(orderId)</span>
+<span class="nc" id="L528">                .orElseThrow(() -&gt; new RuntimeException(&quot;Không tìm thấy đơn hàng&quot;));</span>
+
+<span class="nc" id="L530">        return mapToResponse(order);</span>
+    }
+
+    @Transactional
+    @Override
+    public BulkOrderActionResult bulkShipOrders(List&lt;Long&gt; orderIds) {
+
+<span class="fc" id="L537">        List&lt;Long&gt; successIds = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L538">        List&lt;BulkOrderError&gt; errors = new ArrayList&lt;&gt;();</span>
+
+<span class="fc bfc" id="L540" title="All 2 branches covered.">        for (Long orderId : orderIds) {</span>
+            try {
+<span class="fc" id="L542">                Order order = orderRepository.findById(orderId)</span>
+<span class="pc" id="L543">                        .orElseThrow(() -&gt; new RuntimeException(&quot;Không tồn tại&quot;));</span>
+
+<span class="fc bfc" id="L545" title="All 2 branches covered.">                if (order.getStatus() != OrderStatus.PENDING &amp;&amp;</span>
+<span class="fc bfc" id="L546" title="All 2 branches covered.">                        order.getStatus() != OrderStatus.PAID) {</span>
+<span class="fc" id="L547">                    throw new RuntimeException(&quot;Không thể ship ở trạng thái &quot; + order.getStatus());</span>
+                }
+
+
+<span class="fc" id="L551">                order.setStatus(OrderStatus.SHIPPED);</span>
+<span class="fc" id="L552">                successIds.add(orderId);</span>
+
+<span class="fc" id="L554">            } catch (Exception e) {</span>
+<span class="fc" id="L555">                errors.add(BulkOrderError.builder()</span>
+<span class="fc" id="L556">                        .orderId(orderId)</span>
+<span class="fc" id="L557">                        .reason(e.getMessage())</span>
+<span class="fc" id="L558">                        .build());</span>
+<span class="fc" id="L559">            }</span>
+<span class="fc" id="L560">        }</span>
+
+<span class="fc" id="L562">        return BulkOrderActionResult.builder()</span>
+<span class="fc" id="L563">                .total(orderIds.size())</span>
+<span class="fc" id="L564">                .success(successIds.size())</span>
+<span class="fc" id="L565">                .failed(errors.size())</span>
+<span class="fc" id="L566">                .successIds(successIds)</span>
+<span class="fc" id="L567">                .errors(errors)</span>
+<span class="fc" id="L568">                .build();</span>
+    }
+
+    @Transactional
+    @Override
+    public BulkOrderActionResult bulkCompleteOrders(List&lt;Long&gt; orderIds) {
+
+<span class="fc" id="L575">        List&lt;Long&gt; successIds = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L576">        List&lt;BulkOrderError&gt; errors = new ArrayList&lt;&gt;();</span>
+
+<span class="fc bfc" id="L578" title="All 2 branches covered.">        for (Long orderId : orderIds) {</span>
+            try {
+<span class="fc" id="L580">                Order order = orderRepository.findById(orderId)</span>
+<span class="pc" id="L581">                        .orElseThrow(() -&gt; new RuntimeException(&quot;Không tồn tại&quot;));</span>
+
+<span class="fc bfc" id="L583" title="All 2 branches covered.">                if (order.getStatus() != OrderStatus.SHIPPED) {</span>
+<span class="fc" id="L584">                    throw new RuntimeException(&quot;Chưa được ship&quot;);</span>
+                }
+
+
+<span class="pc bpc" id="L588" title="1 of 2 branches missed.">                if (order.getPaymentMethod() == PaymentMethod.COD) {</span>
+
+<span class="fc bfc" id="L590" title="All 2 branches covered.">                    for (OrderItem item : order.getItems()) {</span>
+<span class="fc" id="L591">                        Drug drug = item.getDrug();</span>
+<span class="fc" id="L592">                        int qty = item.getQuantity();</span>
+
+<span class="pc bpc" id="L594" title="1 of 2 branches missed.">                        if (drug.getReservedQuantity() &lt; qty) {</span>
+<span class="nc" id="L595">                            throw new RuntimeException(</span>
+<span class="nc" id="L596">                                    &quot;Kho không hợp lệ cho thuốc: &quot; + drug.getName()</span>
+                            );
+                        }
+
+<span class="fc" id="L600">                        drug.setReservedQuantity(</span>
+<span class="fc" id="L601">                                drug.getReservedQuantity() - qty</span>
+                        );
+<span class="fc" id="L603">                        drug.setSoldQuantity(</span>
+<span class="fc" id="L604">                                drug.getSoldQuantity() + qty</span>
+                        );
+<span class="fc" id="L606">                    }</span>
+                }
+
+<span class="fc" id="L609">                order.setStatus(OrderStatus.COMPLETED);</span>
+<span class="fc" id="L610">                successIds.add(orderId);</span>
+
+<span class="fc" id="L612">            } catch (Exception e) {</span>
+<span class="fc" id="L613">                errors.add(BulkOrderError.builder()</span>
+<span class="fc" id="L614">                        .orderId(orderId)</span>
+<span class="fc" id="L615">                        .reason(e.getMessage())</span>
+<span class="fc" id="L616">                        .build());</span>
+<span class="fc" id="L617">            }</span>
+<span class="fc" id="L618">        }</span>
+
+<span class="fc" id="L620">        return BulkOrderActionResult.builder()</span>
+<span class="fc" id="L621">                .total(orderIds.size())</span>
+<span class="fc" id="L622">                .success(successIds.size())</span>
+<span class="fc" id="L623">                .failed(errors.size())</span>
+<span class="fc" id="L624">                .successIds(successIds)</span>
+<span class="fc" id="L625">                .errors(errors)</span>
+<span class="fc" id="L626">                .build();</span>
+    }
+
+    @Transactional
+    public void refundPaidOrder(Order order, User admin) {
+
+<span class="fc" id="L632">        Payment payment = paymentRepository.findByOrder(order)</span>
+<span class="pc" id="L633">                .orElseThrow(() -&gt; new RuntimeException(&quot;Không tìm thấy payment&quot;));</span>
+
+<span class="pc bpc" id="L635" title="1 of 2 branches missed.">        if (payment.getStatus() == PaymentStatus.REFUNDED) {</span>
+<span class="nc" id="L636">            throw new RuntimeException(&quot;Đơn hàng đã được hoàn tiền&quot;);</span>
+        }
+
+<span class="pc bpc" id="L639" title="1 of 2 branches missed.">        if (payment.getStatus() != PaymentStatus.SUCCESS) {</span>
+<span class="nc" id="L640">            throw new RuntimeException(&quot;Payment không ở trạng thái có thể hoàn&quot;);</span>
+        }
+
+
+<span class="fc" id="L644">        boolean refundSuccess =</span>
+<span class="fc" id="L645">                paymentService.callVnPayRefund(payment, admin);</span>
+
+<span class="pc bpc" id="L647" title="1 of 2 branches missed.">        if (!refundSuccess) {</span>
+<span class="nc" id="L648">            payment.setStatus(PaymentStatus.REFUND_FAILED);</span>
+<span class="nc" id="L649">            throw new RuntimeException(&quot;Hoàn tiền thất bại&quot;);</span>
+        }
+
+
+<span class="fc bfc" id="L653" title="All 2 branches covered.">        for (OrderItem item : order.getItems()) {</span>
+<span class="fc" id="L654">            Drug drug = item.getDrug();</span>
+<span class="fc" id="L655">            int qty = item.getQuantity();</span>
+
+<span class="fc" id="L657">            drug.setSoldQuantity(</span>
+<span class="fc" id="L658">                    drug.getSoldQuantity() - qty</span>
+            );
+
+<span class="fc" id="L661">        }</span>
+
+
+<span class="fc" id="L664">        payment.setStatus(PaymentStatus.REFUNDED);</span>
+<span class="fc" id="L665">    }</span>
+
+
+
+    @Override
+    @Transactional
+    public BulkOrderActionResult bulkCancelOrders(
+            List&lt;Long&gt; orderIds,
+            User admin
+    ) {
+
+<span class="fc" id="L676">        List&lt;Long&gt; successIds = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L677">        List&lt;BulkOrderError&gt; errors = new ArrayList&lt;&gt;();</span>
+
+<span class="fc bfc" id="L679" title="All 2 branches covered.">        for (Long orderId : orderIds) {</span>
+            try {
+<span class="fc" id="L681">                Order order = orderRepository.findById(orderId)</span>
+<span class="pc" id="L682">                        .orElseThrow(() -&gt; new RuntimeException(&quot;Không tồn tại order&quot;));</span>
+
+
+<span class="fc bfc" id="L685" title="All 2 branches covered.">                if (order.getStatus() == OrderStatus.PENDING) {</span>
+
+<span class="fc bfc" id="L687" title="All 2 branches covered.">                    for (OrderItem item : order.getItems()) {</span>
+<span class="fc" id="L688">                        Drug drug = item.getDrug();</span>
+<span class="fc" id="L689">                        int qty = item.getQuantity();</span>
+
+<span class="pc bpc" id="L691" title="1 of 2 branches missed.">                        if (drug.getReservedQuantity() &lt; qty) {</span>
+<span class="nc" id="L692">                            throw new RuntimeException(</span>
+<span class="nc" id="L693">                                    &quot;Kho không hợp lệ cho thuốc: &quot; + drug.getName()</span>
+                            );
+                        }
+
+<span class="fc" id="L697">                        drug.setReservedQuantity(</span>
+<span class="fc" id="L698">                                drug.getReservedQuantity() - qty</span>
+                        );
+<span class="fc" id="L700">                    }</span>
+
+<span class="fc" id="L702">                    order.setStatus(OrderStatus.CANCELLED);</span>
+<span class="fc" id="L703">                    successIds.add(orderId);</span>
+<span class="fc" id="L704">                    continue;</span>
+                }
+
+
+<span class="fc bfc" id="L708" title="All 2 branches covered.">                if (order.getStatus() == OrderStatus.PAID</span>
+<span class="pc bpc" id="L709" title="1 of 2 branches missed.">                        &amp;&amp; order.getPaymentMethod() == PaymentMethod.VNPAY) {</span>
+
+<span class="fc" id="L711">                    refundPaidOrder(order, admin);</span>
+
+<span class="fc" id="L713">                    order.setStatus(OrderStatus.REFUNDED);</span>
+<span class="fc" id="L714">                    successIds.add(orderId);</span>
+<span class="fc" id="L715">                    continue;</span>
+                }
+
+<span class="pc bpc" id="L718" title="1 of 2 branches missed.">                if (order.getStatus() == OrderStatus.SHIPPED</span>
+<span class="nc bnc" id="L719" title="All 2 branches missed.">                        &amp;&amp; order.getPaymentMethod() == PaymentMethod.VNPAY) {</span>
+
+<span class="nc" id="L721">                    refundPaidOrder(order, admin);</span>
+
+<span class="nc" id="L723">                    order.setStatus(OrderStatus.REFUNDED);</span>
+<span class="nc" id="L724">                    successIds.add(orderId);</span>
+<span class="nc" id="L725">                    continue;</span>
+                }
+
+
+<span class="fc" id="L729">                throw new RuntimeException(</span>
+<span class="fc" id="L730">                        &quot;Không thể huỷ đơn ở trạng thái &quot; + order.getStatus()</span>
+                );
+
+<span class="fc" id="L733">            } catch (Exception e) {</span>
+<span class="fc" id="L734">                errors.add(BulkOrderError.builder()</span>
+<span class="fc" id="L735">                        .orderId(orderId)</span>
+<span class="fc" id="L736">                        .reason(e.getMessage())</span>
+<span class="fc" id="L737">                        .build());</span>
+            }
+<span class="fc" id="L739">        }</span>
+
+<span class="fc" id="L741">        return BulkOrderActionResult.builder()</span>
+<span class="fc" id="L742">                .total(orderIds.size())</span>
+<span class="fc" id="L743">                .success(successIds.size())</span>
+<span class="fc" id="L744">                .failed(errors.size())</span>
+<span class="fc" id="L745">                .successIds(successIds)</span>
+<span class="fc" id="L746">                .errors(errors)</span>
+<span class="fc" id="L747">                .build();</span>
+    }
+
+
+    @Override
+    @Transactional
+    public BulkOrderActionResult bulkApproveRefund(
+            List&lt;Long&gt; orderIds,
+            User admin
+    ) {
+
+<span class="nc" id="L758">        List&lt;Long&gt; successIds = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L759">        List&lt;BulkOrderError&gt; errors = new ArrayList&lt;&gt;();</span>
+
+<span class="nc bnc" id="L761" title="All 2 branches missed.">        for (Long orderId : orderIds) {</span>
+            try {
+<span class="nc" id="L763">                approveRefund(orderId, admin);</span>
+<span class="nc" id="L764">                successIds.add(orderId);</span>
+<span class="nc" id="L765">            } catch (Exception e) {</span>
+<span class="nc" id="L766">                errors.add(BulkOrderError.builder()</span>
+<span class="nc" id="L767">                        .orderId(orderId)</span>
+<span class="nc" id="L768">                        .reason(e.getMessage())</span>
+<span class="nc" id="L769">                        .build());</span>
+<span class="nc" id="L770">            }</span>
+<span class="nc" id="L771">        }</span>
+
+<span class="nc" id="L773">        return BulkOrderActionResult.builder()</span>
+<span class="nc" id="L774">                .total(orderIds.size())</span>
+<span class="nc" id="L775">                .success(successIds.size())</span>
+<span class="nc" id="L776">                .failed(errors.size())</span>
+<span class="nc" id="L777">                .successIds(successIds)</span>
+<span class="nc" id="L778">                .errors(errors)</span>
+<span class="nc" id="L779">                .build();</span>
+    }
+    @Override
+    @Transactional
+    public BulkOrderActionResult bulkRejectRefund(
+            List&lt;Long&gt; orderIds,
+            User admin
+    ) {
+
+<span class="nc" id="L788">        List&lt;Long&gt; successIds = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L789">        List&lt;BulkOrderError&gt; errors = new ArrayList&lt;&gt;();</span>
+
+<span class="nc bnc" id="L791" title="All 2 branches missed.">        for (Long orderId : orderIds) {</span>
+            try {
+<span class="nc" id="L793">                rejectRefund(orderId, admin);</span>
+<span class="nc" id="L794">                successIds.add(orderId);</span>
+<span class="nc" id="L795">            } catch (Exception e) {</span>
+<span class="nc" id="L796">                errors.add(BulkOrderError.builder()</span>
+<span class="nc" id="L797">                        .orderId(orderId)</span>
+<span class="nc" id="L798">                        .reason(e.getMessage())</span>
+<span class="nc" id="L799">                        .build());</span>
+<span class="nc" id="L800">            }</span>
+<span class="nc" id="L801">        }</span>
+
+<span class="nc" id="L803">        return BulkOrderActionResult.builder()</span>
+<span class="nc" id="L804">                .total(orderIds.size())</span>
+<span class="nc" id="L805">                .success(successIds.size())</span>
+<span class="nc" id="L806">                .failed(errors.size())</span>
+<span class="nc" id="L807">                .successIds(successIds)</span>
+<span class="nc" id="L808">                .errors(errors)</span>
+<span class="nc" id="L809">                .build();</span>
+    }
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

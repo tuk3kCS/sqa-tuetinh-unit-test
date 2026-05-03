@@ -28,6 +28,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.springframework.http.HttpStatus.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -36,7 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * Kiểm tra các endpoint quản lý thuốc (CRUD, search, suggest).
  */
 @WebMvcTest(DrugController.class)
-@AutoConfigureMockMvc(addFilters = false)
+@AutoConfigureMockMvc
 class DrugControllerTest {
 
     @Autowired
@@ -251,7 +252,8 @@ class DrugControllerTest {
 
         mockMvc.perform(multipart("/api/drugs")
                         .file(drugPart)
-                        .file(imagePart))
+                        .file(imagePart)
+                        .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("New Drug"));
     }
@@ -272,7 +274,8 @@ class DrugControllerTest {
 
         mockMvc.perform(multipart("/api/drugs")
                         .file(drugPart)
-                        .file(imagePart))
+                        .file(imagePart)
+                        .with(csrf()))
                 .andExpect(status().isInternalServerError());
     }
 
@@ -296,7 +299,8 @@ class DrugControllerTest {
 
         mockMvc.perform(multipart("/api/drugs")
                         .file(drugPart)
-                        .file(imagePart))
+                        .file(imagePart)
+                        .with(csrf()))
                 .andExpect(status().isInternalServerError());
     }
 
@@ -325,6 +329,7 @@ class DrugControllerTest {
 
         mockMvc.perform(multipart("/api/drugs/1")
                         .file(drugPart)
+                        .with(csrf())
                         .with(request -> { request.setMethod("PUT"); return request; }))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("Updated Drug"));
@@ -349,6 +354,7 @@ class DrugControllerTest {
 
         mockMvc.perform(multipart("/api/drugs/999")
                         .file(drugPart)
+                        .with(csrf())
                         .with(request -> { request.setMethod("PUT"); return request; }))
                 .andExpect(status().isInternalServerError());
     }
@@ -368,7 +374,7 @@ class DrugControllerTest {
     void TC_AUTH_DrugController_deleteDrug_001() throws Exception {
         doNothing().when(drugService).deleteDrug(1L);
 
-        mockMvc.perform(delete("/api/drugs/1"))
+        mockMvc.perform(delete("/api/drugs/1").with(csrf()))
                 .andExpect(status().isNoContent());
 
         verify(drugService).deleteDrug(1L);
@@ -388,7 +394,7 @@ class DrugControllerTest {
         doThrow(new RuntimeException("Không tìm thấy thuốc"))
                 .when(drugService).deleteDrug(999L);
 
-        mockMvc.perform(delete("/api/drugs/999"))
+        mockMvc.perform(delete("/api/drugs/999").with(csrf()))
                 .andExpect(status().isInternalServerError());
     }
 
@@ -406,7 +412,7 @@ class DrugControllerTest {
         doThrow(new RuntimeException("Không thể xóa thuốc đang có đơn hàng"))
                 .when(drugService).deleteDrug(1L);
 
-        mockMvc.perform(delete("/api/drugs/1"))
+        mockMvc.perform(delete("/api/drugs/1").with(csrf()))
                 .andExpect(status().isInternalServerError());
     }
 }

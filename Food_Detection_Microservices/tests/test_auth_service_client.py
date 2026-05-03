@@ -13,7 +13,7 @@ from app.external.auth_service import fetch_user_profile, AUTH_SERVICE_URL
 # FETCH USER PROFILE
 # ============================================================
 
-# Test Case ID: TC-FR-00-001uthServiceClient_fetch_user_profile_001
+# Test Case ID: TC_FOOD_TestAuthServiceClient_fetch_user_profile_001
 # Test Objective: Fetch profile thành công từ Auth Service
 # Input: JWT token hợp lệ, Auth Service trả 200 + JSON
 # Expected Output: dict chứa gender, dateOfBirth, etc.
@@ -41,7 +41,7 @@ def test_fetch_user_profile_success():
     assert responses.calls[0].request.headers["Authorization"] == "Bearer test-token"
 
 
-# Test Case ID: TC-FR-00-001uthServiceClient_fetch_user_profile_002
+# Test Case ID: TC_FOOD_TestAuthServiceClient_fetch_user_profile_002
 # Test Objective: Raise Exception khi Auth Service trả non-200
 # Input: Auth Service trả 401
 # Expected Output: Exception chứa status code
@@ -60,7 +60,7 @@ def test_fetch_user_profile_http_error():
         fetch_user_profile("Bearer invalid-token")
 
 
-# Test Case ID: TC-FR-00-001uthServiceClient_fetch_user_profile_003
+# Test Case ID: TC_FOOD_TestAuthServiceClient_fetch_user_profile_003
 # Test Objective: Raise Exception khi Auth Service timeout
 # Input: Auth Service không phản hồi (connection error)
 # Expected Output: ConnectionError
@@ -78,7 +78,7 @@ def test_fetch_user_profile_timeout():
         fetch_user_profile("Bearer test-token")
 
 
-# Test Case ID: TC-FR-00-001uthServiceClient_fetch_user_profile_004
+# Test Case ID: TC_FOOD_TestAuthServiceClient_fetch_user_profile_004
 # Test Objective: Raise Exception khi server trả 500
 # Input: Auth Service trả 500 Internal Server Error
 # Expected Output: Exception chứa "500"
@@ -97,7 +97,7 @@ def test_fetch_user_profile_server_error():
         fetch_user_profile("Bearer test-token")
 
 
-# Test Case ID: TC-FR-00-001uthServiceClient_fetch_user_profile_005
+# Test Case ID: TC_FOOD_TestAuthServiceClient_fetch_user_profile_005
 # Test Objective: Trả JSON response đúng format
 # Input: Auth Service trả 200 với đầy đủ fields
 # Expected Output: dict chứa tất cả fields

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>InventoryServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">AuthService</a> &gt; <a href="index.source.html" class="el_package">com.example.AuthService.service.impl</a> &gt; <span class="el_source">InventoryServiceImpl.java</span></div><h1>InventoryServiceImpl.java</h1><pre class="source lang-java linenums">package com.example.AuthService.service.impl;
+
+import com.example.AuthService.entity.Drug;
+import com.example.AuthService.repository.DrugRepository;
+import com.example.AuthService.repository.ImportInvoiceDetailRepository;
+import com.example.AuthService.repository.OrderItemRepository;
+import com.example.AuthService.service.InventoryService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+@Service
+@RequiredArgsConstructor
+public class InventoryServiceImpl implements InventoryService {
+
+    private final ImportInvoiceDetailRepository importRepo;
+    private final OrderItemRepository orderItemRepo;
+    private final DrugRepository drugRepository;
+    @Override
+    public Integer calculateStock(Long drugId) {
+<span class="fc" id="L24">        Integer imported = importRepo.totalImported(drugId);</span>
+<span class="fc" id="L25">        Drug drug = drugRepository.findById(drugId).orElseThrow(() -&gt; new RuntimeException(&quot;Drug not found&quot;));</span>
+<span class="fc" id="L26">        Integer sold = drug.getSoldQuantity();</span>
+<span class="fc" id="L27">        return imported - sold;</span>
+    }
+
+    @Override
+    public Map&lt;Long, Integer&gt; calculateStockForDrugs(List&lt;Long&gt; drugIds) {
+<span class="fc" id="L32">        return Map.of();</span>
+    }
+
+    @Override
+    public Map&lt;Long, Integer&gt; getTotalImportedForDrugs(List&lt;Long&gt; drugIds) {
+
+<span class="fc" id="L38">        List&lt;Object[]&gt; results =</span>
+<span class="fc" id="L39">                importRepo.findTotalImportedForDrugs(drugIds);</span>
+
+<span class="fc" id="L41">        Map&lt;Long, Integer&gt; importedMap = new HashMap&lt;&gt;();</span>
+
+<span class="fc bfc" id="L43" title="All 2 branches covered.">        for (Object[] row : results) {</span>
+<span class="fc" id="L44">            Long drugId = (Long) row[0];</span>
+<span class="fc" id="L45">            Long totalImported = (Long) row[1];</span>
+
+<span class="fc" id="L47">            importedMap.put(drugId, totalImported.intValue());</span>
+<span class="fc" id="L48">        }</span>
+
+<span class="fc" id="L50">        return importedMap;</span>
+    }
+
+
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

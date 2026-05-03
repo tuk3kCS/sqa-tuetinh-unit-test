@@ -4,18 +4,21 @@ Shared pytest fixtures for Fitness_Coach_AI unit tests.
 Provides:
 - Flask application and test client with in-memory SQLite DB
 - Automatic DB creation and rollback per test (transaction isolation)
-- Mocked LLM and JWT identity for deterministic testing
+- Mocked LLM; JWT qua auth_headers (token ký bằng JWT_SECRET_KEY test)
 """
 import os
 import pytest
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock
 from sqlalchemy import Integer
 from sqlalchemy.pool import StaticPool
 
 os.environ.setdefault("FLASK_ENV", "testing")
 os.environ.setdefault("LLM_PROVIDER", "openai")
 os.environ.setdefault("OPENAI_API_KEY", "sk-test-fake-key")
-os.environ.setdefault("JWT_SECRET_KEY", "test-jwt-secret-key")
+os.environ.setdefault(
+    "JWT_SECRET_KEY",
+    "test-jwt-secret-key-32bytes-minimum!!",
+)
 os.environ.setdefault("DB_TYPE", "chroma")
 
 # Config.SQLALCHEMY_DATABASE_URI is built from DB_* at class definition time, not from
@@ -53,7 +56,7 @@ def app():
         {
             "TESTING": True,
             "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
-            "JWT_SECRET_KEY": "test-jwt-secret-key",
+            "JWT_SECRET_KEY": "test-jwt-secret-key-32bytes-minimum!!",
         }
     )
     yield application
@@ -87,12 +90,22 @@ def db_session(app, _db):
         bind_session = session()
         bind_session.begin_nested()
 
-        yield session
+        # Services call db.session.commit(); real commit ends the outer test transaction
+        # and leaves rows visible across tests. Flush only so teardown rollback still clears DB.
+        real_session_commit = session.commit
 
-        session.remove()
-        transaction.rollback()
-        connection.close()
-        _db.session = old_session
+        def _commit_flush_only():
+            session.flush()
+
+        session.commit = _commit_flush_only
+        try:
+            yield session
+        finally:
+            session.commit = real_session_commit
+            session.remove()
+            transaction.rollback()
+            connection.close()
+            _db.session = old_session
 
 
 @pytest.fixture()
@@ -102,17 +115,16 @@ def client(app):
 
 
 @pytest.fixture()
-def mock_jwt_identity():
-    """Mock flask_jwt_extended to return a fixed user identity."""
-    with (
-        patch("flask_jwt_extended.get_jwt_identity", return_value="test-user-id-123"),
-        patch(
-            "flask_jwt_extended.get_jwt",
-            return_value={"userId": 1, "sub": "test@test.com"},
-        ),
-        patch("flask_jwt_extended.verify_jwt_in_request", return_value=None),
-    ):
-        yield
+def auth_headers(app):
+    """Authorization header với JWT hợp lệ (userId=1) — dùng cho test client."""
+    with app.app_context():
+        from flask_jwt_extended import create_access_token
+
+        token = create_access_token(
+            identity="test@test.com",
+            additional_claims={"userId": 1},
+        )
+    return {"Authorization": f"Bearer {token}"}
 
 
 @pytest.fixture()

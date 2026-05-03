@@ -74,21 +74,22 @@ def test_analysis_service_save_analysis_from_request_valid_dto(app, db_session):
 # Test Case ID: TC_SKIN_TestAnalysisService_save_analysis_from_request_002
 # Test Objective: Lưu thành công khi detection rỗng (không phát hiện bệnh)
 # Input: user_id=2, dto.detection = []
-# Expected Output: AnalysisResult có aiDiagnosis = None, aiConfidence = None
-# Notes: CheckDB – health_analysis có ai_diagnosis IS NULL
+# Expected Output: AnalysisResult có aiDiagnosis = "", aiConfidence = 0.0 (cột NOT NULL)
+# Notes: CheckDB – health_analysis lưu sentinel thay vì NULL
 def test_analysis_service_save_analysis_from_request_empty_detection(app, db_session):
-    """Detection rỗng → diagnosis và confidence đều None."""
+    """Detection rỗng → diagnosis rỗng và confidence 0.0 (schema NOT NULL)."""
     dto = _make_dto(detection=[])
 
     with app.app_context():
         result = AnalysisService.save_analysis_from_request(user_id=2, dto=dto)
 
-        assert result.aiDiagnosis is None
-        assert result.aiConfidence is None
+        assert result.aiDiagnosis == ""
+        assert result.aiConfidence == 0.0
 
         entity = db_session.query(HealthAnalysis).filter_by(user_id=2).first()
         assert entity is not None
-        assert entity.ai_diagnosis is None
+        assert entity.ai_diagnosis == ""
+        assert entity.ai_confidence == 0.0
 
 
 # Test Case ID: TC_SKIN_TestAnalysisService_save_analysis_from_request_003

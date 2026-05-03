@@ -9,7 +9,7 @@ from PIL import Image
 from app.utils.cloudinary_helper import upload_image_to_cloudinary
 
 
-# Test Case ID: TC-FR-00-001loudinaryHelper_upload_image_to_cloudinary_001
+# Test Case ID: TC_FOOD_TestCloudinaryHelper_upload_image_to_cloudinary_001
 # Test Objective: Upload ảnh thành công, trả về secure URL
 # Input: PIL Image hợp lệ
 # Expected Output: URL dạng "https://..."
@@ -34,7 +34,7 @@ def test_upload_image_success(mock_upload):
     assert call_kwargs["resource_type"] == "image"
 
 
-# Test Case ID: TC-FR-00-001loudinaryHelper_upload_image_to_cloudinary_002
+# Test Case ID: TC_FOOD_TestCloudinaryHelper_upload_image_to_cloudinary_002
 # Test Objective: Xử lý lỗi khi Cloudinary API gặp sự cố
 # Input: PIL Image, cloudinary raise Exception
 # Expected Output: Exception được propagate
@@ -50,7 +50,7 @@ def test_upload_image_api_error(mock_upload):
         upload_image_to_cloudinary(image)
 
 
-# Test Case ID: TC-FR-00-001loudinaryHelper_upload_image_to_cloudinary_003
+# Test Case ID: TC_FOOD_TestCloudinaryHelper_upload_image_to_cloudinary_003
 # Test Objective: Trả None khi Cloudinary response không chứa secure_url
 # Input: PIL Image, cloudinary trả response không có secure_url
 # Expected Output: None

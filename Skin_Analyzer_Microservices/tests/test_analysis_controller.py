@@ -1,7 +1,7 @@
 """
 Unit tests cho analysis_controller – các endpoint REST API quản lý kết quả phân tích.
 
-Sử dụng mock_jwt_identity fixture để giả lập JWT authentication.
+Sử dụng auth_headers (JWT Bearer thật) cho các request cần xác thực.
 """
 
 import pytest
@@ -56,12 +56,13 @@ def test_predict_missing_jwt(client):
 # Input: POST /predict với JWT hợp lệ nhưng thiếu aiDiagnosis
 # Expected Output: HTTP 400, body chứa "Missing field"
 # Notes: Kiểm tra validate required_fields
-def test_predict_missing_field(client, mock_jwt_identity):
+def test_predict_missing_field(client, auth_headers):
     """Thiếu trường bắt buộc → 400."""
     resp = client.post(
         "/api/v1/analysis/predict",
         json={"annotatedImageUrl": "url", "aiConfidence": 0.9, "suggestions": {}},
         content_type="application/json",
+        headers=auth_headers,
     )
     assert resp.status_code == 400
     data = resp.get_json()
@@ -74,7 +75,7 @@ def test_predict_missing_field(client, mock_jwt_identity):
 # Expected Output: HTTP 201, body chứa aiDiagnosis
 # Notes: Mock AnalysisService.save_analysis để isolate controller logic
 @patch("app.controllers.analysis_controller.AnalysisService")
-def test_predict_success(mock_svc, client, mock_jwt_identity):
+def test_predict_success(mock_svc, client, auth_headers):
     """Request hợp lệ → 201 + JSON response."""
     mock_result = MagicMock()
     mock_result.to_json.return_value = {
@@ -93,6 +94,7 @@ def test_predict_success(mock_svc, client, mock_jwt_identity):
             "suggestions": {"lifestyle": []},
         },
         content_type="application/json",
+        headers=auth_headers,
     )
     assert resp.status_code == 201
     data = resp.get_json()
@@ -122,12 +124,13 @@ def test_update_doctor_note_missing_jwt(client):
 # Input: PATCH với JWT hợp lệ nhưng body rỗng
 # Expected Output: HTTP 400, "Missing doctorNote"
 # Notes: Kiểm tra validate body
-def test_update_doctor_note_missing_field(client, mock_jwt_identity):
+def test_update_doctor_note_missing_field(client, auth_headers):
     """Thiếu doctorNote → 400."""
     resp = client.patch(
         "/api/v1/analysis/1/doctor-note",
         json={},
         content_type="application/json",
+        headers=auth_headers,
     )
     assert resp.status_code == 400
     assert "Missing doctorNote" in resp.get_json().get("error", "")
@@ -139,7 +142,7 @@ def test_update_doctor_note_missing_field(client, mock_jwt_identity):
 # Expected Output: HTTP 404
 # Notes: AnalysisService.update_doctor_note trả None
 @patch("app.controllers.analysis_controller.AnalysisService")
-def test_update_doctor_note_not_found(mock_svc, client, mock_jwt_identity):
+def test_update_doctor_note_not_found(mock_svc, client, auth_headers):
     """Record không tồn tại → 404."""
     mock_svc.update_doctor_note.return_value = None
 
@@ -147,6 +150,7 @@ def test_update_doctor_note_not_found(mock_svc, client, mock_jwt_identity):
         "/api/v1/analysis/9999/doctor-note",
         json={"doctorNote": "note"},
         content_type="application/json",
+        headers=auth_headers,
     )
     assert resp.status_code == 404
 
@@ -157,7 +161,7 @@ def test_update_doctor_note_not_found(mock_svc, client, mock_jwt_identity):
 # Expected Output: HTTP 200, body có doctorNote đã cập nhật
 # Notes: Mock AnalysisService trả kết quả thành công
 @patch("app.controllers.analysis_controller.AnalysisService")
-def test_update_doctor_note_success(mock_svc, client, mock_jwt_identity):
+def test_update_doctor_note_success(mock_svc, client, auth_headers):
     """Cập nhật thành công → 200 + JSON."""
     mock_result = MagicMock()
     mock_result.to_json.return_value = {
@@ -172,6 +176,7 @@ def test_update_doctor_note_success(mock_svc, client, mock_jwt_identity):
         "/api/v1/analysis/1/doctor-note",
         json={"doctorNote": "Tái khám 2 tuần"},
         content_type="application/json",
+        headers=auth_headers,
     )
     assert resp.status_code == 200
     assert resp.get_json()["doctorNote"] == "Tái khám 2 tuần"
@@ -198,7 +203,7 @@ def test_history_missing_jwt(client):
 # Expected Output: HTTP 200, JSON array
 # Notes: Mock AnalysisService.get_history_by_user
 @patch("app.controllers.analysis_controller.AnalysisService")
-def test_history_success(mock_svc, client, mock_jwt_identity):
+def test_history_success(mock_svc, client, auth_headers):
     """Có lịch sử → 200 + JSON array."""
     mock_result = MagicMock()
     mock_result.to_json.return_value = {
@@ -208,7 +213,7 @@ def test_history_success(mock_svc, client, mock_jwt_identity):
     }
     mock_svc.get_history_by_user.return_value = [mock_result]
 
-    resp = client.get("/api/v1/analysis/history")
+    resp = client.get("/api/v1/analysis/history", headers=auth_headers)
     assert resp.status_code == 200
     data = resp.get_json()
     assert isinstance(data, list)
@@ -221,11 +226,11 @@ def test_history_success(mock_svc, client, mock_jwt_identity):
 # Expected Output: HTTP 200, []
 # Notes: Kiểm tra edge case list rỗng
 @patch("app.controllers.analysis_controller.AnalysisService")
-def test_history_empty(mock_svc, client, mock_jwt_identity):
+def test_history_empty(mock_svc, client, auth_headers):
     """Không có lịch sử → 200 + []."""
     mock_svc.get_history_by_user.return_value = []
 
-    resp = client.get("/api/v1/analysis/history")
+    resp = client.get("/api/v1/analysis/history", headers=auth_headers)
     assert resp.status_code == 200
     assert resp.get_json() == []
 
@@ -253,12 +258,13 @@ def test_save_ai_result_missing_jwt(client):
 # Input: JSON thiếu required fields
 # Expected Output: HTTP 400
 # Notes: AnalyzeRequestDTO raise ValueError
-def test_save_ai_result_invalid_dto(client, mock_jwt_identity):
+def test_save_ai_result_invalid_dto(client, auth_headers):
     """DTO thiếu trường bắt buộc → 400."""
     resp = client.post(
         "/api/v1/analysis/save-ai-result",
         json={"annotated_image_url": "url"},
         content_type="application/json",
+        headers=auth_headers,
     )
     assert resp.status_code == 400
 
@@ -269,7 +275,7 @@ def test_save_ai_result_invalid_dto(client, mock_jwt_identity):
 # Expected Output: HTTP 201, JSON response
 # Notes: Mock AnalysisService.save_analysis_from_request
 @patch("app.controllers.analysis_controller.AnalysisService")
-def test_save_ai_result_success(mock_svc, client, mock_jwt_identity):
+def test_save_ai_result_success(mock_svc, client, auth_headers):
     """Request hợp lệ → 201 + JSON."""
     mock_result = MagicMock()
     mock_result.to_json.return_value = {
@@ -290,6 +296,7 @@ def test_save_ai_result_success(mock_svc, client, mock_jwt_identity):
             "status": "success",
         },
         content_type="application/json",
+        headers=auth_headers,
     )
     assert resp.status_code == 201
     data = resp.get_json()

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>OAuth2TokenServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">AuthService</a> &gt; <a href="index.source.html" class="el_package">com.example.AuthService.service.impl</a> &gt; <span class="el_source">OAuth2TokenServiceImpl.java</span></div><h1>OAuth2TokenServiceImpl.java</h1><pre class="source lang-java linenums">package com.example.AuthService.service.impl;
+
+import com.example.AuthService.dto.response.AuthTokenResponse;
+import com.example.AuthService.security.jwt.JwtProperties;
+import com.example.AuthService.security.jwt.JwtService;
+import com.example.AuthService.service.OAuth2TokenService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Service;
+
+import java.util.*;
+
+@Service
+@RequiredArgsConstructor
+public class OAuth2TokenServiceImpl implements OAuth2TokenService {
+
+    private final JwtService jwtService;
+    private final JwtProperties jwtProps; // để lấy accessExpirationMs
+
+    @Override
+    public AuthTokenResponse buildTokenResponse(UserDetails user, Map&lt;String, Object&gt; attributes) {
+<span class="fc" id="L23">        String access  = jwtService.generateAccessToken(user);</span>
+<span class="fc" id="L24">        String refresh = jwtService.generateRefreshToken(user.getUsername());</span>
+
+<span class="fc bfc" id="L26" title="All 2 branches covered.">        Map&lt;String, Object&gt; a = attributes == null ? Collections.emptyMap() : attributes;</span>
+<span class="pc bpc" id="L27" title="1 of 2 branches missed.">        List&lt;String&gt; roles = user.getAuthorities() == null</span>
+<span class="nc" id="L28">                ? List.of()</span>
+<span class="fc" id="L29">                : user.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();</span>
+
+<span class="fc" id="L31">        return AuthTokenResponse.builder()</span>
+<span class="fc" id="L32">                .tokenType(&quot;Bearer&quot;)</span>
+<span class="fc" id="L33">                .accessToken(access)</span>
+<span class="fc" id="L34">                .refreshToken(refresh)</span>
+<span class="fc" id="L35">                .expiresIn(jwtProps.getAccessExpirationMs())</span>
+<span class="fc" id="L36">                .provider(&quot;google&quot;)</span>
+<span class="fc" id="L37">                .email(asString(a.get(&quot;email&quot;), user.getUsername()))</span>
+<span class="fc" id="L38">                .name(asString(a.get(&quot;name&quot;), null))</span>
+<span class="fc" id="L39">                .picture(asString(a.get(&quot;picture&quot;), null))</span>
+<span class="fc" id="L40">                .sub(asString(a.get(&quot;sub&quot;), null))</span>
+<span class="fc" id="L41">                .authorities(roles)</span>
+<span class="fc" id="L42">                .build();</span>
+    }
+
+    private String asString(Object v, String fallback) {
+<span class="fc bfc" id="L46" title="All 2 branches covered.">        return v == null ? fallback : String.valueOf(v);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

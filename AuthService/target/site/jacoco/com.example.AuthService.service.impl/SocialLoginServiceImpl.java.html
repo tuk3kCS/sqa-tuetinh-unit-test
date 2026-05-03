@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SocialLoginServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">AuthService</a> &gt; <a href="index.source.html" class="el_package">com.example.AuthService.service.impl</a> &gt; <span class="el_source">SocialLoginServiceImpl.java</span></div><h1>SocialLoginServiceImpl.java</h1><pre class="source lang-java linenums">package com.example.AuthService.service.impl;
+
+import com.example.AuthService.entity.Role;
+import com.example.AuthService.entity.User;
+import com.example.AuthService.repository.RoleRepository;
+import com.example.AuthService.repository.UserRepository;
+import com.example.AuthService.service.SocialLoginService;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
+import java.util.Locale;
+
+@Service
+@RequiredArgsConstructor
+@Transactional
+public class SocialLoginServiceImpl implements SocialLoginService {
+
+    private final UserRepository userRepo;
+    private final RoleRepository roleRepo;
+
+    @Override
+    public User upsertGoogleUser(OAuth2User oauth) {
+        // Thuộc tính chuẩn từ Google OIDC
+<span class="fc" id="L27">        String sub     = oauth.getAttribute(&quot;sub&quot;);      // Google unique id</span>
+<span class="fc" id="L28">        String email   = norm(oauth.getAttribute(&quot;email&quot;));</span>
+<span class="fc" id="L29">        String name    = oauth.getAttribute(&quot;name&quot;);</span>
+<span class="fc" id="L30">        String picture = oauth.getAttribute(&quot;picture&quot;);</span>
+
+<span class="fc bfc" id="L32" title="All 2 branches covered.">        if (!StringUtils.hasText(sub)) {</span>
+<span class="fc" id="L33">            throw new IllegalStateException(&quot;Google 'sub' (account id) is missing&quot;);</span>
+        }
+
+        // 1) Tìm theo googleAccountId; 2) fallback theo email để hợp nhất tài khoản
+<span class="fc" id="L37">        return userRepo.findByGoogleAccountId(sub)</span>
+<span class="pc bpc" id="L38" title="1 of 2 branches missed.">                .or(() -&gt; StringUtils.hasText(email) ? userRepo.findByEmail(email) : java.util.Optional.empty())</span>
+<span class="fc" id="L39">                .map(u -&gt; {</span>
+<span class="fc" id="L40">                    u.setGoogleAccountId(sub);</span>
+<span class="pc bpc" id="L41" title="1 of 2 branches missed.">                    if (StringUtils.hasText(email))   u.setEmail(email);</span>
+<span class="pc bpc" id="L42" title="1 of 2 branches missed.">                    if (StringUtils.hasText(name))    u.setName(name);</span>
+<span class="fc bfc" id="L43" title="All 2 branches covered.">                    if (StringUtils.hasText(picture)) u.setPhotoUrl(picture);</span>
+<span class="fc" id="L44">                    u.setEnabled(true);</span>
+<span class="fc" id="L45">                    return userRepo.save(u);</span>
+                })
+<span class="fc" id="L47">                .orElseGet(() -&gt; {</span>
+<span class="fc" id="L48">                    Role userRole = roleRepo.findByName(&quot;USER&quot;)</span>
+<span class="fc" id="L49">                            .orElseThrow(() -&gt; new IllegalStateException(&quot;Default role 'USER' not found&quot;));</span>
+
+<span class="fc" id="L51">                    User u = new User(sub, email, name, picture);</span>
+<span class="fc" id="L52">                    u.setRole(userRole);</span>
+
+<span class="fc" id="L54">                    return userRepo.save(u);</span>
+                });
+    }
+
+    private String norm(String raw) {
+<span class="pc bpc" id="L59" title="1 of 2 branches missed.">        return raw == null ? null : raw.trim().toLowerCase(Locale.ROOT);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
