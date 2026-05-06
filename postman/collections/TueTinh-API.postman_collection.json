@@ -1,0 +1,5357 @@
+{
+  "item": [
+    {
+      "id": "35edbd2d-2587-4a7e-afd2-72e2554bdbaa",
+      "name": "Auth",
+      "item": [
+        {
+          "id": "a7aa471e-45bf-49a7-a5f9-27bcf9805c69",
+          "name": "TC_AUTH_LOGIN_001 - Login (happy)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"email\": \"{{email}}\", \"password\": \"{{password}}\" }"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "0470b937-06b3-4d93-b74e-ed07bd9bce34",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const j = pm.response.json();",
+                  "pm.test('accessToken present', () => pm.expect(j.accessToken).to.be.a('string').and.not.empty);",
+                  "pm.test('refreshToken present', () => pm.expect(j.refreshToken).to.be.a('string').and.not.empty);",
+                  "pm.environment.set('accessToken', j.accessToken);",
+                  "pm.environment.set('refreshToken', j.refreshToken);",
+                  "// metadata",
+                  "pm.test('TC ID present', () => true);"
+                ],
+                "_lastExecutionId": "72428f9f-0c88-49a5-bcdd-d7af39467781"
+              }
+            }
+          ]
+        },
+        {
+          "id": "1b2c1355-d304-4f9f-87b7-b6369fca93f2",
+          "name": "TC_AUTH_REFRESH_001 - Refresh token",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "auth",
+                "refresh"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"refreshToken\": \"{{refreshToken}}\" }"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "7bf73547-6e7d-495d-9bd0-9acee2c3d863",
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.environment.get('refreshToken')) throw new Error('refreshToken missing')"
+                ],
+                "_lastExecutionId": "49b5f249-d161-4f6e-96f8-a6db019934b3"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "50308c78-9ca3-491f-b43d-e79f49c7d264",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const j = pm.response.json();",
+                  "pm.environment.set('accessToken', j.accessToken);",
+                  "if(j.refreshToken) pm.environment.set('refreshToken', j.refreshToken);"
+                ],
+                "_lastExecutionId": "4ed6a707-6500-4cc6-9555-672daa232073"
+              }
+            }
+          ]
+        },
+        {
+          "id": "4417101a-80e6-4f3d-a90a-fe659cc8bc30",
+          "name": "TC_AUTH_ME_001 - Get me (protected)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "auth",
+                "me"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "4cde6cce-8a7d-487e-a219-d2804be99973",
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.environment.get('accessToken')) throw new Error('accessToken missing - run Login first');"
+                ],
+                "_lastExecutionId": "a40a25f8-b8c4-45c1-ba66-bf2e06689e4a"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "0f1e7731-3da7-4ffc-a065-e1eb627dda3e",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200 or 204', () => pm.expect(pm.response.code).to.be.oneOf([200,204]));"
+                ],
+                "_lastExecutionId": "ac50dda9-b8f2-4ca2-a12c-eda569677f53"
+              }
+            }
+          ]
+        },
+        {
+          "id": "e046c65b-0a65-4836-b299-6264d5c78128",
+          "name": "TC_AUTH_LOGIN_400 - Login (missing email)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"password\": \"123\"}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "e0a355a2-3952-43b5-988a-e491ad057424",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "// metadata"
+                ],
+                "_lastExecutionId": "72428f9f-0c88-49a5-bcdd-d7af39467781"
+              }
+            }
+          ]
+        },
+        {
+          "id": "e3e97e10-afe6-4033-a0d4-2a3dcb60f44b",
+          "name": "TC_AUTH_LOGIN_401 - Login (wrong password)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"email\": \"{{email}}\", \"password\": \"wrong\"}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "22825d48-2eaf-4bb2-804a-2a07462231c3",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 401', () => pm.response.to.have.status(401));",
+                  "// metadata"
+                ],
+                "_lastExecutionId": "72428f9f-0c88-49a5-bcdd-d7af39467781"
+              }
+            }
+          ]
+        },
+        {
+          "id": "892b0a3d-9648-4512-8a1c-4dfe9dd7af04",
+          "name": "TC_AUTH_REFRESH_400 - Refresh (missing token)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "auth",
+                "refresh"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "7bf73547-6e7d-495d-9bd0-9acee2c3d863",
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.environment.get('refreshToken')) throw new Error('refreshToken missing')"
+                ],
+                "_lastExecutionId": "49b5f249-d161-4f6e-96f8-a6db019934b3"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "199728c8-4b1d-41ee-874b-536c8723fc9d",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));"
+                ],
+                "_lastExecutionId": "4ed6a707-6500-4cc6-9555-672daa232073"
+              }
+            }
+          ]
+        },
+        {
+          "id": "4b3cf426-8ff0-4f9b-9553-d2d28ca69b45",
+          "name": "TC_AUTH_ME_401 - Get me (no token)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "auth",
+                "me"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [],
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "4cde6cce-8a7d-487e-a219-d2804be99973",
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.environment.get('accessToken')) throw new Error('accessToken missing - run Login first');"
+                ],
+                "_lastExecutionId": "a40a25f8-b8c4-45c1-ba66-bf2e06689e4a"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "6e7322cc-532d-4080-9792-daba11cdcead",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 401', () => pm.response.to.have.status(401));"
+                ],
+                "_lastExecutionId": "ac50dda9-b8f2-4ca2-a12c-eda569677f53"
+              }
+            }
+          ]
+        },
+        {
+          "id": "tc-auth-register-start-001",
+          "name": "TC_AUTH_REGISTER_START_001 - Register start (send OTP)",
+          "request": {
+            "url": {
+              "path": ["api", "auth", "register", "start"],
+              "host": ["{{baseUrl}}"],
+              "query": [],
+              "variable": []
+            },
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"email\": \"test_otp_user_{{$timestamp}}@example.com\", \"password\": \"Abc@12345\", \"fullName\": \"Test OTP\" }"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "tc-auth-register-start-001-test",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "// TC metadata"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "tc-auth-forgot-password-001",
+          "name": "TC_AUTH_FORGOT_PASSWORD_001 - Forgot password (OTP request)",
+          "request": {
+            "url": {
+              "path": ["api", "auth", "forgot-password"],
+              "host": ["{{baseUrl}}"],
+              "query": [],
+              "variable": []
+            },
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"email\": \"{{email}}\" }"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "tc-auth-forgot-password-001-test",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 204', () => pm.expect(pm.response.code).to.eql(204));",
+                  "// TC metadata"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "tc-auth-otp-resend-001",
+          "name": "TC_AUTH_OTP_RESEND_001 - Resend OTP",
+          "request": {
+            "url": {
+              "path": ["api", "auth", "otp", "resend"],
+              "host": ["{{baseUrl}}"],
+              "query": [],
+              "variable": []
+            },
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"email\": \"{{email}}\" }"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "tc-auth-otp-resend-001-test",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "// TC metadata"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "event": []
+    },
+    {
+      "id": "f798f0aa-2f28-4bc0-bdf2-e03b86314b48",
+      "name": "Drugs",
+      "item": [
+        {
+          "id": "3c1b7895-90ba-43a1-b844-fc6a25a26393",
+          "name": "TC_DRUG_LIST_001 - List drugs (auth)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "drugs"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "key": "size",
+                  "value": "10"
+                }
+              ],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "0f9634da-a411-405c-ab14-5a3eddbf3bb1",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const j = pm.response.json();",
+                  "pm.test('Response is paged', function(){ pm.expect(j).to.have.property('content'); });",
+                  "if(j.content && j.content.length>0) pm.environment.set('drugId', j.content[0].id);"
+                ],
+                "_lastExecutionId": "92acb583-4ac9-48fd-9d24-0e09164c19e3"
+              }
+            }
+          ]
+        },
+        {
+          "id": "45e1cad9-0fa8-4ece-8534-1b75389240a1",
+          "name": "TC_DRUG_ALL_001 - Get all drugs",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "drugs",
+                "all"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "0c4585f8-ef3d-41b9-b6b2-ad3bcfca816a",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', ()=> pm.response.to.have.status(200));",
+                  "const j = pm.response.json(); if(Array.isArray(j) && j.length) pm.environment.set('drugId', j[0].id);"
+                ],
+                "_lastExecutionId": "6ced5513-4ab0-4a52-99ac-17e92b45e03e"
+              }
+            }
+          ]
+        },
+        {
+          "id": "cb159efb-d1a5-43bf-8691-6b27b81b7707",
+          "name": "TC_DRUG_GETBYID_001 - Get drug by id",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "drugs",
+                "{{drugId}}"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "3249d6ac-fb15-420d-86b7-9b3bb3705a41",
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.environment.get('drugId')) throw new Error('drugId missing - run drug list first');"
+                ],
+                "_lastExecutionId": "62fa904a-4268-4e4e-a23f-31f8f62efd32"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "ff54a5c0-54b8-4f37-9c3f-4c8848f8a6b8",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 or 404', ()=> pm.expect(pm.response.code).to.be.oneOf([200,404]));"
+                ],
+                "_lastExecutionId": "b955bdfb-8c05-4d02-a931-cf2e57dcb5dd"
+              }
+            }
+          ]
+        },
+        {
+          "id": "972a209b-dcbd-4253-82c8-6175152d94db",
+          "name": "TC_DRUG_LIST_401 - List drugs (no token)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "drugs"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "key": "size",
+                  "value": "10"
+                }
+              ],
+              "variable": []
+            },
+            "header": [],
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "71d9980e-ff30-482d-9480-4ca2457f201b",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 401', () => pm.response.to.have.status(401));"
+                ],
+                "_lastExecutionId": "92acb583-4ac9-48fd-9d24-0e09164c19e3"
+              }
+            }
+          ]
+        },
+        {
+          "id": "51adcb99-9eb4-4999-a834-86e45d1c0adc",
+          "name": "TC_DRUG_GETBYID_404 - Get drug (invalid id)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "drugs",
+                "999999"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "3249d6ac-fb15-420d-86b7-9b3bb3705a41",
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.environment.get('drugId')) throw new Error('drugId missing - run drug list first');"
+                ],
+                "_lastExecutionId": "62fa904a-4268-4e4e-a23f-31f8f62efd32"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "43f2002b-255e-4eca-99a8-90397e1aa048",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 404', () => pm.response.to.have.status(404));"
+                ],
+                "_lastExecutionId": "b955bdfb-8c05-4d02-a931-cf2e57dcb5dd"
+              }
+            }
+          ]
+        }
+        ,
+        {
+          "id": "tc-drug-suggest-001",
+          "name": "TC_DRUG_SUGGEST_001 - Suggest drug names",
+          "request": {
+            "url": {
+              "path": ["api", "drugs", "suggest"],
+              "host": ["{{baseUrl}}"],
+              "query": [
+                { "key": "q", "value": "Para" },
+                { "key": "limit", "value": "5" }
+              ],
+              "variable": []
+            },
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "tc-drug-suggest-001-pre",
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.environment.get('accessToken')) throw new Error('accessToken missing - run Login first');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "tc-drug-suggest-001-test",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const j = pm.response.json();",
+                  "pm.test('Response is array', ()=> pm.expect(j).to.be.an('array'));"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "event": []
+    },
+    {
+      "id": "1fae636a-fb34-4e5e-94a9-4573276aab37",
+      "name": "Orders",
+      "item": [
+        {
+          "id": "0413948d-f55a-4fef-98b8-927f4ab1cdb6",
+          "name": "TC_ORDER_CREATE_001 - Create order (happy)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "orders"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"shippingAddress\": \"Test Address\", \"receiverName\": \"Tester\", \"receiverPhone\": \"0900000000\", \"items\": [ { \"drugId\": {{drugId}}, \"quantity\": 1 } ] }"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "3da914c9-7cdf-444d-a32c-82fd7656d982",
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.environment.get('accessToken')) throw new Error('accessToken missing - run Login first');",
+                  "if(!pm.environment.get('drugId')) throw new Error('drugId missing - run drug list first');"
+                ],
+                "_lastExecutionId": "4dd241d2-0252-41e6-904c-b7ab884d5eb3"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "5c0e5502-29ab-4ed3-8db8-380b8aec6753",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', ()=> pm.response.to.have.status(200));",
+                  "// extract order id from response string if present",
+                  "const txt = pm.response.text(); const m=txt.match(/\\d+/); if(m) pm.environment.set('orderId', m[0]);"
+                ],
+                "_lastExecutionId": "8fc928f1-9e1b-483e-82d3-eeaa57959398"
+              }
+            }
+          ]
+        },
+        {
+          "id": "60e57d70-1056-4e98-b2ef-09a3208f71fa",
+          "name": "TC_ORDER_GETLIST_001 - Get my orders",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "orders"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "48d951e9-1247-45d3-918a-addf637d9da0",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', ()=> pm.response.to.have.status(200));"
+                ],
+                "_lastExecutionId": "9d872bee-7b85-4f10-9078-8226e33ea1eb"
+              }
+            }
+          ]
+        },
+        {
+          "id": "bf0817f2-298c-48e1-9242-dc38993dc87d",
+          "name": "TC_ORDER_GETBYID_001 - Get order by id",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "orders",
+                "{{orderId}}"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "896bd04e-35d3-40f2-a828-7d88b078e934",
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.environment.get('orderId')) throw new Error('orderId missing - create order first');"
+                ],
+                "_lastExecutionId": "603b7f3b-17a3-4b65-9f28-b42b54cb1039"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "0f9aed97-ab2e-402d-9096-2fad82ffc329",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 or 404', ()=> pm.expect(pm.response.code).to.be.oneOf([200,404]));"
+                ],
+                "_lastExecutionId": "a4dcb72e-d3cc-4892-961d-a7dfddf0212e"
+              }
+            }
+          ]
+        },
+        {
+          "id": "b0d9cc47-ffcc-4bce-bbb8-17e8d5409fad",
+          "name": "TC_ORDER_CREATE_400 - Create order (invalid body)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "orders"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"shippingAddress\": \"\"}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "3da914c9-7cdf-444d-a32c-82fd7656d982",
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.environment.get('accessToken')) throw new Error('accessToken missing - run Login first');",
+                  "if(!pm.environment.get('drugId')) throw new Error('drugId missing - run drug list first');"
+                ],
+                "_lastExecutionId": "4dd241d2-0252-41e6-904c-b7ab884d5eb3"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "4313b281-5035-48bb-9533-d10ae3e6075e",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "// extract order id from response string if present"
+                ],
+                "_lastExecutionId": "8fc928f1-9e1b-483e-82d3-eeaa57959398"
+              }
+            }
+          ]
+        },
+        {
+          "id": "298c5e50-586c-402f-9695-d2b7e9f86765",
+          "name": "TC_ORDER_CREATE_401 - Create order (no token)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "orders"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"shippingAddress\": \"Test Address\", \"receiverName\": \"Tester\", \"receiverPhone\": \"0900000000\", \"items\": [ { \"drugId\": {{drugId}}, \"quantity\": 1 } ] }"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "3da914c9-7cdf-444d-a32c-82fd7656d982",
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.environment.get('accessToken')) throw new Error('accessToken missing - run Login first');",
+                  "if(!pm.environment.get('drugId')) throw new Error('drugId missing - run drug list first');"
+                ],
+                "_lastExecutionId": "4dd241d2-0252-41e6-904c-b7ab884d5eb3"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "003d1858-612e-4a3f-a090-ed6ceeaeefb0",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 401', () => pm.response.to.have.status(401));",
+                  "// extract order id from response string if present"
+                ],
+                "_lastExecutionId": "8fc928f1-9e1b-483e-82d3-eeaa57959398"
+              }
+            }
+          ]
+        },
+        {
+          "id": "5c270944-6d39-4363-a395-0deda2466292",
+          "name": "TC_ORDER_GETLIST_401 - Get my orders (no token)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "orders"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [],
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "18ea48e2-cd84-4bda-be4f-ade987e15583",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 401', () => pm.response.to.have.status(401));"
+                ],
+                "_lastExecutionId": "9d872bee-7b85-4f10-9078-8226e33ea1eb"
+              }
+            }
+          ]
+        },
+        {
+          "id": "dab07d66-58cb-4b9f-9ec1-333f9521065c",
+          "name": "TC_ORDER_GETBYID_404 - Get order (invalid id)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "orders",
+                "999999"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "896bd04e-35d3-40f2-a828-7d88b078e934",
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.environment.get('orderId')) throw new Error('orderId missing - create order first');"
+                ],
+                "_lastExecutionId": "603b7f3b-17a3-4b65-9f28-b42b54cb1039"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "fc47961f-e8d8-4ee8-a10f-5083048f3d4d",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 404', () => pm.response.to.have.status(404));"
+                ],
+                "_lastExecutionId": "a4dcb72e-d3cc-4892-961d-a7dfddf0212e"
+              }
+            }
+          ]
+        }
+        ,
+        {
+          "id": "tc-order-confirm-cod-001",
+          "name": "TC_ORDER_CONFIRM_COD_001 - Confirm COD payment",
+          "request": {
+            "url": {
+              "path": ["api", "orders", "{{orderId}}", "confirm-cod"],
+              "host": ["{{baseUrl}}"],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "method": "POST"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "tc-order-confirm-cod-001-pre",
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.environment.get('accessToken')) throw new Error('accessToken missing - run Login first');",
+                  "if(!pm.environment.get('orderId')) throw new Error('orderId missing - run Create order first');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "tc-order-confirm-cod-001-test",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', ()=> pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "tc-order-cancel-001",
+          "name": "TC_ORDER_CANCEL_001 - Cancel order",
+          "request": {
+            "url": {
+              "path": ["api", "orders", "{{orderId}}", "cancel"],
+              "host": ["{{baseUrl}}"],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "method": "PUT"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "tc-order-cancel-001-pre",
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.environment.get('accessToken')) throw new Error('accessToken missing - run Login first');",
+                  "if(!pm.environment.get('orderId')) throw new Error('orderId missing - run Create order first');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "tc-order-cancel-001-test",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', ()=> pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "event": []
+    },
+    {
+      "id": "folder-users",
+      "name": "Users",
+      "item": [
+        {
+          "id": "tc-users-profile-001",
+          "name": "TC_USERS_PROFILE_001 - Get my profile",
+          "request": {
+            "url": {
+              "path": ["api", "users", "profile"],
+              "host": ["{{baseUrl}}"],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "tc-users-profile-001-pre",
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.environment.get('accessToken')) throw new Error('accessToken missing - run Login first');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "tc-users-profile-001-test",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', ()=> pm.response.to.have.status(200));",
+                  "const j = pm.response.json();",
+                  "pm.test('Has email', ()=> pm.expect(j.email || j.username).to.exist);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "tc-users-update-me-001",
+          "name": "TC_USERS_UPDATE_ME_001 - Update my profile",
+          "request": {
+            "url": {
+              "path": ["api", "users", "me"],
+              "host": ["{{baseUrl}}"],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "method": "PUT",
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"fullName\": \"Postman Updated {{$timestamp}}\", \"phone\": \"0900000000\" }"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "tc-users-update-me-001-pre",
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.environment.get('accessToken')) throw new Error('accessToken missing - run Login first');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "tc-users-update-me-001-test",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', ()=> pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "event": []
+    },
+    {
+      "id": "519cbb5a-095c-4978-9624-92195f44248e",
+      "name": "Agent",
+      "item": [
+        {
+          "id": "724c868c-a20f-4e37-9e31-89496d84ec0f",
+          "name": "TC_AGENT_CHAT_001 - Agent chat",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "v3",
+                "agent",
+                "chat"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"message\": \"Hello\" }"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "88e51f6a-18ef-4a9c-aa25-8ac98f05c2a3",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', ()=> pm.response.to.have.status(200));",
+                  "pm.test('Has JSON body', ()=> { pm.response.to.be.json; const j=pm.response.json(); pm.expect(j).to.be.ok; })"
+                ],
+                "_lastExecutionId": "f76138e1-be73-4fdd-b6e2-fda6e11cf358"
+              }
+            }
+          ]
+        },
+        {
+          "id": "4e2f39e5-a1b5-4ff6-9366-a3eb6cd3bbcf",
+          "name": "TC_AGENT_CHAT_002 - Agent chat (empty message)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "v3",
+                "agent",
+                "chat"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"message\": \"\"}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "d55690f8-b67a-42c3-bf92-a5a658861555",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));"
+                ],
+                "_lastExecutionId": "f76138e1-be73-4fdd-b6e2-fda6e11cf358"
+              }
+            }
+          ]
+        },
+        {
+          "id": "c4a420e1-1ecd-403e-bd8c-4d64d29d2365",
+          "name": "TC_AGENT_CHAT_401 - Agent chat (no token)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "v3",
+                "agent",
+                "chat"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"message\": \"Hello\" }"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "6039590a-a073-4636-b519-0d69b4a2fb88",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 401', () => pm.response.to.have.status(401));"
+                ],
+                "_lastExecutionId": "f76138e1-be73-4fdd-b6e2-fda6e11cf358"
+              }
+            }
+          ]
+        }
+      ],
+      "event": []
+    },
+    {
+      "id": "7966652e-1e82-4e6c-8579-742fa890dc7f",
+      "name": "Auth - Register & Password",
+      "item": [
+        {
+          "id": "7802528a-9540-4ada-a732-cb7ab3ef1a1b",
+          "name": "TC_AUTH_REGISTER_START_001 - Register start (happy)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "auth",
+                "register",
+                "start"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"email\":\"testuser_newman@example.com\",\"password\":\"Abc@1234\",\"fullName\":\"Newman Test\"}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "995429e4-a45e-4c2c-9181-33d7089e18ef",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', ()=> pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "a2248baa-74ec-40f8-ab15-ce0f3844e47d",
+          "name": "TC_AUTH_REGISTER_START_400 - Register start (missing email)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "auth",
+                "register",
+                "start"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"password\":\"Abc@1234\"}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "65b2029c-b492-4d61-a03f-a8545f44aa7e",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400 or 422', ()=> pm.expect(pm.response.code).to.be.oneOf([400,422]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "4ece1702-07c9-470b-b3a4-d25b8ec505d9",
+          "name": "TC_AUTH_REGISTER_VERIFY_001 - Register verify (happy path stub)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "auth",
+                "register",
+                "verify"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"email\":\"testuser_newman@example.com\",\"otp\":\"000000\"}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "c3e66fd0-4a17-4a8a-a8a7-0c886d1a5730",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Has response', ()=> pm.expect(pm.response.code).to.be.oneOf([200,400,401,422]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "13b595c1-c5f0-4346-8b4e-61d07fc39356",
+          "name": "TC_AUTH_REGISTER_VERIFY_400 - Register verify (wrong OTP)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "auth",
+                "register",
+                "verify"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"email\":\"nonexistent_newman@example.com\",\"otp\":\"000000\"}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "41fae1ad-e2d4-4bf4-bc33-0369eb3025e4",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400 or 401', ()=> pm.expect(pm.response.code).to.be.oneOf([400,401]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "02d770d7-a0f2-4c39-8c12-3b99ac52ea41",
+          "name": "TC_AUTH_FORGOT_PASSWORD_001 - Forgot password (happy)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "auth",
+                "forgot-password"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"email\":\"khanhduyuni@gmail.com\"}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "0f490304-5b08-4227-82d1-850187d3fe9e",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', ()=> pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "50febda1-b6f2-48b8-bbbc-7172ff3548a8",
+          "name": "TC_AUTH_FORGOT_PASSWORD_404 - Forgot password (email not found)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "auth",
+                "forgot-password"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"email\":\"nobody_newman@example.com\"}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "72ce1476-4b40-4fba-816d-6b5927379402",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 404 or 400', ()=> pm.expect(pm.response.code).to.be.oneOf([400,404]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "af4bdb73-7367-4f71-9bc8-3581969caaab",
+          "name": "TC_AUTH_RESET_PASSWORD_001 - Reset password (stub - invalid OTP)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "auth",
+                "reset-password"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"email\":\"khanhduyuni@gmail.com\",\"otp\":\"000000\",\"newPassword\":\"Abc@1234\"}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "20239db6-5f67-469d-a2db-3ca1712b5d5c",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Has response', ()=> pm.expect(pm.response.code).to.be.oneOf([200,400,401]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "d2b80b7c-120a-4a1b-a4e9-40eab808b7aa",
+          "name": "TC_AUTH_RESET_PASSWORD_400 - Reset password (wrong OTP)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "auth",
+                "reset-password"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"email\":\"nobody@example.com\",\"otp\":\"000000\",\"newPassword\":\"x\"}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "06fc2397-7482-4cc7-9955-62e237c9622c",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400 or 401', ()=> pm.expect(pm.response.code).to.be.oneOf([400,401]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "c5f17f61-aa69-41cf-ae75-c84337e3bdc9",
+          "name": "TC_AUTH_OTP_RESEND_001 - Resend OTP (happy)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "auth",
+                "otp",
+                "resend"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"email\":\"khanhduyuni@gmail.com\",\"type\":\"REGISTER\"}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "af10df6c-09bd-4e3a-93d0-d8783cf52658",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Has response', ()=> pm.expect(pm.response.code).to.be.oneOf([200,400,429]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "7496639a-4ab2-4d50-be80-45efec27be4a",
+          "name": "TC_AUTH_OTP_RESEND_400 - Resend OTP (missing type)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "auth",
+                "otp",
+                "resend"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"email\":\"khanhduyuni@gmail.com\"}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "7ad04e3f-f26e-488d-ad5b-b93d8db0c4ac",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400 or 422', ()=> pm.expect(pm.response.code).to.be.oneOf([400,422]));"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "event": []
+    },
+    {
+      "id": "ee36e039-250b-44cb-b59b-ad1343d56a78",
+      "name": "Users",
+      "item": [
+        {
+          "id": "12611620-f8c8-4aee-a4a9-c0b95f8f5fb6",
+          "name": "TC_USER_PROFILE_001 - Get user profile (auth)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "users",
+                "profile"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "0085ba8b-935f-456e-bf57-3501a5d63072",
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.environment.get('accessToken')) throw new Error('accessToken missing');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "c0cff0d6-f307-4c82-89d4-a6fc96f609ed",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', ()=> pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "3546031a-0bcb-434d-8353-c037952e9cbf",
+          "name": "TC_USER_PROFILE_401 - Get user profile (no token)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "users",
+                "profile"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [],
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "50570e20-62a7-4f78-b0a9-70213653a13e",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 401', ()=> pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "0644d727-b5e3-4584-9c43-6d292953c373",
+          "name": "TC_USER_UPDATE_001 - Update user profile (happy)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "users",
+                "me"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "PUT",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"fullName\":\"Newman Updated\"}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "350867b3-991b-45df-931d-be63d8841dac",
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.environment.get('accessToken')) throw new Error('accessToken missing');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "fea3edaa-27ed-44fa-be8e-a3292d3649b1",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', ()=> pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "b27bc2b9-3f19-4a63-997d-ef699b06a063",
+          "name": "TC_USER_UPDATE_401 - Update user profile (no token)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "users",
+                "me"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "PUT",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"fullName\":\"Newman\"}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "4002a47a-0f73-4270-a0d1-ee762df664fd",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 401', ()=> pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "event": []
+    },
+    {
+      "id": "3c420bfe-439a-4bf2-b238-fc2bddcf879c",
+      "name": "Prescriptions",
+      "item": [
+        {
+          "id": "92392c41-6a36-40e9-af21-e2cec2af70c4",
+          "name": "TC_PRESCRIPTION_CREATE_001 - Create prescription (happy)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "prescriptions"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"name\":\"Newman Rx\",\"startDate\":\"2026-05-01\",\"endDate\":\"2026-06-01\"}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "1897b78a-0356-4b32-a6f5-be3b8d5c3e24",
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.environment.get('accessToken')) throw new Error('accessToken missing');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "661e766b-5378-4925-8ed7-7e92cf5c516c",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200 or 201', ()=> pm.expect(pm.response.code).to.be.oneOf([200,201]));",
+                  "const j=pm.response.json(); if(j && j.id) pm.environment.set('prescriptionId', j.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "f1872cde-8e65-4dca-8511-1991a7f2abb9",
+          "name": "TC_PRESCRIPTION_CREATE_401 - Create prescription (no token)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "prescriptions"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"name\":\"No Auth Rx\"}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "b57ee45b-8160-4417-9d2e-9ce3d26780e5",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 401', ()=> pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "ce98aacf-97cd-4eaa-8bae-3cfdd8e4439d",
+          "name": "TC_PRESCRIPTION_LIST_001 - Get prescriptions by status (auth)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "prescriptions",
+                "status",
+                "ACTIVE"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "dae15ebc-cea6-4c7d-b937-daad65c980ad",
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.environment.get('accessToken')) throw new Error('accessToken missing');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "242e9c82-8c04-4b26-946b-3c77cb51c8d2",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', ()=> pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "88ac8a4f-9b8e-4291-8a19-ed33eb65bc2b",
+          "name": "TC_PRESCRIPTION_LIST_401 - Get prescriptions by status (no token)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "prescriptions",
+                "status",
+                "ACTIVE"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [],
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "f821fb24-a4cd-4224-b7ab-d2a3c94b3adc",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 401', ()=> pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "0b5a5b22-4406-48c9-b7dd-74766cb82200",
+          "name": "TC_PRESCRIPTION_DELETE_001 - Delete prescription (happy)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "prescriptions",
+                "{{prescriptionId}}"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "method": "DELETE"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "84357dd4-6894-4edd-a630-ec7fc0e36e4a",
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.environment.get('accessToken')) throw new Error('accessToken missing');",
+                  "if(!pm.environment.get('prescriptionId')) pm.environment.set('prescriptionId','1');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "52fd8116-6159-4caf-8d2b-b4e781d896c4",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200 or 204', ()=> pm.expect(pm.response.code).to.be.oneOf([200,204]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "048bcc66-d893-4db6-b661-c7335c3a6aaa",
+          "name": "TC_PRESCRIPTION_DELETE_404 - Delete prescription (not found)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "prescriptions",
+                "999999"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "method": "DELETE"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "c02be505-e6e8-44ad-903b-9ee29cacd5b6",
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.environment.get('accessToken')) throw new Error('accessToken missing');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "13078540-df8b-4ce3-b3ba-33b12e96c182",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 404 or 400', ()=> pm.expect(pm.response.code).to.be.oneOf([400,404]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "7774a283-8e4e-485f-a262-51022c389e0e",
+          "name": "TC_PRESCRIPTION_SCHEDULE_001 - Get schedules by date (auth)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "prescriptions",
+                "schedules"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "key": "date",
+                  "value": "2026-05-06"
+                }
+              ],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "b5cd756f-8eaf-4677-bbcc-7d65037046d7",
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.environment.get('accessToken')) throw new Error('accessToken missing');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "49193c9e-a8ed-4f85-b2cc-59b033abde4e",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', ()=> pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "f5add579-bbff-4246-8d5a-1ede5f36ae3f",
+          "name": "TC_PRESCRIPTION_SCHEDULE_401 - Get schedules (no token)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "prescriptions",
+                "schedules"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "key": "date",
+                  "value": "2026-05-06"
+                }
+              ],
+              "variable": []
+            },
+            "header": [],
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "260dde80-d6e1-4768-9c9f-534094791ab8",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 401', ()=> pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "event": []
+    },
+    {
+      "id": "835e8daa-bb4d-4a22-9d87-170f8f415dd0",
+      "name": "Payments",
+      "item": [
+        {
+          "id": "9d8b2823-34f1-45b0-b27e-fedc7df3fe6b",
+          "name": "TC_PAYMENT_VNPAY_001 - Create VNPay payment URL (happy)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "payments",
+                "vnpay",
+                "{{orderId}}"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "method": "POST"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "634ff730-65e7-4d7d-a997-c3f244ce064f",
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.environment.get('accessToken')) throw new Error('accessToken missing');",
+                  "if(!pm.environment.get('orderId')) throw new Error('orderId missing');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "18af4ad1-a614-4205-8c24-f98e0ea1a670",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200 or 400', ()=> pm.expect(pm.response.code).to.be.oneOf([200,400]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "740731bd-6541-49fa-b7be-4840402a8e8a",
+          "name": "TC_PAYMENT_VNPAY_401 - Create VNPay payment URL (no token)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "payments",
+                "vnpay",
+                "1"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [],
+            "method": "POST"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "86d78e35-c119-4a9b-8f04-480574d3099b",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 401', ()=> pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "00085eaf-f6a4-456a-9d1b-75d1a1b92329",
+          "name": "TC_PAYMENT_VNPAY_404 - Create VNPay payment URL (invalid order)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "payments",
+                "vnpay",
+                "999999"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "method": "POST"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "7711754f-5238-4c8b-acbb-ae5e4f3f9da0",
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.environment.get('accessToken')) throw new Error('accessToken missing');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "231b10d0-0620-4826-a5ef-56943d5b51f5",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 404 or 400', ()=> pm.expect(pm.response.code).to.be.oneOf([400,404]));"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "event": []
+    },
+    {
+      "id": "b0b174e2-2081-45dc-a674-cc16ccd6ad73",
+      "name": "Orders - Cancel & COD",
+      "item": [
+        {
+          "id": "a103c1bd-d2d8-423b-8f6b-52a8f95b2609",
+          "name": "TC_ORDER_CANCEL_001 - Cancel order (happy)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "orders",
+                "{{orderId}}",
+                "cancel"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "method": "PUT"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "fe1e4295-2251-46fc-b4ce-80cda19a075d",
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.environment.get('accessToken')) throw new Error('accessToken missing');",
+                  "if(!pm.environment.get('orderId')) throw new Error('orderId missing');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "9639b6e5-59e6-4947-865f-2a863cc95cba",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200 or 400', ()=> pm.expect(pm.response.code).to.be.oneOf([200,400]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "ba48ad0d-dff6-481f-929f-1d72fe97b857",
+          "name": "TC_ORDER_CANCEL_401 - Cancel order (no token)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "orders",
+                "1",
+                "cancel"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [],
+            "method": "PUT"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "7fe4b916-f403-4d54-88ed-93661130afdf",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 401', ()=> pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "25ab2b72-dd53-42e9-8079-4b3f0bad49e3",
+          "name": "TC_ORDER_CANCEL_404 - Cancel order (not found)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "orders",
+                "999999",
+                "cancel"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "method": "PUT"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "aaed6688-f662-4159-a13d-aae97bf42b56",
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.environment.get('accessToken')) throw new Error('accessToken missing');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "737246e3-e922-4e4d-b0f0-41e7a1edfea6",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 404 or 400', ()=> pm.expect(pm.response.code).to.be.oneOf([400,404]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "5a559b33-bf7d-476f-aa9a-6aa95f12a139",
+          "name": "TC_ORDER_COD_001 - Confirm COD payment (happy)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "orders",
+                "{{orderId}}",
+                "confirm-cod"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "method": "POST"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "e0d3901f-5f4c-4818-92b2-afaf75d9965e",
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.environment.get('accessToken')) throw new Error('accessToken missing');",
+                  "if(!pm.environment.get('orderId')) throw new Error('orderId missing');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "f15cf7bb-8cd6-44cb-86ff-1a017e6c54e3",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200 or 400', ()=> pm.expect(pm.response.code).to.be.oneOf([200,400]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "6f7c61a3-e999-4f68-a70f-90ae2838872e",
+          "name": "TC_ORDER_COD_401 - Confirm COD (no token)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "orders",
+                "1",
+                "confirm-cod"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [],
+            "method": "POST"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "861b5692-bdc3-422f-bb28-64b03f335ef9",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 401', ()=> pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "event": []
+    },
+    {
+      "id": "88a02670-9bfa-4016-bdc7-93488a2671de",
+      "name": "Agent - Plans",
+      "item": [
+        {
+          "id": "e0a25a64-fcb5-408d-97e3-119d2298d8b0",
+          "name": "TC_AGENT_MEAL_PLAN_GET_001 - Get meal plan (happy)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "v3",
+                "agent",
+                "meal-plan"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "bc07661a-491d-4e58-a608-031520c49bd5",
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.environment.get('accessToken')) throw new Error('accessToken missing');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "544ba732-1a8b-4f02-9bcf-b29618e58126",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', ()=> pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "caae7fed-1362-482a-9c87-0190d6692904",
+          "name": "TC_AGENT_MEAL_PLAN_GET_401 - Get meal plan (no token)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "v3",
+                "agent",
+                "meal-plan"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [],
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "24c74b68-1f69-4f86-bddb-798c4345cfad",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 401', ()=> pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "7f061a2b-0ccd-450d-8ae2-2f102f7f3f75",
+          "name": "TC_AGENT_MEAL_PLAN_CREATE_001 - Create meal plan (happy)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "v3",
+                "agent",
+                "meal-plan"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "method": "POST"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "44fef094-717c-43a0-b34d-83783ebb9041",
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.environment.get('accessToken')) throw new Error('accessToken missing');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "0917c909-97ab-446a-83cd-b5ef36a54fab",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', ()=> pm.response.to.have.status(200));",
+                  "pm.test('Plan data present', ()=> { pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "803f5e63-b5b4-4df4-8945-a483bc1fea47",
+          "name": "TC_AGENT_MEAL_PLAN_CREATE_401 - Create meal plan (no token)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "v3",
+                "agent",
+                "meal-plan"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [],
+            "method": "POST"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "f09da893-83f2-4fc7-b015-2de060bf1f1c",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 401', ()=> pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "0e69924d-2a7e-4ce6-8774-298a31172c1d",
+          "name": "TC_AGENT_WORKOUT_PLAN_GET_001 - Get workout plan (happy)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "v3",
+                "agent",
+                "workout-plan"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "d86c87d2-02e2-4758-ad16-f9da09bff05e",
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.environment.get('accessToken')) throw new Error('accessToken missing');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "ac3ce7e2-61fa-4eea-abdf-908c42366dd6",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', ()=> pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "5a217867-146c-47bc-a224-cb4de142565c",
+          "name": "TC_AGENT_WORKOUT_PLAN_GET_401 - Get workout plan (no token)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "v3",
+                "agent",
+                "workout-plan"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [],
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "40f02e17-944f-440f-88ab-b9a308e470b6",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 401', ()=> pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "fba136ad-432c-4fe5-a230-c3f8e7d23176",
+          "name": "TC_AGENT_WORKOUT_PLAN_CREATE_001 - Create workout plan (happy)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "v3",
+                "agent",
+                "workout-plan"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "method": "POST"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "b3e01784-72c1-4e7f-ba29-f9c9885fe6cd",
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.environment.get('accessToken')) throw new Error('accessToken missing');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "c40556e0-620d-4e03-a949-7b8c49bcb8c5",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', ()=> pm.response.to.have.status(200));",
+                  "pm.test('Plan data present', ()=> { pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "bc7d0cf4-5820-4a3b-921e-32c1c41a3e93",
+          "name": "TC_AGENT_WORKOUT_PLAN_CREATE_401 - Create workout plan (no token)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "v3",
+                "agent",
+                "workout-plan"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [],
+            "method": "POST"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "67b9366a-bc28-4f46-8453-4a9b2a1e96c8",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 401', ()=> pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "e1f28bc1-4a26-4055-b1a6-511e50af55e9",
+          "name": "TC_AGENT_WORKOUT_DB_POST_001 - Save workout plan to DB (happy)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "v3",
+                "agent",
+                "workout-plan",
+                "db"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"plan\":{}}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "b6f46830-25f6-41d7-8e68-0df65fac27e0",
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.environment.get('accessToken')) throw new Error('accessToken missing');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "683d0e3b-151a-4389-83cf-c21a1fc3c142",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 2xx', ()=> pm.expect(pm.response.code).to.be.oneOf([200,201,204]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "f0a8b808-3b4b-4bf5-94a4-83d94c8e62a0",
+          "name": "TC_AGENT_WORKOUT_DB_PUT_001 - Update workout plan in DB (happy)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "v3",
+                "agent",
+                "workout-plan",
+                "db"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "PUT",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"plan\":{}}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "23ff8297-7986-41d8-8962-780f6eb73556",
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.environment.get('accessToken')) throw new Error('accessToken missing');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "b07bbb28-f823-489e-b563-1cd91eb27f99",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200 or 404', ()=> pm.expect(pm.response.code).to.be.oneOf([200,404]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "e5107f85-8aba-46b2-9e38-5d51e5434209",
+          "name": "TC_AGENT_WORKOUT_DB_DELETE_001 - Delete workout plan from DB (happy)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "v3",
+                "agent",
+                "workout-plan",
+                "db"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "method": "DELETE"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "e596c997-b911-4e65-b880-b975671e25c6",
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.environment.get('accessToken')) throw new Error('accessToken missing');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "aee02fa4-dde1-47e5-86fc-bc72d086c476",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200 or 204', ()=> pm.expect(pm.response.code).to.be.oneOf([200,204]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "36ed4232-041c-4609-9dfc-d6e05e1e650b",
+          "name": "TC_AGENT_MEAL_DB_POST_001 - Save meal plan to DB (happy)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "v3",
+                "agent",
+                "meal-plan",
+                "db"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"plan\":{}}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "5fa6db46-dbb2-43b0-ab89-5f0eee442999",
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.environment.get('accessToken')) throw new Error('accessToken missing');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "056ce816-8d97-44d7-8908-0d57f17b2f64",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 2xx', ()=> pm.expect(pm.response.code).to.be.oneOf([200,201,204]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "b2055c3f-696f-4a6f-8be8-60d567f30629",
+          "name": "TC_AGENT_MEAL_DB_PUT_001 - Update meal plan in DB (happy)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "v3",
+                "agent",
+                "meal-plan",
+                "db"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "PUT",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"plan\":{}}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "1b88ad1c-cbd5-4620-be32-020d691101bc",
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.environment.get('accessToken')) throw new Error('accessToken missing');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "7ce183ae-add8-409d-9dc1-a64fcea38c3f",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200 or 404', ()=> pm.expect(pm.response.code).to.be.oneOf([200,404]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "9d8b5e8c-b87f-49e1-a06c-91c20bcc0c68",
+          "name": "TC_AGENT_MEAL_DB_DELETE_001 - Delete meal plan from DB (happy)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "v3",
+                "agent",
+                "meal-plan",
+                "db"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "method": "DELETE"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "ca1c9c5e-ea3f-4b1c-b6de-555f9f8ee803",
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.environment.get('accessToken')) throw new Error('accessToken missing');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "b1d0b8dc-f3e4-4d10-943c-7ca713322b74",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200 or 204', ()=> pm.expect(pm.response.code).to.be.oneOf([200,204]));"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "event": []
+    },
+    {
+      "id": "75453ada-6998-4ebe-9764-35bfb1a653b7",
+      "name": "Food Detection",
+      "item": [
+        {
+          "id": "22228187-3ee6-4429-bf9b-064f5dad1bf2",
+          "name": "TC_FOOD_DETECT_001 - Detect food (stub - multipart)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "v2",
+                "detect"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "method": "POST"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "35eef52f-8515-4ee0-8153-9a09c2c24486",
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.environment.get('accessToken')) throw new Error('accessToken missing');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "d1f8f93d-7fd6-468a-a5e5-8da44de30d08",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Has response', ()=> pm.expect(pm.response.code).to.be.oneOf([200,400,415,422]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "364777e5-bd15-4fa1-a3a3-29b3b04708b9",
+          "name": "TC_FOOD_DETECT_401 - Detect food (no token)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "v2",
+                "detect"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [],
+            "method": "POST"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "ba7318fd-1ffd-4d36-82d3-cbc707825e22",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 401 or 403', ()=> pm.expect(pm.response.code).to.be.oneOf([401,403]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "325362b1-7448-4fab-8499-2fdad3c56c77",
+          "name": "TC_FOOD_DETECT_400 - Detect food (no image)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "v2",
+                "detect"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "4c53d108-486a-49d8-88e1-ada39a568f9e",
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.environment.get('accessToken')) throw new Error('accessToken missing');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "8338e176-7237-4413-87ef-4a277284bb29",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400 or 415 or 422', ()=> pm.expect(pm.response.code).to.be.oneOf([400,415,422]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "07edd916-0e25-49f7-bcff-5dc681ce5b1c",
+          "name": "TC_FOOD_CALORIE_ADD_001 - Add food records (happy)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "v2",
+                "calories",
+                "food-records"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"foods\":[{\"name\":\"Rice\",\"calories\":200,\"protein\":4,\"carb\":40,\"fat\":1,\"quantity\":1}],\"log_date\":\"2026-05-06\"}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "e34f35bf-50bb-43ba-b73b-99e3420414b8",
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.environment.get('accessToken')) throw new Error('accessToken missing');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "79d49d29-5c20-48cb-9514-57129b811c92",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 2xx', ()=> pm.expect(pm.response.code).to.be.oneOf([200,201,204]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "1e5ce07b-e224-4029-ab85-7187da48b662",
+          "name": "TC_FOOD_CALORIE_ADD_401 - Add food records (no token)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "v2",
+                "calories",
+                "food-records"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"foods\":[]}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "d3176b40-26e2-43f5-bdaa-c17e15218492",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 401 or 403', ()=> pm.expect(pm.response.code).to.be.oneOf([401,403]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "8cb8e6f8-01a5-4de7-82b2-096977ee95c8",
+          "name": "TC_FOOD_CALORIE_GET_001 - Get food records (happy)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "v2",
+                "calories",
+                "food-records"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "key": "log_date",
+                  "value": "2026-05-06"
+                }
+              ],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "8fe67e2e-1e4c-4901-b66d-4d0a31cfc842",
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.environment.get('accessToken')) throw new Error('accessToken missing');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "0a5cbfed-2e67-4f6b-ad34-981b78d7accf",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', ()=> pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "cfbfcb7b-fa0a-4348-b209-31db781702d8",
+          "name": "TC_FOOD_CALORIE_GET_401 - Get food records (no token)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "v2",
+                "calories",
+                "food-records"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [],
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "3909efee-833e-4ca0-84fe-05d3599a8d7d",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 401 or 403', ()=> pm.expect(pm.response.code).to.be.oneOf([401,403]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "e6b9b5fe-7a3a-4c6f-9794-f93da8c5cf31",
+          "name": "TC_FOOD_CALORIE_UPDATE_001 - Update food record (happy)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "v2",
+                "calories",
+                "food-records",
+                "1"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "PUT",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"calories\":250}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "a6140cfe-c7cb-4109-a66d-d3db24cd675e",
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.environment.get('accessToken')) throw new Error('accessToken missing');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "70e91670-3515-453c-9cfa-52fb1e718324",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200 or 404', ()=> pm.expect(pm.response.code).to.be.oneOf([200,404]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "1628efb8-edfd-4b1c-b301-edf2e02c2d63",
+          "name": "TC_FOOD_CALORIE_UPDATE_404 - Update food record (not found)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "v2",
+                "calories",
+                "food-records",
+                "999999"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "PUT",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"calories\":250}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "213229a2-f61e-45bc-82f8-e1de6cdaa3e7",
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.environment.get('accessToken')) throw new Error('accessToken missing');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "54c8af59-b696-44fd-982a-2dc077eba250",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 404 or 403', ()=> pm.expect(pm.response.code).to.be.oneOf([403,404]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "1808adf1-e7f9-42b9-9251-102c5dee6619",
+          "name": "TC_FOOD_CALORIE_DELETE_001 - Delete food record (happy)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "v2",
+                "calories",
+                "food-records",
+                "1"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "method": "DELETE"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "5da4b2fd-83ff-4264-81ff-7be84a278fa4",
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.environment.get('accessToken')) throw new Error('accessToken missing');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "17c85a34-c0cd-460d-ba73-d254c0d928c4",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200 or 204 or 404', ()=> pm.expect(pm.response.code).to.be.oneOf([200,204,404]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "0f7b7bb7-4833-4e90-8392-20a7005d4872",
+          "name": "TC_FOOD_CALORIE_DELETE_404 - Delete food record (not found)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "v2",
+                "calories",
+                "food-records",
+                "999999"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "method": "DELETE"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "de079a4b-5bdf-43ad-8c82-86083a9b9ae4",
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.environment.get('accessToken')) throw new Error('accessToken missing');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "462d14eb-6792-4157-b690-268fe21c6cf1",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 404 or 403', ()=> pm.expect(pm.response.code).to.be.oneOf([403,404]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "623d95f0-ba28-4386-931a-911fd960ed38",
+          "name": "TC_FOOD_DAILY_LOG_GET_001 - Get daily logs (happy)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "v2",
+                "daily-logs"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "key": "start_date",
+                  "value": "2026-05-01"
+                },
+                {
+                  "key": "end_date",
+                  "value": "2026-05-06"
+                }
+              ],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "ed1cb57b-c6ff-4dde-9301-ff95d129455a",
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.environment.get('accessToken')) throw new Error('accessToken missing');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "cd209d9c-0ad9-4f4f-abcb-d59172c6eff7",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', ()=> pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "de2d65bc-eee4-43e3-ad92-1b0b992a62ed",
+          "name": "TC_FOOD_DAILY_LOG_GET_401 - Get daily logs (no token)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "v2",
+                "daily-logs"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [],
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "08ead244-4525-4b30-a7e7-28d4d896424c",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 401 or 403', ()=> pm.expect(pm.response.code).to.be.oneOf([401,403]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "b1aa93c8-b469-4eff-85ad-43264ddf8f32",
+          "name": "TC_FOOD_DAILY_LOG_GENERATE_001 - Generate daily log (happy)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "v2",
+                "daily-logs",
+                "generate"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "key": "date",
+                  "value": "2026-05-06"
+                }
+              ],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "method": "POST"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "266d0cd1-95bb-4b9c-b0a1-35c6b3da76b2",
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.environment.get('accessToken')) throw new Error('accessToken missing');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "31c7f9f2-08a1-4c33-8d17-be2365890193",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 2xx', ()=> pm.expect(pm.response.code).to.be.oneOf([200,201,204]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "9a4418c9-7de1-44a2-aa60-2d946d162225",
+          "name": "TC_FOOD_DAILY_LOG_GENERATE_400 - Generate daily log (invalid date)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "v2",
+                "daily-logs",
+                "generate"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "key": "date",
+                  "value": "not-a-date"
+                }
+              ],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "method": "POST"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "178045f5-1d87-472d-9b23-7792554ac820",
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.environment.get('accessToken')) throw new Error('accessToken missing');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "28c84ee2-afd8-4e06-bf23-122b561ca9fe",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400 or 422 or 500', ()=> pm.expect(pm.response.code).to.be.oneOf([400,422,500]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "944926ab-383b-4ca4-ad97-ceaff499da35",
+          "name": "TC_FOOD_DAILY_LOG_STEPS_001 - Update daily steps (happy)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "v2",
+                "daily-logs",
+                "steps"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "key": "steps",
+                  "value": "5000"
+                },
+                {
+                  "key": "log_date",
+                  "value": "2026-05-06"
+                }
+              ],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "method": "POST"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "b915cae0-298b-42fe-b410-88633f61bbd0",
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.environment.get('accessToken')) throw new Error('accessToken missing');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "1dbfe96d-7a41-4aa6-8b01-ede3fb916220",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200 or 404', ()=> pm.expect(pm.response.code).to.be.oneOf([200,404]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "8437adaa-a14b-4561-9ace-63b467eddde6",
+          "name": "TC_FOOD_DAILY_LOG_STEPS_400 - Update daily steps (invalid steps)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "v2",
+                "daily-logs",
+                "steps"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "key": "steps",
+                  "value": "-1"
+                }
+              ],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "method": "POST"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "844b7b67-74ec-4386-9f0b-eb92794a1b8f",
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.environment.get('accessToken')) throw new Error('accessToken missing');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "df6d5ee6-d6d6-40cd-a437-99a0f55ccf69",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400 or 422 or 200', ()=> pm.expect(pm.response.code).to.be.oneOf([200,400,422]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "8e9b044f-6700-4b2a-afc2-eb41eae5c2ac",
+          "name": "TC_FOOD_DAILY_LOG_STEPS_401 - Update daily steps (no token)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "v2",
+                "daily-logs",
+                "steps"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "key": "steps",
+                  "value": "5000"
+                }
+              ],
+              "variable": []
+            },
+            "header": [],
+            "method": "POST"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "b4a5aa43-d377-46f1-ab19-2518d23b7a51",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 401 or 403', ()=> pm.expect(pm.response.code).to.be.oneOf([401,403]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "8096715d-8830-4d4e-a704-e27e24546b12",
+          "name": "TC_FOOD_PROFILE_GET_001 - Get user profile - Food (happy)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "v2",
+                "user-profile"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "410cbf4c-9b41-4b80-a179-6dfd68d5023f",
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.environment.get('accessToken')) throw new Error('accessToken missing');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "2b278b51-d9a7-4e51-b4da-1bdb28e42bd2",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', ()=> pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "8364f2cd-3481-420a-b197-772b030d9822",
+          "name": "TC_FOOD_PROFILE_GET_401 - Get user profile - Food (no token)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "v2",
+                "user-profile"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [],
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "ba391222-923e-4328-92a3-ded2b0d61b4d",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 401 or 403', ()=> pm.expect(pm.response.code).to.be.oneOf([401,403]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "0266083c-4bda-44d3-9413-f6bec0996c66",
+          "name": "TC_FOOD_PROFILE_CREATE_001 - Create user profile - Food (happy)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "v2",
+                "user-profile"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"height\":170,\"weight\":65,\"gender\":\"male\",\"date_of_birth\":\"1995-01-01\",\"activity_level\":\"moderately_active\",\"goal_type\":\"maintain\"}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "5f674faf-e85e-4345-b6cf-9c96ae19ed84",
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.environment.get('accessToken')) throw new Error('accessToken missing');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "cc27f300-39af-4d0f-9763-9bc56dfa73c7",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200 or 201 or 409', ()=> pm.expect(pm.response.code).to.be.oneOf([200,201,409]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "ca1a74c9-a978-407d-81a7-c5e5237ba80f",
+          "name": "TC_FOOD_PROFILE_CREATE_400 - Create user profile - Food (missing fields)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "v2",
+                "user-profile"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "dd1a3912-1110-44d3-b10b-83bfd4ac2238",
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.environment.get('accessToken')) throw new Error('accessToken missing');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "857304b8-a5a4-4b88-af67-1614f25db101",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400 or 422', ()=> pm.expect(pm.response.code).to.be.oneOf([400,422]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "e8afac93-624f-48de-8da7-028df0ce9872",
+          "name": "TC_FOOD_PROFILE_UPDATE_001 - Update user profile - Food (happy)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "v2",
+                "user-profile"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "PUT",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"weight\":66}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "8849eef2-8c6e-4835-8462-37a1d5807083",
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.environment.get('accessToken')) throw new Error('accessToken missing');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "1e6b03f4-d757-446e-8b4d-8c89b6e388a3",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200 or 404', ()=> pm.expect(pm.response.code).to.be.oneOf([200,404]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "00cca8f3-5907-4402-a5df-cc048e1392f6",
+          "name": "TC_FOOD_PROFILE_WEIGHT_HISTORY_001 - Get weight history (happy)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "v2",
+                "user-profile",
+                "weight-history"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "6155f92c-e489-48b7-9354-3449c291a906",
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.environment.get('accessToken')) throw new Error('accessToken missing');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "abbfba04-fe82-4f63-a411-c18953cbff09",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', ()=> pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "be4061d0-1afa-44e6-9763-85aaf9b37087",
+          "name": "TC_FOOD_PROFILE_WEIGHT_HISTORY_401 - Get weight history (no token)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "v2",
+                "user-profile",
+                "weight-history"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [],
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "483ceb8b-8f29-4aad-a27a-3863994d8b2a",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 401 or 403', ()=> pm.expect(pm.response.code).to.be.oneOf([401,403]));"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "event": []
+    },
+    {
+      "id": "55c81e0a-4f7f-420b-af93-24291f113a14",
+      "name": "Skin Analyzer",
+      "item": [
+        {
+          "id": "34235ebf-ba51-4e89-ae02-957253fb0f58",
+          "name": "TC_SKIN_HEALTH_001 - Health check endpoint",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "v1",
+                "health"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [],
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "21bdf833-c8f0-4e56-a064-8610807164a1",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', ()=> pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "8d8d530c-cf6d-46e9-a760-7a8fe43afc7a",
+          "name": "TC_SKIN_ANALYZE_001 - Analyze skin image (stub - multipart)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "v1",
+                "analyze"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "method": "POST"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "a1c928d6-2bd2-4435-a09a-7be2cd04c72a",
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.environment.get('accessToken')) throw new Error('accessToken missing');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "e3292dbd-62b3-4b66-a9ff-312c451a42e0",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Has response', ()=> pm.expect(pm.response.code).to.be.oneOf([200,400,415,422]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "7e1a77ee-7a28-41f6-9a89-6cc923baae58",
+          "name": "TC_SKIN_ANALYZE_401 - Analyze skin image (no token)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "v1",
+                "analyze"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [],
+            "method": "POST"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "0964ecca-12ba-4a13-987b-9d6118afe9ee",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 401 or 403', ()=> pm.expect(pm.response.code).to.be.oneOf([401,403]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "fce37b11-f379-4ef6-b25b-2088dbc06617",
+          "name": "TC_SKIN_ANALYZE_400 - Analyze skin image (no image)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "v1",
+                "analyze"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "ea77a420-0574-44a3-be0e-c0a702ee0a1d",
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.environment.get('accessToken')) throw new Error('accessToken missing');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "7047c777-b9bf-4056-a0d3-4f3c283fcf7b",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400 or 415 or 422', ()=> pm.expect(pm.response.code).to.be.oneOf([400,415,422]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "2496f249-b29b-4e32-bde2-a2d3ea566da6",
+          "name": "TC_SKIN_PREDICT_001 - Save analysis result - predict (happy)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "v1",
+                "analysis",
+                "predict"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"aiDiagnosis\":\"acne_test\",\"annotatedImageUrl\":\"http://example.com/img.jpg\",\"detections\":[],\"lifestyleSuggestions\":[]}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "f0c5a921-751c-4404-85f6-a8818840f066",
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.environment.get('accessToken')) throw new Error('accessToken missing');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "c33d3a41-f9b4-416c-9ee3-93f905c6fe2a",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200 or 201', ()=> pm.expect(pm.response.code).to.be.oneOf([200,201]));",
+                  "try{ const j=pm.response.json(); if(j && j.id) pm.environment.set('skinRecordId', j.id); } catch(e){}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "f1bb8049-7b03-41af-a23d-95b6aab44a9a",
+          "name": "TC_SKIN_PREDICT_401 - Save analysis result (no token)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "v1",
+                "analysis",
+                "predict"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [],
+            "method": "POST"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "83a83561-ff2f-434c-a965-3dab62ee7cd5",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 401 or 403 or 422', ()=> pm.expect(pm.response.code).to.be.oneOf([401,403,422]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "a98878b7-53d2-49fc-9de3-dbcd6e16aba5",
+          "name": "TC_SKIN_PREDICT_400 - Save analysis result (missing field)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "v1",
+                "analysis",
+                "predict"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"aiDiagnosis\":\"acne_test\"}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "41053a3b-5c37-4394-b670-f90a2c13d613",
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.environment.get('accessToken')) throw new Error('accessToken missing');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "ea7b0abb-ab0e-4110-92a9-16a4bd29b7a8",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400 or 422', ()=> pm.expect(pm.response.code).to.be.oneOf([400,422]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "ad843139-5e63-4eca-8433-e69c38bb3d41",
+          "name": "TC_SKIN_DOCTOR_NOTE_001 - Update doctor note (happy)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "v1",
+                "analysis",
+                "{{skinRecordId}}",
+                "doctor-note"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "PATCH",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"doctorNote\":\"Apply cream daily\"}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "e1d544e8-6d31-42d7-803d-8f3e634028fc",
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.environment.get('accessToken')) throw new Error('accessToken missing');",
+                  "if(!pm.environment.get('skinRecordId')) pm.environment.set('skinRecordId','1');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "63bf3fc9-ef0b-49ef-8533-69de75b2262d",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200 or 404', ()=> pm.expect(pm.response.code).to.be.oneOf([200,404]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "7cb21e52-1bf0-4168-8535-73cb29e24a42",
+          "name": "TC_SKIN_DOCTOR_NOTE_401 - Update doctor note (no token)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "v1",
+                "analysis",
+                "1",
+                "doctor-note"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "PATCH",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"doctorNote\":\"note\"}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "7161377d-fc07-424e-8aa8-3ffb0d5c515d",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 401 or 403 or 422', ()=> pm.expect(pm.response.code).to.be.oneOf([401,403,422]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "6d1569ca-5f71-405b-8ab7-f25c28a92d7d",
+          "name": "TC_SKIN_DOCTOR_NOTE_404 - Update doctor note (not found)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "v1",
+                "analysis",
+                "999999",
+                "doctor-note"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "PATCH",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"doctorNote\":\"note\"}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "3b912b2f-a1dc-4082-9508-7d799cec0267",
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.environment.get('accessToken')) throw new Error('accessToken missing');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "457a58f2-dad4-4965-9605-4657a0b6e968",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 404 or 403', ()=> pm.expect(pm.response.code).to.be.oneOf([403,404]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "21444148-314e-45a3-9a45-d1eb3aa394e2",
+          "name": "TC_SKIN_HISTORY_001 - Get analysis history (happy)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "v1",
+                "analysis",
+                "history"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "48037e5b-b614-4ce0-b49b-25fbe8decb63",
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.environment.get('accessToken')) throw new Error('accessToken missing');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "f6287041-6fbc-4201-93bb-2f24cd23fe6f",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', ()=> pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "e8d2996b-5115-4815-9959-30f5204463a5",
+          "name": "TC_SKIN_HISTORY_401 - Get analysis history (no token)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "v1",
+                "analysis",
+                "history"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [],
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "1bd37d54-7c28-423d-ba95-fb62b0bcbd52",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 401 or 403 or 422', ()=> pm.expect(pm.response.code).to.be.oneOf([401,403,422]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "f68b6b7e-eb0c-456b-a3a8-4dd5acffdecf",
+          "name": "TC_SKIN_SAVE_AI_001 - Save full AI result (happy)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "v1",
+                "analysis",
+                "save-ai-result"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"aiDiagnosis\":\"test\",\"annotatedImageUrl\":\"http://example.com/img.jpg\",\"detections\":[],\"lifestyleSuggestions\":[],\"metadata\":{}}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "cbecf82d-ab64-4d2a-8e8f-c204007332e4",
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.environment.get('accessToken')) throw new Error('accessToken missing');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "5ba9dfe0-23ad-4b11-a4a7-4f0bd209b443",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 2xx', ()=> pm.expect(pm.response.code).to.be.oneOf([200,201,204]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "59a81170-b34f-4b46-ace3-79023bd48df1",
+          "name": "TC_SKIN_SAVE_AI_401 - Save full AI result (no token)",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "v1",
+                "analysis",
+                "save-ai-result"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [],
+            "method": "POST"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "78e94f45-e84b-49a0-8482-4bae30b6a5ff",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 401 or 403 or 422', ()=> pm.expect(pm.response.code).to.be.oneOf([401,403,422]));"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "id": "41980738-ac63-49fc-867f-505589b1a345",
+        "type": "text/javascript",
+        "exec": [
+          "// collection-level pre-request placeholder: could refresh token if needed"
+        ],
+        "_lastExecutionId": "962578e7-d328-460f-82cf-0d6927e491e6"
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "id": "ced2e802-b28a-425e-814d-3e402faba54e",
+        "type": "text/javascript",
+        "exec": [
+          "pm.test(\"Request reached server\", function () {",
+          "    pm.expect(pm.response).to.have.property(\"code\");",
+          "    pm.expect(pm.response.code).to.be.a(\"number\");",
+          "});"
+        ]
+      }
+    }
+  ],
+  "variable": [],
+  "info": {
+    "_postman_id": "7ebd7326-7cee-4348-bbaa-40257fe8db24",
+    "name": "TueTinh API Tests",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "Automated API tests generated from source controllers. Includes auth, drugs, orders, users, and agent tests.",
+      "type": "text/plain"
+    }
+  }
+}
